@@ -38,11 +38,14 @@ function load() {
 let state = load()
 
 function save() {
-  mkdirSync(dirname(FILE), { recursive: true })
-  const tmp = FILE + '.tmp'
-  writeFileSync(tmp, JSON.stringify(state, null, 2))
-  renameSync(tmp, FILE)
+  try {
+    mkdirSync(dirname(FILE), { recursive: true })
+    writeFileSync(FILE, JSON.stringify(state, null, 2))
+  } catch (err) {
+    console.error('Failed to save store:', err.message)
+  }
 }
+
 
 export const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
 export const get = () => state
