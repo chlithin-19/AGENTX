@@ -80,9 +80,11 @@ export default function MobileNav({ activeTab, onSelectTab }) {
       )}
 
       {/* Slide-Down Navigation Drawer */}
-      <nav
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile Navigation Menu"
         className={`atlas-mobile-drawer frosted-panel ${drawerOpen ? 'open' : ''}`}
-        aria-label="Mobile Navigation Drawer"
       >
         <div className="atlas-mobile-drawer-header">
           <span className="atlas-drawer-title">Navigation</span>
@@ -120,7 +122,7 @@ export default function MobileNav({ activeTab, onSelectTab }) {
             )
           })}
         </div>
-      </nav>
+      </div>
 
       {/* Persistent Bottom Mobile Navigation Bar */}
       <nav className="atlas-bottom-bar frosted-panel" aria-label="Bottom Quick Navigation">

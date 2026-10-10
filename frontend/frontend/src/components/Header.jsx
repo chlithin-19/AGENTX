@@ -43,13 +43,17 @@ export default function Header({ activeTab, onSelectTab }) {
         </button>
 
         {/* Center: Segmented Navigation Track */}
-        <nav className="atlas-nav-track" aria-label="Main Navigation">
+        <nav className="atlas-nav-track" role="tablist" aria-label="Main Navigation">
           {navItems.map((item) => {
             const IconComponent = item.icon
             const isActive = activeTab === item.id
             return (
               <button
                 key={item.id}
+                role="tab"
+                id={`tab-${item.id}`}
+                aria-selected={isActive}
+                aria-controls={`${item.id}-view-mount`}
                 className={`atlas-nav-item ${isActive ? 'active' : ''}`}
                 onClick={() => onSelectTab(item.id)}
                 aria-current={isActive ? 'page' : undefined}

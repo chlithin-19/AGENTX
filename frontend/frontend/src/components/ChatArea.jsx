@@ -481,7 +481,7 @@ export default function ChatArea({ initialPrompt = '' }) {
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="messages">
+      <div className="messages" role="log" aria-live="polite" aria-label="Conversation history">
         {messages.map(m => (
           <div key={m.id} className={`message ${m.sender}`}>
             <div className={`avatar ${m.sender}`}>
@@ -630,6 +630,7 @@ export default function ChatArea({ initialPrompt = '' }) {
             disabled={isGenerating || !input.trim()}
             style={{ opacity: isGenerating || !input.trim() ? 0.35 : 1 }}
             title="Send Message (Enter)"
+            aria-label="Send message"
           >
             <PaperPlaneRight size={18} weight="fill" />
           </button>

@@ -2856,3 +2856,113 @@
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   PLAN 01-06: WCAG 2.1 AA ACCESSIBILITY & RESPONSIVE POLISH
+   ========================================================================== */
+
+/* Universal Focus Halos */
+:focus-visible {
+  outline: 2px solid var(--atlas-accent-cobalt) !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced Motion Respect */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .core-orbital-ring {
+    animation: none !important;
+  }
+  .atlas-status-dot {
+    animation: none !important;
+  }
+}
+
+/* Tablet Breakpoint (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .constellation-grid {
+    gap: 80px 100px;
+  }
+  .metric-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .capability-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .subview-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .student-switcher {
+    align-items: flex-start;
+  }
+}
+
+/* Strict Mobile Breakpoint (<= 640px) */
+@media (max-width: 640px) {
+  html, body {
+    overflow-x: hidden;
+  }
+  .atlas-app {
+    overflow-x: hidden;
+  }
+  .atlas-main-content {
+    padding: 10px 12px 90px;
+  }
+  .chat-container {
+    padding: 8px 10px 16px;
+    height: calc(100vh - 140px);
+    min-height: 480px;
+  }
+  .chat-header {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .chat-controls {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .message {
+    max-width: 95%;
+  }
+  .input-wrapper {
+    padding: 6px 8px 6px 14px;
+  }
+  .home-hero-headline {
+    gap: 4px;
+  }
+  .home-hero-brand {
+    font-size: 38px;
+  }
+  .home-hero-subhead {
+    font-size: 20px;
+  }
+  .home-notched-container {
+    padding: 36px 16px 40px;
+  }
+  .navy-metric-module {
+    padding: 40px 18px;
+  }
+  .subview-container {
+    padding: 8px 0 60px;
+    gap: 20px;
+  }
+  .event-card-item {
+    padding: 16px;
+    gap: 14px;
+  }
+  .circular-item {
+    padding: 18px;
+  }
+  .settings-arch-card {
+    padding: 20px 16px;
+  }
+  .settings-integrations-wrapper {
+    padding: 16px;
+  }
+}
