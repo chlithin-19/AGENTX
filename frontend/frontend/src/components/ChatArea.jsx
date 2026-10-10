@@ -85,11 +85,17 @@ const LOCALIZED_CONTENT = {
   }
 }
 
-export default function ChatArea() {
+export default function ChatArea({ initialPrompt = '' }) {
   const [messages, setMessages] = useState([])
-  const [input, setInput] = useState("")
+  const [input, setInput] = useState(initialPrompt || "")
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentStep, setCurrentStep] = useState(null)
+
+  useEffect(() => {
+    if (initialPrompt) {
+      setInput(initialPrompt)
+    }
+  }, [initialPrompt])
   const [autoMode, setAutoMode] = useState(false)
   const [actionInProgress, setActionInProgress] = useState({})
   const [isRefreshing, setIsRefreshing] = useState(false)

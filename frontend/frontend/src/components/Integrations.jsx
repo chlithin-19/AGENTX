@@ -15,7 +15,7 @@ import {
 
 const INTEGRATION_DEFS = [
   { id: 'google', name: 'Google Login', desc: 'Sign in with Google', icon: <GoogleLogo size={24} weight="fill" /> },
-  { id: 'gmail', name: 'Gmail API', desc: 'Read and send emails via Hermes', icon: <EnvelopeSimple size={24} weight="fill" /> },
+  { id: 'gmail', name: 'Gmail API', desc: 'Read and send emails via Atlas agents', icon: <EnvelopeSimple size={24} weight="fill" /> },
   { id: 'calendar', name: 'Calendar API', desc: 'Manage your schedule', icon: <Calendar size={24} weight="fill" /> },
   { id: 'github', name: 'GitHub', desc: 'Interact with repositories and issues', icon: <GithubLogo size={24} weight="fill" /> },
   { id: 'linkedin', name: 'LinkedIn', desc: 'Share posts and profile updates', icon: <LinkedinLogo size={24} weight="fill" /> },
@@ -132,8 +132,8 @@ export default function Integrations() {
   return (
     <div className="integrations-panel">
       <div className="integrations-header">
-        <h2>Integrations</h2>
-        <p>Connect external apps and services to enable Hermes agents.</p>
+        <h2>Institutional Integrations</h2>
+        <p>Connect institutional tools and workspaces to enable Atlas Campus Agents.</p>
       </div>
 
 

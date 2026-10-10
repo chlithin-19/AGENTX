@@ -4,7 +4,11 @@ import Header from './components/Header'
 import MobileNav from './components/MobileNav'
 import HomeView from './views/HomeView'
 import ChatArea from './components/ChatArea'
-import Integrations from './components/Integrations'
+import AcademicsView from './views/AcademicsView'
+import CampusView from './views/CampusView'
+import EventsView from './views/EventsView'
+import CommunicationView from './views/CommunicationView'
+import SettingsView from './views/SettingsView'
 
 function getInitialTab() {
   if (typeof window === 'undefined') return 'home'
@@ -33,6 +37,7 @@ function getInitialTab() {
 
 function App() {
   const [activeTab, setActiveTabState] = useState(getInitialTab)
+  const [initialPrompt, setInitialPrompt] = useState('')
 
   const handleSelectTab = (tab, pushState = true) => {
     setActiveTabState(tab)
@@ -40,6 +45,13 @@ function App() {
       const url = tab === 'home' ? '/' : `/?tab=${tab}`
       window.history.pushState({ tab }, '', url)
     }
+  }
+
+  const handleNavigateWithPrompt = (tab, prompt = '') => {
+    if (prompt) {
+      setInitialPrompt(prompt)
+    }
+    handleSelectTab(tab)
   }
 
   // Handle browser back/forward buttons
@@ -71,47 +83,39 @@ function App() {
 
       {/* Main Content Area */}
       <main className="atlas-main-content">
-        {activeTab === 'chat' && <ChatArea />}
-        {activeTab === 'settings' && <Integrations />}
         {activeTab === 'home' && (
           <div className="atlas-view-container" id="home-view-mount">
-            <HomeView onNavigate={handleSelectTab} />
+            <HomeView onNavigate={handleNavigateWithPrompt} />
+          </div>
+        )}
+        {activeTab === 'chat' && (
+          <div className="atlas-view-container" id="chat-view-mount">
+            <ChatArea initialPrompt={initialPrompt} />
           </div>
         )}
         {activeTab === 'academics' && (
           <div className="atlas-view-container" id="academics-view-mount">
-            <div className="scalloped-card" style={{ padding: '40px', maxWidth: '800px', margin: '40px auto' }}>
-              <span className="atlas-badge academic">Academic Intelligence</span>
-              <h2 style={{ fontSize: '28px', fontWeight: 700, margin: '16px 0', color: 'var(--atlas-text-headline)' }}>Academic & Placement Analytics</h2>
-              <p style={{ color: 'var(--atlas-text-body)' }}>Track attendance, predict placement readiness, and review course grades.</p>
-            </div>
+            <AcademicsView onNavigate={handleNavigateWithPrompt} />
           </div>
         )}
         {activeTab === 'campus' && (
           <div className="atlas-view-container" id="campus-view-mount">
-            <div className="scalloped-card" style={{ padding: '40px', maxWidth: '800px', margin: '40px auto' }}>
-              <span className="atlas-badge campus">Campus Facilities</span>
-              <h2 style={{ fontSize: '28px', fontWeight: 700, margin: '16px 0', color: 'var(--atlas-text-headline)' }}>Facilities & Infrastructure</h2>
-              <p style={{ color: 'var(--atlas-text-body)' }}>Real-time Lab 204 occupancy, campus maps, and maintenance requests.</p>
-            </div>
+            <CampusView onNavigate={handleNavigateWithPrompt} />
           </div>
         )}
         {activeTab === 'events' && (
           <div className="atlas-view-container" id="events-view-mount">
-            <div className="scalloped-card" style={{ padding: '40px', maxWidth: '800px', margin: '40px auto' }}>
-              <span className="atlas-badge events">Campus Events</span>
-              <h2 style={{ fontSize: '28px', fontWeight: 700, margin: '16px 0', color: 'var(--atlas-text-headline)' }}>Events & Hackathons</h2>
-              <p style={{ color: 'var(--atlas-text-body)' }}>Discover hackathons, AI workshops, guest lectures, and placement drives.</p>
-            </div>
+            <EventsView onNavigate={handleNavigateWithPrompt} />
           </div>
         )}
         {activeTab === 'communication' && (
           <div className="atlas-view-container" id="communication-view-mount">
-            <div className="scalloped-card" style={{ padding: '40px', maxWidth: '800px', margin: '40px auto' }}>
-              <span className="atlas-badge communication">Communications</span>
-              <h2 style={{ fontSize: '28px', fontWeight: 700, margin: '16px 0', color: 'var(--atlas-text-headline)' }}>Official Notices & Circulars</h2>
-              <p style={{ color: 'var(--atlas-text-body)' }}>Department notifications, urgent circulars, and academic announcements.</p>
-            </div>
+            <CommunicationView onNavigate={handleNavigateWithPrompt} />
+          </div>
+        )}
+        {activeTab === 'settings' && (
+          <div className="atlas-view-container" id="settings-view-mount">
+            <SettingsView />
           </div>
         )}
       </main>
