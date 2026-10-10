@@ -772,20 +772,26 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   width: 100%;
-  padding: 20px 24px;
-  height: 100%;
+  padding: 12px 20px 24px;
+  height: calc(100vh - 120px);
+  min-height: 600px;
   overflow: hidden;
+  position: relative;
 }
 
 .chat-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  background: var(--atlas-surface-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--atlas-border-subtle);
+  border-radius: var(--atlas-radius-xl);
+  box-shadow: var(--atlas-shadow-sm);
   margin-bottom: 16px;
   flex-shrink: 0;
   gap: 12px;
@@ -799,19 +805,21 @@
 }
 
 .chat-title-group h2 {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.01em;
+  color: var(--atlas-text-headline);
 }
 
 .model-pill {
   font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  background: rgba(99, 102, 241, 0.15);
-  color: var(--accent-light);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--atlas-radius-full);
+  background: var(--atlas-accent-soft);
+  color: var(--atlas-accent-cobalt);
+  border: 1px solid rgba(0, 98, 255, 0.2);
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .chat-controls {
@@ -829,39 +837,39 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
+  background: var(--atlas-surface-white);
+  border: 1px solid var(--atlas-border-subtle);
+  border-radius: var(--atlas-radius-full);
+  padding: 6px 12px;
   font-size: 12px;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-weight: 600;
+  color: var(--atlas-text-headline);
   cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: var(--atlas-shadow-sm);
 }
 
 .lang-selector-btn:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--border-hover);
+  background: var(--atlas-surface-tint);
+  border-color: var(--atlas-accent-cobalt);
 }
 
 .lang-dropdown-menu {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-hover);
-  border-radius: 10px;
+  background: var(--atlas-surface-white);
+  border: 1px solid var(--atlas-border-subtle);
+  border-radius: var(--atlas-radius-lg);
   padding: 6px;
-  min-width: 170px;
-  box-shadow: var(--shadow-lg);
+  min-width: 175px;
+  box-shadow: var(--atlas-shadow-floating);
   z-index: 100;
   display: flex;
   flex-direction: column;
   gap: 2px;
   max-height: 280px;
   overflow-y: auto;
-  backdrop-filter: blur(8px);
 }
 
 .lang-option {
@@ -869,21 +877,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 7px 10px;
-  border-radius: 6px;
+  border-radius: var(--atlas-radius-sm);
   font-size: 12.5px;
-  color: var(--text-secondary);
+  color: var(--atlas-text-body);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .lang-option:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: var(--atlas-surface-tint);
+  color: var(--atlas-text-headline);
 }
 
 .lang-option.active {
-  background: rgba(99, 102, 241, 0.2);
-  color: #ffffff;
+  background: var(--atlas-accent-soft);
+  color: var(--atlas-accent-cobalt);
   font-weight: 600;
 }
 
@@ -892,27 +900,27 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 11px;
+  background: var(--atlas-surface-white);
+  border: 1px solid var(--atlas-border-subtle);
+  border-radius: var(--atlas-radius-full);
+  padding: 6px 12px;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--atlas-text-body);
+  box-shadow: var(--atlas-shadow-sm);
 }
 
 .mode-toggle:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: var(--atlas-surface-tint);
 }
 
 .mode-toggle.active {
-  background: var(--success-bg);
-  border-color: var(--success-border);
-  color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #059669;
 }
 
 /* Action Control Buttons (Refresh, Clear) */
@@ -920,21 +928,21 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
+  background: var(--atlas-surface-white);
+  border: 1px solid var(--atlas-border-subtle);
+  color: var(--atlas-text-muted);
   cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: var(--atlas-radius-full);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.15s ease;
+  box-shadow: var(--atlas-shadow-sm);
 }
 
 .header-btn:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border-color: var(--border-hover);
+  background: var(--atlas-surface-tint);
+  color: var(--atlas-text-headline);
 }
 
 .header-btn.spinning svg {
@@ -964,11 +972,6 @@
   animation: fadeIn 0.25s ease-out;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 .message.user {
   align-self: flex-end;
   flex-direction: row-reverse;
@@ -981,44 +984,45 @@
 .avatar {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
 }
 
 .avatar.user {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
+  background: var(--atlas-surface-tint);
+  color: var(--atlas-accent-cobalt);
+  border: 1px solid rgba(0, 98, 255, 0.2);
 }
 
 .avatar.agent {
-  background: var(--accent-gradient);
-  color: white;
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.35);
+  background: linear-gradient(135deg, var(--atlas-accent-cobalt) 0%, #38BDF8 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.25);
 }
 
 .message-content {
-  background-color: var(--bg-card);
-  padding: 14px 18px;
-  border-radius: 14px;
+  background-color: var(--atlas-surface-white);
+  padding: 16px 20px;
+  border-radius: var(--atlas-radius-xl);
   font-size: 14.5px;
   line-height: 1.6;
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  color: var(--atlas-text-body);
+  border: 1px solid var(--atlas-border-subtle);
+  box-shadow: var(--atlas-shadow-card);
   position: relative;
   word-break: break-word;
 }
 
 .message.user .message-content {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.12) 100%);
-  border-color: rgba(99, 102, 241, 0.35);
-  color: #f8fafc;
+  background: rgba(0, 98, 255, 0.06);
+  border-color: rgba(0, 98, 255, 0.16);
+  color: var(--atlas-text-headline);
+  border-bottom-right-radius: 4px;
 }
 
 /* Thinking Indicator Pill */
@@ -1027,11 +1031,11 @@
   align-items: center;
   gap: 8px;
   font-size: 12.5px;
-  color: #cbd5e1;
-  padding: 6px 14px;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  border-radius: 20px;
+  color: var(--atlas-text-headline);
+  padding: 8px 16px;
+  background: var(--atlas-surface-tint);
+  border: 1px solid rgba(0, 98, 255, 0.2);
+  border-radius: var(--atlas-radius-full);
   animation: pulse-step 1.8s infinite;
 }
 
@@ -1045,9 +1049,9 @@
 ========================================= */
 .action-box {
   margin-top: 14px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-hover);
-  border-radius: 12px;
+  background: var(--atlas-surface-tint);
+  border: 1px solid rgba(0, 98, 255, 0.14);
+  border-radius: var(--atlas-radius-lg);
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -1064,25 +1068,25 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13.5px;
-  color: var(--text-primary);
+  color: var(--atlas-text-headline);
 }
 
 .action-box-title svg {
-  color: var(--accent-light);
+  color: var(--atlas-accent-cobalt);
 }
 
 .action-detail-item {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--atlas-text-body);
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--bg-primary);
+  background: var(--atlas-surface-white);
   padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  border-radius: var(--atlas-radius-md);
+  border: 1px solid var(--atlas-border-subtle);
 }
 
 .action-execute-btn {
@@ -1090,28 +1094,29 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 9px 18px;
+  border-radius: var(--atlas-radius-full);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
-  background: var(--accent-gradient);
+  background: var(--atlas-accent-cobalt);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.25);
   align-self: flex-start;
 }
 
 .action-execute-btn:hover:not(:disabled) {
+  background: var(--atlas-accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 6px 16px rgba(0, 98, 255, 0.35);
 }
 
 .action-execute-btn.done {
-  background: var(--success-bg);
-  border: 1px solid var(--success-border);
-  color: var(--success);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #059669;
   cursor: default;
   box-shadow: none;
 }
@@ -1132,9 +1137,9 @@
 }
 
 .attachment-item {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 9px;
+  background: var(--atlas-surface-white);
+  border: 1px solid var(--atlas-border-subtle);
+  border-radius: var(--atlas-radius-md);
   padding: 10px 14px;
   display: flex;
   align-items: center;
@@ -1144,11 +1149,12 @@
   text-decoration: none;
   color: inherit;
   transition: all 0.15s ease;
+  box-shadow: var(--atlas-shadow-sm);
 }
 
 .attachment-item:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--border-hover);
+  background: var(--atlas-surface-tint);
+  border-color: var(--atlas-accent-cobalt);
   transform: translateX(2px);
 }
 
@@ -1161,7 +1167,7 @@
 
 .attachment-title {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--atlas-text-headline);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1169,7 +1175,7 @@
 
 .attachment-sub {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--atlas-text-muted);
 }
 
 /* =========================================
@@ -1182,8 +1188,8 @@
 
 .prompt-chips-label {
   font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-weight: 700;
+  color: var(--atlas-text-muted);
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1196,46 +1202,52 @@
 }
 
 .prompt-chip {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 12.5px;
-  color: var(--text-secondary);
+  background: var(--atlas-surface-white);
+  border: 1px solid var(--atlas-border-subtle);
+  border-radius: var(--atlas-radius-full);
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--atlas-text-body);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
   user-select: none;
+  box-shadow: var(--atlas-shadow-sm);
 }
 
 .prompt-chip:hover {
-  background: var(--bg-tertiary);
-  border-color: rgba(99, 102, 241, 0.4);
-  color: var(--text-primary);
+  background: var(--atlas-surface-tint);
+  border-color: var(--atlas-accent-cobalt);
+  color: var(--atlas-accent-cobalt);
   transform: translateY(-1px);
 }
 
 /* =========================================
-   Input Area
+   Floating Omnibar Input Area
 ========================================= */
 .input-area {
   padding-top: 14px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .input-wrapper {
   display: flex;
   align-items: center;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 6px 12px 6px 16px;
-  box-shadow: var(--shadow-sm);
+  background: var(--atlas-surface-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--atlas-border-glass);
+  border-radius: var(--atlas-radius-full);
+  padding: 8px 12px 8px 20px;
+  box-shadow: var(--atlas-shadow-floating);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input-wrapper:focus-within {
-  border-color: rgba(99, 102, 241, 0.5);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: var(--atlas-accent-cobalt);
+  box-shadow: 0 0 0 3px rgba(0, 98, 255, 0.15), var(--atlas-shadow-floating);
 }
 
 .chat-input {
@@ -1243,38 +1255,39 @@
   border: none;
   outline: none;
   background: transparent;
-  padding: 10px 0;
-  font-size: 14.5px;
-  font-family: inherit;
-  color: var(--text-primary);
+  padding: 8px 0;
+  font-size: 15px;
+  font-family: var(--atlas-font-sans);
+  color: var(--atlas-text-headline);
   resize: none;
   max-height: 140px;
   line-height: 1.5;
 }
 
 .chat-input::placeholder {
-  color: var(--text-muted);
+  color: var(--atlas-text-muted);
 }
 
 .send-button {
-  background: var(--accent-gradient);
+  background: var(--atlas-accent-cobalt);
   border: none;
   color: white;
   cursor: pointer;
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.3);
   flex-shrink: 0;
 }
 
 .send-button:hover:not(:disabled) {
-  transform: scale(1.04);
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.5);
+  background: var(--atlas-accent-hover);
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 98, 255, 0.45);
 }
 
 .send-button:disabled {

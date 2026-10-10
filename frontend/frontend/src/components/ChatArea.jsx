@@ -15,6 +15,7 @@ import {
   CaretDown
 } from '@phosphor-icons/react'
 import ImageCard from './ImageCard'
+import ThoughtLine from './ThoughtLine'
 
 export const LANGUAGES = [
   { code: 'auto', name: 'Auto-Detect', native: 'Auto', flag: '🌐' },
@@ -32,13 +33,14 @@ export const LANGUAGES = [
 
 const LOCALIZED_CONTENT = {
   English: {
-    greeting: "Hello from Atlas! How can I assist you today? You can ask me questions, have me schedule events on your Google Calendar, read or draft emails via Gmail, post to LinkedIn, or search the web.",
-    placeholder: "Message Atlas (e.g. 'Add team sync on Monday at 10am to calendar')...",
+    greeting: "Hello from Atlas! How can I assist you today? You can ask me questions about your academic standing, check Lab 204 & library availability, discover campus hackathons, or read verified circulars.",
+    placeholder: "Ask Atlas about academics, facilities, events, or circulars...",
     suggestions: [
-      "Add team sync on Monday at 10am to calendar",
-      "What emails do I have in my inbox?",
-      "Draft an email to tillu about our product launch",
-      "Search the web for latest AI news"
+      "Show my academic standing and attendance",
+      "When is the Atlas 36h Hackathon?",
+      "Is Lab 204 available right now?",
+      "What are the library borrowing rules?",
+      "Show circular #104 midterm advisory"
     ]
   },
   Telugu: {
@@ -564,15 +566,18 @@ export default function ChatArea() {
           </div>
         ))}
 
-        {/* Real-time thinking / step indicator */}
-        {currentStep && (
-          <div className="message agent" style={{ opacity: 0.9 }}>
-            <div className="avatar agent">A</div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div className="thinking-step">
-                <Sparkle size={15} weight="fill" color="#eab308" />
-                <span>{currentStep}</span>
-              </div>
+        {/* Real-time multi-agent reasoning steps via ThoughtLine */}
+        {(isGenerating || currentStep) && (
+          <div className="message agent" style={{ maxWidth: '820px', width: '100%' }}>
+            <div className="avatar agent">✦</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <ThoughtLine
+                working={isGenerating}
+                label="Orchestrator Reasoning"
+                steps={currentStep ? [currentStep] : ['Routing intent to campus agents...', 'Processing knowledge base...']}
+                showTimer={true}
+                collapseOnSettle={true}
+              />
             </div>
           </div>
         )}

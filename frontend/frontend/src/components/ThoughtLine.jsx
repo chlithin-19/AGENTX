@@ -3,14 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 export default function ThoughtLine({
   working = true,
   steps = ['Reading the question', 'Searching your notes', 'Drafting an answer'],
-  label = 'Thinking…',
-  doneLabel = 'Thought for',
+  label = 'Orchestrator Reasoning',
+  doneLabel = 'Reasoning completed in',
   glyph = 'sparkle',
-  fontSize = 16,
+  fontSize = 14,
   breathPeriod = 1.6,
   breathDepth = 0.45,
   settleDuration = 350,
-  settleBlur = 2,
+  settleBlur = 0,
   collapsible = true,
   collapseOnSettle = true,
   showTimer = true,
@@ -56,21 +56,22 @@ export default function ThoughtLine({
     };
   }, [working, steps, collapseOnSettle, settleDuration, onSettle]);
 
-  const glyphIcon = glyph === 'sparkle' ? '✨' : '✦';
+  const glyphIcon = glyph === 'sparkle' ? '✦' : '✨';
   const activeStepText = steps && steps.length > 0 ? steps[currentStepIdx] || steps[0] : '';
 
   return (
     <div
       style={{
-        margin: '8px 0',
-        padding: '8px 12px',
-        borderRadius: '8px',
-        background: 'rgba(255, 255, 255, 0.04)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        margin: '12px 0',
+        padding: '10px 14px',
+        borderRadius: 'var(--atlas-radius-lg, 12px)',
+        background: 'var(--atlas-surface-tint, #EAF2F9)',
+        border: '1px solid var(--atlas-border-subtle, rgba(10, 25, 47, 0.08))',
         fontSize: `${fontSize}px`,
-        color: 'var(--text-secondary, #a3a3a3)',
+        color: 'var(--atlas-text-body, #334E68)',
         transition: `all ${settleDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`,
         filter: working ? 'none' : `blur(${settled && !collapsed ? settleBlur : 0}px)`,
+        boxShadow: 'var(--atlas-shadow-sm, 0 2px 6px rgba(11, 21, 40, 0.04))',
       }}
     >
       <div
@@ -83,10 +84,11 @@ export default function ThoughtLine({
           userSelect: 'none',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <span
             style={{
               display: 'inline-block',
+              color: 'var(--atlas-accent-cobalt, #0062FF)',
               animation: working
                 ? `thoughtBreath ${breathPeriod}s ease-in-out infinite alternate`
                 : 'none',
@@ -95,14 +97,15 @@ export default function ThoughtLine({
           >
             {glyphIcon}
           </span>
-          <span style={{ fontWeight: 500 }}>
+          <span style={{ fontWeight: 600, color: 'var(--atlas-text-headline, #0A192F)' }}>
             {working ? label : `${doneLabel} ${elapsed.toFixed(1)}s`}
           </span>
           {working && (
             <span
               style={{
-                color: 'var(--text-tertiary, #737373)',
-                fontSize: `${fontSize - 2}px`,
+                color: 'var(--atlas-accent-cobalt, #0062FF)',
+                fontSize: `${fontSize - 1}px`,
+                fontWeight: 500,
                 marginLeft: '4px',
               }}
             >
@@ -116,8 +119,9 @@ export default function ThoughtLine({
             <span
               style={{
                 fontSize: `${fontSize - 2}px`,
-                color: 'var(--text-tertiary, #737373)',
+                color: 'var(--atlas-text-muted, #627D98)',
                 fontVariantNumeric: 'tabular-nums',
+                fontWeight: 600,
               }}
             >
               {elapsed.toFixed(1)}s
@@ -127,7 +131,7 @@ export default function ThoughtLine({
             <span
               style={{
                 fontSize: '11px',
-                opacity: 0.5,
+                color: 'var(--atlas-text-muted, #627D98)',
                 transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
                 transition: 'transform 0.2s',
               }}
@@ -143,7 +147,7 @@ export default function ThoughtLine({
           style={{
             marginTop: '8px',
             paddingTop: '6px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+            borderTop: '1px solid var(--atlas-border-subtle, rgba(10, 25, 47, 0.08))',
             display: 'flex',
             flexDirection: 'column',
             gap: '4px',
@@ -161,10 +165,11 @@ export default function ThoughtLine({
                   alignItems: 'center',
                   gap: '6px',
                   color: isCur
-                    ? 'var(--text-primary, #ffffff)'
+                    ? 'var(--atlas-accent-cobalt, #0062FF)'
                     : isPast
-                    ? 'var(--text-secondary, #888888)'
-                    : 'var(--text-tertiary, #555555)',
+                    ? 'var(--atlas-text-body, #334E68)'
+                    : 'var(--atlas-text-muted, #627D98)',
+                  fontWeight: isCur ? 600 : 400,
                 }}
               >
                 <span>{isPast ? '✓' : isCur ? '›' : '·'}</span>
@@ -178,7 +183,7 @@ export default function ThoughtLine({
       <style>{`
         @keyframes thoughtBreath {
           from { opacity: ${1 - breathDepth}; transform: scale(0.92); }
-          to { opacity: 1; transform: scale(1.08); }
+          to { transform: scale(1.08); }
         }
       `}</style>
     </div>
