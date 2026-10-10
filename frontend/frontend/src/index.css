@@ -1,34 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg-base: #090a0f;
-  --bg-primary: #0f1118;
-  --bg-secondary: #161922;
-  --bg-tertiary: #1f2330;
-  --bg-card: #131620;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.18);
-  --accent: #6366f1;
-  --accent-light: #818cf8;
-  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-  --accent-glow: 0 0 24px rgba(99, 102, 241, 0.3);
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --success-border: rgba(16, 185, 129, 0.3);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --warning-border: rgba(245, 158, 11, 0.3);
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.12);
-  --danger-border: rgba(239, 68, 68, 0.3);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  /* --- 60% Dominant Canvas & Light Surfaces --- */
+  --atlas-bg-canvas: #F4F8FC;                 /* Atmospheric sky mist base */
+  --atlas-bg-canvas-alt: #EBF3FA;             /* Subtle tonal variation for alternating sections */
+  --atlas-surface-white: #FFFFFF;             /* Pure white floating cards & panels */
+  --atlas-surface-glass: rgba(255, 255, 255, 0.85); /* Glassmorphic top navigation & pills */
+  --atlas-surface-tint: #EAF2F9;              /* Soft ice-blue pill & input fill */
+
+  /* --- 30% Secondary Dark & Contrast Containers --- */
+  --atlas-navy-deep: #0B1528;                 /* Deep midnight navy for grounding cards & footer */
+  --atlas-navy-card: #132238;                 /* Elevated navy surface for dark sub-modules */
+  --atlas-navy-border: rgba(255, 255, 255, 0.12); /* Hairline borders on dark surfaces */
+
+  /* --- 10% Accent System & Active States --- */
+  --atlas-accent-cobalt: #0062FF;             /* Primary interactive cobalt blue */
+  --atlas-accent-hover: #004EDB;              /* Darkened cobalt on hover */
+  --atlas-accent-soft: rgba(0, 98, 255, 0.08); /* Translucent cobalt pill background */
+  --atlas-accent-cyan: #38BDF8;               /* Glowing halo / orbital ring highlight */
+
+  /* --- Domain Agent Badges & Identity --- */
+  --atlas-agent-academic: #2563EB;            /* Academic & Placement Agent (Royal Blue) */
+  --atlas-agent-campus: #0D9488;              /* Campus Facilities & Maintenance (Teal) */
+  --atlas-agent-event: #7C3AED;               /* Campus Events & Hackathons (Violet) */
+  --atlas-agent-comm: #EA580C;                /* Announcements & Circulars (Warm Amber) */
+
+  /* --- Typography Tokens --- */
+  --atlas-text-headline: #0A192F;             /* Deep ink navy for high-contrast titles */
+  --atlas-text-body: #334E68;                 /* Slate navy for refined editorial paragraphs */
+  --atlas-text-muted: #627D98;                /* Secondary labels, timestamps, metadata */
+  --atlas-text-on-dark: #F8FAFC;              /* Pure white text on navy containers */
+  --atlas-text-on-dark-muted: #94A3B8;        /* Muted slate text on navy containers */
+  --atlas-watermark: rgba(10, 25, 47, 0.04);  /* Giant translucent background typography */
+
+  /* --- Spacing Scale (8pt Grid / 4px Multiples) --- */
+  --atlas-space-xs: 4px;
+  --atlas-space-sm: 8px;
+  --atlas-space-md: 16px;
+  --atlas-space-lg: 24px;
+  --atlas-space-xl: 32px;
+  --atlas-space-2xl: 48px;
+  --atlas-space-3xl: 64px;
+  --atlas-space-4xl: 96px;
+
+  /* --- Radius Scale --- */
+  --atlas-radius-full: 9999px;
+  --atlas-radius-2xl: 28px;
+  --atlas-radius-xl: 20px;
+  --atlas-radius-lg: 14px;
+  --atlas-radius-md: 10px;
+  --atlas-radius-sm: 6px;
+
+  /* --- Borders & Strokes --- */
+  --atlas-border-subtle: rgba(10, 25, 47, 0.07);
+  --atlas-border-medium: rgba(10, 25, 47, 0.12);
+  --atlas-border-focus: rgba(0, 98, 255, 0.35);
+  --atlas-border-glass: rgba(255, 255, 255, 0.7);
+
+  /* --- Multi-Stage Elevation & Shadows --- */
+  --atlas-shadow-card: 0 16px 36px -12px rgba(11, 21, 40, 0.07), 0 0 1px 1px rgba(11, 21, 40, 0.04);
+  --atlas-shadow-floating: 0 28px 56px -16px rgba(11, 21, 40, 0.12), 0 8px 20px -6px rgba(0, 98, 255, 0.08);
+  --atlas-shadow-glow: 0 0 45px rgba(0, 98, 255, 0.22);
+  --atlas-shadow-sm: 0 2px 6px rgba(11, 21, 40, 0.04);
+
+  /* Font Families */
+  --atlas-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --atlas-font-mono: 'JetBrains Mono', monospace;
+
+  /* Legacy Backward-Compatibility Aliases */
+  --bg-base: var(--atlas-bg-canvas);
+  --bg-primary: var(--atlas-surface-white);
+  --bg-secondary: var(--atlas-surface-tint);
+  --bg-tertiary: var(--atlas-bg-canvas-alt);
+  --bg-card: var(--atlas-surface-white);
+  --text-primary: var(--atlas-text-headline);
+  --text-secondary: var(--atlas-text-body);
+  --text-muted: var(--atlas-text-muted);
+  --border: var(--atlas-border-subtle);
+  --border-hover: var(--atlas-border-medium);
+  --accent: var(--atlas-accent-cobalt);
+  --accent-light: #3b82f6;
+  --accent-gradient: linear-gradient(135deg, #0062FF 0%, #2563EB 100%);
+  --accent-glow: 0 0 24px rgba(0, 98, 255, 0.25);
+  --font-sans: var(--atlas-font-sans);
+  --font-mono: var(--atlas-font-mono);
 }
 
 * {
@@ -38,32 +93,36 @@
 }
 
 body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
+  background-color: var(--atlas-bg-canvas);
+  color: var(--atlas-text-body);
+  font-family: var(--atlas-font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
   user-select: text;
 }
 
 #root {
-  height: 100%;
+  min-height: 100vh;
 }
 
-/* Custom Scrollbars */
+:focus-visible {
+  outline: 2px solid var(--atlas-accent-cobalt);
+  outline-offset: 2px;
+}
+
+/* Scrollbars tuned for pale frosted canvas */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
+  background: rgba(11, 21, 40, 0.15);
+  border-radius: var(--atlas-radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(11, 21, 40, 0.28);
 }

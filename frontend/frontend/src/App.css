@@ -1,3 +1,182 @@
+/* ==========================================================================
+   ATLAS DESIGN SYSTEM — SCULPTURAL & UTILITY FOUNDATION
+   ========================================================================== */
+
+.atlas-app {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--atlas-bg-canvas);
+  color: var(--atlas-text-body);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle micro-dots architectural grid backdrop */
+.atlas-grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(11, 21, 40, 0.065) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Atmospheric Glow Blooms */
+.atlas-glow-bloom {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+.atlas-glow-top {
+  top: -120px;
+  right: 10%;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(0, 98, 255, 0.12) 0%, rgba(56, 189, 248, 0.05) 50%, transparent 70%);
+}
+.atlas-glow-bottom {
+  bottom: -150px;
+  left: 5%;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.07) 0%, rgba(0, 98, 255, 0.04) 50%, transparent 70%);
+}
+
+/* Monumental Watermark Typography */
+.atlas-watermark {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--atlas-font-sans);
+  font-size: clamp(72px, 14vw, 160px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--atlas-watermark);
+  line-height: 0.9;
+  text-transform: uppercase;
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+/* Pill Action Button */
+.atlas-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--atlas-accent-cobalt);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--atlas-radius-full);
+  padding: 10px 22px;
+  font-family: var(--atlas-font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 98, 255, 0.25);
+  text-decoration: none;
+}
+.atlas-pill-btn:hover {
+  background-color: var(--atlas-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 98, 255, 0.35);
+}
+.atlas-pill-btn:active {
+  transform: translateY(0);
+}
+.atlas-pill-btn.secondary {
+  background-color: var(--atlas-surface-white);
+  color: var(--atlas-text-headline);
+  border: 1px solid var(--atlas-border-medium);
+  box-shadow: var(--atlas-shadow-sm);
+}
+.atlas-pill-btn.secondary:hover {
+  background-color: var(--atlas-surface-tint);
+  border-color: var(--atlas-accent-cobalt);
+}
+
+/* Pill Badges & Identity Tags */
+.atlas-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--atlas-radius-full);
+  font-family: var(--atlas-font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background-color: var(--atlas-accent-soft);
+  color: var(--atlas-accent-cobalt);
+  border: 1px solid rgba(0, 98, 255, 0.16);
+}
+.atlas-badge-node {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+.atlas-badge.academic {
+  background-color: rgba(37, 99, 235, 0.08);
+  color: var(--atlas-agent-academic);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+.atlas-badge.campus {
+  background-color: rgba(13, 148, 136, 0.08);
+  color: var(--atlas-agent-campus);
+  border-color: rgba(13, 148, 136, 0.2);
+}
+.atlas-badge.events {
+  background-color: rgba(124, 58, 237, 0.08);
+  color: var(--atlas-agent-event);
+  border-color: rgba(124, 58, 237, 0.2);
+}
+.atlas-badge.communication {
+  background-color: rgba(234, 88, 12, 0.08);
+  color: var(--atlas-agent-comm);
+  border-color: rgba(234, 88, 12, 0.2);
+}
+
+/* Sculptural & Frosted Cards */
+.scalloped-card {
+  background: var(--atlas-surface-white);
+  border-radius: var(--atlas-radius-2xl);
+  border: 1px solid var(--atlas-border-subtle);
+  box-shadow: var(--atlas-shadow-card);
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.scalloped-card:hover {
+  box-shadow: var(--atlas-shadow-floating);
+}
+
+.scalloped-card-dark {
+  background: var(--atlas-navy-deep);
+  color: var(--atlas-text-on-dark);
+  border-radius: var(--atlas-radius-2xl);
+  border: 1px solid var(--atlas-navy-border);
+  box-shadow: 0 20px 40px rgba(11, 21, 40, 0.25);
+}
+
+.frosted-panel {
+  background: var(--atlas-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--atlas-border-glass);
+}
+
+/* Legacy layout container support during transition */
 .app-container {
   display: flex;
   height: 100vh;
