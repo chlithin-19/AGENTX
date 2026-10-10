@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Header from './components/Header'
 import MobileNav from './components/MobileNav'
+import HomeView from './views/HomeView'
 import ChatArea from './components/ChatArea'
 import Integrations from './components/Integrations'
 
@@ -74,22 +75,7 @@ function App() {
         {activeTab === 'settings' && <Integrations />}
         {activeTab === 'home' && (
           <div className="atlas-view-container" id="home-view-mount">
-            {/* Home view will be rendered by HomeView component in Plan 01-03 */}
-            <div className="atlas-view-placeholder">
-              <span className="atlas-watermark">ATLAS</span>
-              <div className="scalloped-card" style={{ padding: '48px', maxWidth: '720px', margin: '60px auto', textAlign: 'center', zIndex: 1 }}>
-                <span className="atlas-badge" style={{ marginBottom: '16px' }}>Campus Intelligence System</span>
-                <h1 style={{ fontSize: '36px', fontWeight: 800, color: 'var(--atlas-text-headline)', marginBottom: '16px' }}>
-                  Atlas Multi-Agent Platform
-                </h1>
-                <p style={{ color: 'var(--atlas-text-body)', fontSize: '16px', lineHeight: 1.6, marginBottom: '28px' }}>
-                  Privacy-first hybrid architecture connecting academic records, facilities scheduling, campus events, and administrative circulars.
-                </p>
-                <button className="atlas-pill-btn" onClick={() => handleSelectTab('chat')}>
-                  Launch Ask Atlas →
-                </button>
-              </div>
-            </div>
+            <HomeView onNavigate={handleSelectTab} />
           </div>
         )}
         {activeTab === 'academics' && (

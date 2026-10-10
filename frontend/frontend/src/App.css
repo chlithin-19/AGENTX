@@ -1498,3 +1498,529 @@
   overflow-x: auto;
   color: #e2e8f0;
 }
+
+/* ==========================================================================
+   PLAN 01-03: HOME VIEW, CONSTELLATION & NOTCHED ARCHITECTURE
+   ========================================================================== */
+
+.home-view-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  padding-top: 24px;
+}
+
+.home-hero-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 0 60px;
+}
+
+.home-hero-header {
+  position: relative;
+  z-index: 2;
+  max-width: 840px;
+  margin: 0 auto 48px;
+}
+
+.home-hero-headline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.home-hero-brand {
+  font-family: var(--atlas-font-sans);
+  font-size: clamp(38px, 6vw, 68px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--atlas-text-headline);
+  line-height: 1.05;
+}
+
+.home-hero-subhead {
+  font-family: var(--atlas-font-sans);
+  font-size: clamp(20px, 3.2vw, 36px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--atlas-accent-cobalt);
+  line-height: 1.2;
+}
+
+.home-hero-narrative {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--atlas-text-body);
+  max-width: 680px;
+  margin: 0 auto 32px;
+}
+
+.home-hero-ctas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Constellation Visualizer */
+.home-constellation-container {
+  position: relative;
+  width: 100%;
+  max-width: 1060px;
+  min-height: 480px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.constellation-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.constellation-center-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.core-orbital-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 98, 255, 0.35);
+  animation: rotate-ring 24s linear infinite;
+}
+.ring-outer {
+  width: 160px;
+  height: 160px;
+}
+.ring-inner {
+  width: 130px;
+  height: 130px;
+  border-style: solid;
+  border-color: rgba(56, 189, 248, 0.3);
+  animation-direction: reverse;
+  animation-duration: 16s;
+}
+
+@keyframes rotate-ring {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.core-center-sphere {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #0062FF 0%, #0B1528 85%);
+  box-shadow: var(--atlas-shadow-glow), 0 0 20px rgba(0, 98, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  text-align: center;
+  padding: 8px;
+}
+
+.core-symbol {
+  font-size: 18px;
+  line-height: 1;
+  color: #38BDF8;
+}
+
+.core-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+.core-sub {
+  font-size: 8px;
+  opacity: 0.8;
+  letter-spacing: 0.02em;
+}
+
+/* Constellation Satellite Cards */
+.constellation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 180px 260px;
+  width: 100%;
+  z-index: 2;
+  position: relative;
+}
+
+.satellite-card {
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 240px;
+  max-width: 320px;
+}
+.satellite-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--atlas-accent-cobalt);
+}
+
+.satellite-card.card-academic { justify-self: start; }
+.satellite-card.card-campus { justify-self: end; }
+.satellite-card.card-events { justify-self: start; }
+.satellite-card.card-communication { justify-self: end; }
+
+.satellite-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.satellite-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--atlas-radius-full);
+}
+
+.satellite-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.satellite-user {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--atlas-text-headline);
+}
+
+.satellite-metric-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.satellite-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--atlas-text-muted);
+  font-weight: 600;
+}
+
+.metric-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--atlas-text-headline);
+}
+
+.text-success { color: #059669 !important; }
+.text-accent { color: var(--atlas-accent-cobalt) !important; }
+
+/* ==========================================================================
+   SECTION 2: NOTCHED ARCHITECTURAL CONTAINER & CAPABILITY TRIO
+   ========================================================================== */
+
+.home-notched-container {
+  position: relative;
+  background: var(--atlas-bg-canvas-alt);
+  border-radius: var(--atlas-radius-2xl);
+  padding: 48px 36px 64px;
+  margin-top: 32px;
+  border: 1px solid var(--atlas-border-subtle);
+}
+
+.notched-badge-cradle {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--atlas-bg-canvas);
+  padding: 4px 16px;
+  border-radius: var(--atlas-radius-full);
+  box-shadow: 0 4px 12px rgba(11, 21, 40, 0.05);
+}
+
+.notched-content-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.notched-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 16px auto 48px;
+}
+
+.notched-title {
+  font-size: clamp(26px, 3.5vw, 38px);
+  font-weight: 700;
+  color: var(--atlas-text-headline);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+
+.notched-subtitle {
+  font-size: 16px;
+  color: var(--atlas-text-body);
+  line-height: 1.6;
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.capability-card {
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.capability-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--atlas-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.capability-icon-wrap.academic {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--atlas-agent-academic);
+}
+.capability-icon-wrap.campus {
+  background: rgba(13, 148, 136, 0.1);
+  color: var(--atlas-agent-campus);
+}
+.capability-icon-wrap.communication {
+  background: rgba(234, 88, 12, 0.1);
+  color: var(--atlas-agent-comm);
+}
+
+.capability-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--atlas-text-headline);
+  margin-bottom: 12px;
+}
+
+.capability-card-desc {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--atlas-text-body);
+  flex: 1;
+  margin-bottom: 24px;
+}
+
+.capability-card-footer {
+  margin-top: auto;
+}
+
+.capability-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--atlas-accent-cobalt);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: gap 0.2s ease;
+}
+.capability-link:hover {
+  gap: 10px;
+}
+
+/* ==========================================================================
+   SECTION 3: MIDNIGHT NAVY METRIC MODULE
+   ========================================================================== */
+
+.navy-metric-module {
+  padding: 64px 40px;
+  margin: 32px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.navy-metric-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.navy-header {
+  max-width: 780px;
+  margin: 0 auto 48px;
+}
+
+.navy-title {
+  font-size: clamp(26px, 3.8vw, 42px);
+  font-weight: 800;
+  color: var(--atlas-text-on-dark);
+  margin: 18px 0 14px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.navy-subtitle {
+  font-size: 16px;
+  color: var(--atlas-text-on-dark-muted);
+  line-height: 1.6;
+}
+
+.metric-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.metric-stat-item {
+  padding: 24px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--atlas-navy-border);
+  border-radius: var(--atlas-radius-xl);
+}
+
+.stat-number {
+  font-size: clamp(34px, 4vw, 50px);
+  font-weight: 800;
+  color: #38BDF8;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--atlas-text-on-dark-muted);
+  line-height: 1.4;
+}
+
+.navy-cta-row {
+  display: flex;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.home-footer {
+  border-top: 1px solid var(--atlas-border-subtle);
+  padding: 40px 0 20px;
+  margin-top: 40px;
+}
+
+.home-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1240px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-monogram {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--atlas-text-headline);
+  letter-spacing: 0.05em;
+}
+
+.footer-desc {
+  font-size: 13px;
+  color: var(--atlas-text-muted);
+  margin-top: 4px;
+}
+
+.footer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: var(--atlas-text-muted);
+}
+
+/* Responsive adjustments for HomeView */
+@media (max-width: 1024px) {
+  .constellation-grid {
+    gap: 120px 140px;
+  }
+  .capability-grid {
+    grid-template-columns: 1fr;
+  }
+  .metric-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .home-constellation-container {
+    min-height: auto;
+    flex-direction: column;
+    padding: 20px 0;
+  }
+  .constellation-svg {
+    display: none;
+  }
+  .constellation-center-core {
+    position: static;
+    transform: none;
+    margin: 20px auto 32px;
+  }
+  .constellation-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 16px;
+  }
+  .satellite-card {
+    justify-self: stretch !important;
+    max-width: 100%;
+  }
+  .metric-stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .home-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-meta {
+    align-items: flex-start;
+  }
+}
