@@ -19,3 +19,15 @@ verification: passed
 
 ## Verification
 - Ran `npm --prefix frontend/frontend run build`. Built 4580 modules in 6.32s with code 0.
+- **Real Backend End-to-End Verification (`POST /api/chat`)**:
+  - Live backend verified active on `http://localhost:8080/api/health` (`atlas-backend`, `gemma4:e2b`).
+  - Directly tested `POST http://localhost:8080/api/chat` with `{ message: "Where is the library?", mode: "auto", language: "en" }`.
+  - Received HTTP 200 `text/event-stream` with multi-event SSE protocol:
+    - Step event: `data: {"step":"Routing to Atlas Campus Multi-Agent System"}`
+    - Streamed content: Word chunks for Central Library Building, hours, and citations (`[library_sec_2]`)
+    - Completion event: `data: {"done":true}`
+  - Verified Vite dev proxy (`/api/chat` -> `http://localhost:8080/api/chat`) forwards SSE chunks with 100% fidelity.
+  - Executed full browser end-to-end test via browser automation on `http://localhost:5173/?tab=chat`:
+    - Dispatched query `"What are the library borrowing rules?"`.
+    - Observed live UI updates: `ThoughtLine` active with step indication, token stream progressively rendering response markdown, and completion.
+    - Zero console errors or uncaught exceptions during message dispatch or rendering.
