@@ -9,7 +9,7 @@
  */
 
 import { Router } from 'express'
-import { orchestrate, routeQuery, isAtlasQuery } from './orchestrator/orchestrator.js'
+import { orchestrate, routeQuery, isAtlasQuery, isIdempotent } from './orchestrator/orchestrator.js'
 import { DEMO_STUDENT_PROFILES } from './data/demoStudents.js'
 import { DEMO_FACILITIES, DEMO_CAMPUS_SERVICES, createDemoMaintenanceTicket } from './data/demoCampus.js'
 import { DEMO_EVENTS } from './data/demoEvents.js'
@@ -184,11 +184,12 @@ export function createAtlasRouter() {
   return router
 }
 
-export { orchestrate, routeQuery, isAtlasQuery }
+export { orchestrate, routeQuery, isAtlasQuery, isIdempotent }
 
 export default {
   createAtlasRouter,
   orchestrate,
   routeQuery,
-  isAtlasQuery
+  isAtlasQuery,
+  isIdempotent
 }

@@ -214,7 +214,19 @@ app.post('/api/chat', async (req, res) => {
       const atlasResult = await orchestrateAtlas({
         message,
         user: req.user,
-        history: (db.chats || []).slice(-4)
+        history: (db.chats || []).slice(-4),
+        onProgress: (p) => {
+          if (p.type === 'task_start') {
+            const agentName = p.agent ? p.agent.charAt(0).toUpperCase() + p.agent.slice(1) : 'Atlas'
+            send({ step: `${agentName} Agent: processing inquiry...` })
+          } else if (p.type === 'task_complete') {
+            const agentName = p.agent ? p.agent.charAt(0).toUpperCase() + p.agent.slice(1) : 'Atlas'
+            send({ step: `${agentName} Agent: inquiry completed (${p.durationMs}ms)` })
+          } else if (p.type === 'task_retry') {
+            const agentName = p.agent ? p.agent.charAt(0).toUpperCase() + p.agent.slice(1) : 'Atlas'
+            send({ step: `${agentName} Agent: retrying operation (attempt ${p.attempt})...` })
+          }
+        }
       })
       const reply = atlasResult.response?.text || 'Atlas processed your campus inquiry.'
       const extraAction = atlasResult.actions?.[0] ? { action: atlasResult.actions[0] } : {}
@@ -223,6 +235,9 @@ app.post('/api/chat', async (req, res) => {
       const words = reply.match(/\S+\s*/g) || [reply]
       for (const chunk of words) {
         send({ token: chunk })
+      }
+      if (atlasResult.actions?.[0]) {
+        send({ action: atlasResult.actions[0] })
       }
       send({ done: true })
       return res.end()
