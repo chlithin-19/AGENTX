@@ -16,6 +16,7 @@
 
 import { getDemoStudent, DEMO_STUDENT_PROFILES, COHORT_BENCHMARKS } from '../data/demoStudents.js'
 import { assertStudentAccess } from '../security/index.js'
+import { getCampusRepositories } from '../campus/repositories/index.js'
 
 export class AcademicAgent {
   constructor() {
@@ -43,8 +44,39 @@ export class AcademicAgent {
     // 2. Named student explicitly mentioned in query
     // 3. Defaults to callingUser's own record
     let student = null
-    if (task.input?.targetStudentId) {
-      student = DEMO_STUDENT_PROFILES.find(s => s.student_id === Number(task.input.targetStudentId))
+    const targetStudentId = task.input?.targetStudentId ? Number(task.input.targetStudentId) : null
+
+    // Try reading from authorized SQLite repository first
+    try {
+      const { studentRepo, academicRepo, placementRepo } = getCampusRepositories()
+      const resolvedId = targetStudentId || callingUser.studentId || callingUser.id || 1
+      const st = studentRepo.getStudentById(resolvedId, callingUser)
+      const ac = academicRepo.getAcademicRecord(resolvedId, callingUser)
+      const pl = placementRepo.getPlacementProfile(resolvedId, callingUser)
+
+      if (st && ac) {
+        student = {
+          ...st,
+          ...ac,
+          ...(pl || {})
+        }
+      }
+    } catch (repoErr) {
+      if (repoErr.code?.startsWith('FORBIDDEN') || repoErr.status === 403) {
+        return {
+          agent: this.name,
+          action: 'access_denied',
+          status: 'forbidden',
+          error: repoErr.code || 'FORBIDDEN',
+          summary: `⚠️ ${repoErr.message}`,
+          citations: []
+        }
+      }
+      // If DB is uninitialized or student not in DB, fallback to demo dataset
+    }
+
+    if (!student && targetStudentId) {
+      student = DEMO_STUDENT_PROFILES.find(s => s.student_id === targetStudentId)
     }
     if (!student) {
       for (const p of DEMO_STUDENT_PROFILES) {
@@ -78,7 +110,8 @@ export class AcademicAgent {
 
     // Sub-intent 1: Attendance inquiry
     if (/\b(attendance|present|absent|classes?)\b/i.test(query)) {
-      const att = student.attendance_percentage
+      const rawAtt = student.attendance_percentage
+      const att = Number(Number(rawAtt).toFixed(2))
       const statusNote = att < 65 
         ? '⚠️ Critical: Attendance is below 65%. Significant risk of semester detention.'
         : att < 75 

@@ -16,15 +16,28 @@ import { DEMO_EVENTS } from './data/demoEvents.js'
 import { DEMO_ANNOUNCEMENTS, draftCampusMessage } from './data/demoCommunication.js'
 import { AUTH_CONFIG, executeConfirmedAction } from './security/index.js'
 
+import { getCampusRepositories } from './campus/repositories/index.js'
+
 /**
  * Action executor callback executing the verified stored server proposal.
  */
 async function defaultActionExecutor(actionType, proposal, user) {
   if (actionType === 'campus.create_maintenance_ticket') {
-    return createDemoMaintenanceTicket({
-      ...proposal,
-      reportedBy: user?.name || proposal.reportedBy || 'Alex Kumar'
-    })
+    try {
+      const { campusRepo } = getCampusRepositories()
+      return campusRepo.createMaintenanceTicket({
+        location: proposal.location,
+        issue: proposal.issue,
+        priority: (proposal.priority || 'normal').toLowerCase(),
+        reportedBy: user?.name || proposal.reportedBy || 'Alex Kumar',
+        reporterId: user?.id || user?.studentId || null
+      })
+    } catch {
+      return createDemoMaintenanceTicket({
+        ...proposal,
+        reportedBy: user?.name || proposal.reportedBy || 'Alex Kumar'
+      })
+    }
   }
 
   if (actionType === 'communication.draft_broadcast') {
@@ -65,7 +78,20 @@ export function createAtlasRouter() {
         facilitiesLoaded: DEMO_FACILITIES.length,
         servicesLoaded: DEMO_CAMPUS_SERVICES.length,
         eventsLoaded: DEMO_EVENTS.length,
-        announcementsLoaded: DEMO_ANNOUNCEMENTS.length
+        announcementsLoaded: DEMO_ANNOUNCEMENTS.length,
+        sqlite: (() => {
+          try {
+            const { db } = getCampusRepositories()
+            return {
+              connected: true,
+              studentsCount: db.prepare('SELECT COUNT(*) as c FROM students').get()?.c || 0,
+              benchmarksCount: db.prepare('SELECT COUNT(*) as c FROM cohort_benchmarks').get()?.c || 0,
+              engine: 'node:sqlite'
+            }
+          } catch {
+            return { connected: false }
+          }
+        })()
       },
       timestamp: new Date().toISOString()
     })

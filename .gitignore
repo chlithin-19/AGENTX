@@ -8,3 +8,5 @@ build/
 *.key
 __pycache__/
 .localstorage
+*.db
+*.csv
