@@ -35,13 +35,23 @@ export function validateSecurityConfig(env = process.env) {
 
   const authMode = (isProductionEnv || explicitAuthMode === 'production') ? 'production' : 'development'
   const enableDevPersonas = authMode === 'production' ? false : (env.ENABLE_DEV_PERSONAS !== 'false')
+  const jwtSecret = env.ATLAS_JWT_SECRET || null
+
+  // In production mode, if a secret is provided, it must meet minimum cryptographic length (>= 32 chars)
+  if (authMode === 'production' && jwtSecret && jwtSecret.length < 32) {
+    throw new SecurityConfigurationError(
+      'FATAL SECURITY CONFIGURATION: ATLAS_JWT_SECRET must be at least 32 characters in production mode.'
+    )
+  }
 
   return Object.freeze({
     authMode,
     isProduction: authMode === 'production',
     enableDevPersonas,
-    jwtSecret: env.ATLAS_JWT_SECRET || null,
-    institutionalIdpConfigured: Boolean(env.ATLAS_IDP_URL || env.ATLAS_JWT_SECRET)
+    jwtSecret,
+    jwtIssuer: env.ATLAS_JWT_ISSUER || null,
+    jwtAudience: env.ATLAS_JWT_AUDIENCE || null,
+    institutionalIdpConfigured: Boolean(env.ATLAS_IDP_URL || jwtSecret)
   })
 }
 

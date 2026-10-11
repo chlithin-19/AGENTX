@@ -113,7 +113,8 @@ export async function executeConfirmedAction({ token, reqUser, actionExecutor })
   }
 
   // 2. User Binding Check
-  if (String(record.userId) !== String(reqUser.id)) {
+  const callingUserId = String(reqUser.id ?? reqUser.studentId ?? reqUser.sub ?? '')
+  if (!callingUserId || String(record.userId) !== callingUserId) {
     throw new SecurityError(
       'FORBIDDEN_USER_MISMATCH',
       'Access Denied: You cannot confirm an action proposed for another user account.',

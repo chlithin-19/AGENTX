@@ -72,47 +72,107 @@ export const CANONICAL_PERSONAS = Object.freeze({
 
 /**
  * Verify a production token using HMAC-SHA256 signature verification.
+ * Strictly pins alg to HS256, enforces mandatory exp, timing-safe equality,
+ * and validates issuer/audience claims.
  * 
  * @param {string} token 
  * @param {string} secret 
- * @returns {Object|null} Decoded user payload if verified, null otherwise
+ * @param {Object} [options={}]
+ * @returns {Object|null} Decoded, verified, and normalized user payload if valid, null otherwise
  */
-export function verifyProductionToken(token, secret) {
+export function verifyProductionToken(token, secret, options = {}) {
   if (!token || !secret || typeof token !== 'string') return null
   const parts = token.split('.')
   if (parts.length !== 3) return null
 
   const [headerB64, payloadB64, signature] = parts
+
+  // 1. Decode header and enforce strict algorithm pinning to HS256
+  let header
+  try {
+    header = JSON.parse(Buffer.from(headerB64, 'base64url').toString('utf8'))
+  } catch {
+    return null
+  }
+  if (!header || header.alg !== 'HS256' || header.typ !== 'JWT') {
+    return null
+  }
+
+  // 2. Cryptographic signature check with timingSafeEqual
   const expectedSig = crypto
     .createHmac('sha256', secret)
     .update(`${headerB64}.${payloadB64}`)
     .digest('base64url')
 
-  if (signature !== expectedSig) return null
+  const sigBuf = Buffer.from(signature)
+  const expectedBuf = Buffer.from(expectedSig)
+  if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) {
+    return null
+  }
 
+  // 3. Decode and validate payload claims
+  let payload
   try {
-    const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf8'))
-    if (payload.exp && Date.now() >= payload.exp * 1000) return null
-    return payload
+    payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf8'))
   } catch {
     return null
   }
+
+  if (!payload || typeof payload !== 'object') return null
+
+  // Mandatory numeric expiration check (token MUST have exp claim in the future)
+  if (typeof payload.exp !== 'number' || Date.now() >= payload.exp * 1000) {
+    return null
+  }
+
+  // Not Before (nbf) check if present
+  if (typeof payload.nbf === 'number' && Date.now() < payload.nbf * 1000) {
+    return null
+  }
+
+  // Issuer (iss) check if configured
+  const expectedIssuer = options.issuer || AUTH_CONFIG.jwtIssuer
+  if (expectedIssuer && payload.iss !== expectedIssuer) {
+    return null
+  }
+
+  // Audience (aud) check if configured
+  const expectedAudience = options.audience || AUTH_CONFIG.jwtAudience
+  if (expectedAudience && payload.aud !== expectedAudience) {
+    return null
+  }
+
+  // Valid identity binding claim required (id, studentId, or sub)
+  const id = payload.id ?? payload.studentId ?? payload.sub
+  if (id === undefined || id === null) {
+    return null
+  }
+
+  // Return normalized user object
+  return Object.freeze({
+    ...payload,
+    id,
+    studentId: payload.studentId ?? (payload.role === 'student' ? Number(id) : undefined)
+  })
 }
 
 /**
- * Create a signed production token for testing or valid sessions.
+ * Create a signed production token for valid test sessions or server-minted tokens.
  * 
  * @param {Object} user 
  * @param {string} secret 
  * @param {number} [expiresInSeconds=3600] 
+ * @param {Object} [options={}]
  * @returns {string} Signed JWT-compatible token
  */
-export function createSignedToken(user, secret, expiresInSeconds = 3600) {
+export function createSignedToken(user, secret, expiresInSeconds = 3600, options = {}) {
   const header = { alg: 'HS256', typ: 'JWT' }
   const payload = {
     ...user,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + expiresInSeconds
+    exp: Math.floor(Date.now() / 1000) + expiresInSeconds,
+    ...(options.issuer || AUTH_CONFIG.jwtIssuer ? { iss: options.issuer || AUTH_CONFIG.jwtIssuer } : {}),
+    ...(options.audience || AUTH_CONFIG.jwtAudience ? { aud: options.audience || AUTH_CONFIG.jwtAudience } : {})
   }
   const headerB64 = Buffer.from(JSON.stringify(header)).toString('base64url')
   const payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64url')

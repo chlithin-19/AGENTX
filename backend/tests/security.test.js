@@ -15,6 +15,7 @@
 
 import { test, describe, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
+import crypto from 'node:crypto'
 import {
   validateSecurityConfig,
   SecurityConfigurationError,
@@ -41,6 +42,19 @@ describe('1. Startup Configuration Checks & Fail-Closed Gate', () => {
       },
       SecurityConfigurationError,
       'Should throw if ENABLE_DEV_PERSONAS=true in production'
+    )
+  })
+
+  test('throws SecurityConfigurationError if ATLAS_JWT_SECRET is shorter than 32 chars in production', () => {
+    assert.throws(
+      () => {
+        validateSecurityConfig({
+          NODE_ENV: 'production',
+          ATLAS_JWT_SECRET: 'short-secret'
+        })
+      },
+      SecurityConfigurationError,
+      'Should throw if secret is < 32 chars in production'
     )
   })
 
@@ -117,21 +131,53 @@ describe('3. Production Mode Fail-Closed Identity Gate', () => {
   })
 
   test('fails closed with 401 when production token is missing or unverified', () => {
-    const secret = 'super-secret-campus-key-2026'
+    const secret = 'super-secret-campus-key-2026-min-32-chars!'
     const invalidToken = 'invalid.bearer.token'
     const verified = verifyProductionToken(invalidToken, secret)
     assert.equal(verified, null)
   })
 
-  test('successfully verifies authentic HMAC-SHA256 production tokens', () => {
-    const secret = 'super-secret-campus-key-2026'
-    const userPayload = { id: 1, name: 'Alex Kumar', role: 'student', branch: 'IT' }
-    const token = createSignedToken(userPayload, secret, 3600)
+  test('rejects algorithm tampering such as alg=none or mismatched typ', () => {
+    const secret = 'super-secret-campus-key-2026-min-32-chars!'
+    // Unsigned token with alg: 'none'
+    const headerNone = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url')
+    const payload = Buffer.from(JSON.stringify({ id: 1, role: 'student', exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url')
+    const noneToken = `${headerNone}.${payload}.`
+
+    const verified = verifyProductionToken(noneToken, secret)
+    assert.equal(verified, null, 'Tokens with alg: none must be rejected')
+  })
+
+  test('rejects tokens missing mandatory exp claim', () => {
+    const secret = 'super-secret-campus-key-2026-min-32-chars!'
+    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url')
+    // Payload with NO exp
+    const payloadNoExp = Buffer.from(JSON.stringify({ id: 1, role: 'student' })).toString('base64url')
+    const sig = crypto.createHmac('sha256', secret).update(`${header}.${payloadNoExp}`).digest('base64url')
+    const token = `${header}.${payloadNoExp}.${sig}`
 
     const verified = verifyProductionToken(token, secret)
+    assert.equal(verified, null, 'Tokens without exp must be rejected')
+  })
+
+  test('successfully verifies authentic HMAC-SHA256 production tokens with issuer and audience validation', () => {
+    const secret = 'super-secret-campus-key-2026-min-32-chars!'
+    const userPayload = { id: 1, name: 'Alex Kumar', role: 'student', branch: 'IT' }
+    const token = createSignedToken(userPayload, secret, 3600, { issuer: 'campus.edu', audience: 'atlas-app' })
+
+    // Matching issuer and audience succeeds
+    const verified = verifyProductionToken(token, secret, { issuer: 'campus.edu', audience: 'atlas-app' })
     assert.ok(verified)
     assert.equal(verified.id, 1)
     assert.equal(verified.name, 'Alex Kumar')
+
+    // Mismatched issuer fails
+    const badIssuer = verifyProductionToken(token, secret, { issuer: 'untrusted.edu', audience: 'atlas-app' })
+    assert.equal(badIssuer, null)
+
+    // Mismatched audience fails
+    const badAudience = verifyProductionToken(token, secret, { issuer: 'campus.edu', audience: 'other-app' })
+    assert.equal(badAudience, null)
   })
 })
 
@@ -379,5 +425,55 @@ describe('8. Academic Agent Point-of-Access Authorization Enforcement', () => {
     assert.equal(res.status, 'forbidden')
     assert.equal(res.error, 'FORBIDDEN_STUDENT_ISOLATION')
     assert.ok(res.summary.includes('Access Denied'))
+  })
+})
+
+describe('9. Identity Claim Normalization & Confirmation Binding', () => {
+  beforeEach(() => {
+    clearConfirmationStore()
+  })
+
+  test('successfully confirms action when reqUser matches via sub or studentId', async () => {
+    const intent = createConfirmationIntent({
+      userId: '1',
+      actionType: 'campus.create_maintenance_ticket',
+      proposal: { location: 'Lab 204', issue: 'AC leakage' }
+    })
+
+    let executed = false
+    const executor = async () => { executed = true; return { ok: true } }
+
+    // User with sub: 1
+    const res1 = await executeConfirmedAction({
+      token: intent.confirmationToken,
+      reqUser: { sub: 1, role: 'student' },
+      actionExecutor: executor
+    })
+
+    assert.equal(res1.status, 'completed')
+    assert.equal(executed, true)
+  })
+
+  test('rejects confirmation when reqUser sub/studentId mismatches intent userId', async () => {
+    const intent = createConfirmationIntent({
+      userId: '1',
+      actionType: 'campus.create_maintenance_ticket',
+      proposal: { location: 'Lab 204', issue: 'AC leakage' }
+    })
+
+    await assert.rejects(
+      async () => {
+        await executeConfirmedAction({
+          token: intent.confirmationToken,
+          reqUser: { sub: 2, role: 'student' },
+          actionExecutor: async () => ({})
+        })
+      },
+      (err) => {
+        assert.equal(err.code, 'FORBIDDEN_USER_MISMATCH')
+        assert.equal(err.status, 403)
+        return true
+      }
+    )
   })
 })

@@ -1,68 +1,81 @@
-# Atlas Requirements & Gap Matrix
+# Atlas Requirements & Gap Matrix (8-Phase Full Product Completion)
 
 ## Traceable Requirements Matrix
 
-### A. Frontend and Experience
-| ID | Requirement | Current State | Target State | Gap / Resolution |
+### A. Security and Authentication (Phase 1)
+| ID | Requirement | Baseline State (`71a70db`) | Target State | Phase 1 Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| **REQ-FE-01** | Payrot-inspired Atlas UI Design System | Complete in Phase 01: CSS tokens, Inter font, glassmorphism, responsive navigation. | Fully maintained across all viewports. | Verified Pass ✓ (Plan 01-01, 01-02). |
-| **REQ-FE-02** | 7-Destination View Router | Implemented in `App.jsx` (`home`, `chat`, `academics`, `campus`, `events`, `communication`, `settings`). | Clean URL sync, back/forward history handling. | Verified Pass ✓ (Plan 01-02). |
-| **REQ-FE-03** | Chat Workstation & SSE Streaming | Light editorial UI in `ChatArea.jsx`, `ThoughtLine.jsx` reasoning indicators, real SSE streaming. | Real-time multi-agent step progress and token rendering. | Verified Pass ✓ (Plan 01-04). |
-| **REQ-FE-04** | Campus Sub-Views Backend Integration | `AcademicsView`, `CampusView`, `EventsView`, `CommunicationView` display static demo arrays. | Fetch live records from `/api/atlas/*` and `/api/academics/*`. | Phase 05 will connect sub-views to live backend endpoints with loading skeletons and error recovery. |
-| **REQ-FE-05** | Empty States & Error Recovery | Basic fallback text in views. | Structured empty state graphics, retry buttons, and degraded-mode banners. | Planned in Phase 05. |
-| **REQ-FE-06** | Profile & Session Switcher | Settings embeds Integrations without active student identity switcher. | Add Student/Faculty session toggle in Settings for multi-persona verification. | Planned in Phase 02/05. |
+| **REQ-SEC-01** | Trusted Identity & Production Fail-Closed Gate | HMAC-SHA256 token verifier in `identity.js`; fails closed on dev headers in production. | Strict algorithm pinning (`alg === 'HS256'`), mandatory `exp`, optional `iss`/`aud`, minimum secret length (>= 32 chars). Rejects client dev simulation headers with 400; fails closed with 401 when unverified. | Audited & hardened in Phase 1. |
+| **REQ-SEC-02** | Department-Scoped Faculty RBAC | `assertStudentAccess` checks `reqUser.department === targetStudent.branch`. | Strict department boundary enforcement (e.g. CSE faculty strictly cannot access IT students). Admin has institutional audit access. | Hardened & verified in Phase 1. |
+| **REQ-SEC-03** | Point-of-Access Student Isolation | `assertStudentAccess` checks self-only access (`targetStudent.student_id === reqUser.studentId`). | Rejects cross-student access with HTTP 403 Forbidden (`FORBIDDEN_STUDENT_ISOLATION`) without leaking private data. | Hardened & verified in Phase 1. |
+| **REQ-SEC-04** | Cryptographic Confirmation Lifecycle | 32-byte hex token binding `userId`, `actionType`, proposal hash, 5m TTL. | Executes **stored server proposal**, ignoring client execution arguments; atomic replay lock preventing concurrent races; handles expired tokens and user mismatches safely. | Hardened & verified in Phase 1. |
+| **REQ-SEC-05** | Quarantined Dev Persona Simulator | `SettingsView.jsx` simulator card conditionally rendered under `import.meta.env.DEV`. | Strictly dead-code eliminated in Vite production bundles; warning banner present. | Verified in Phase 1. |
+| **REQ-SEC-06** | Orchestrator Identity Invariance | `/api/atlas/orchestrate` accepts body `user`. | Remove any unauthenticated body override; enforce `req.user` from identity middleware. | Hardened in Phase 1. |
 
 ---
 
-### B. Multi-Agent Orchestration
-| ID | Requirement | Current State | Target State | Gap / Resolution |
+### B. Dataset Discovery, Ingestion, and Data Architecture (Phase 2)
+| ID | Requirement | Current State | Target State | Phase 2 Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| **REQ-OR-01** | Multi-Intent Query Decomposition | Implemented in `orchestrator.js` using regex domain detectors (`routeQuery`). | Decomposes single- and multi-intent inquiries into ordered execution DAG. | Verified functional. Phase 03 will add ambiguity scoring and LLM fallback intent parsing. |
-| **REQ-OR-02** | Safe Fault Isolation | `try/catch` per agent execution prevents cascading crashes. | Partial execution returns completed agent data with degraded warning for failed agents. | Verified functional. |
-| **REQ-OR-03** | Task Execution Timeouts | Agents execute synchronously without timeout limits. | Enforce 8-second execution timeout per agent using `AbortController`. | Planned in Phase 03. |
-| **REQ-OR-04** | Inter-Agent Context Handoff | Agents receive raw initial query; no output sharing. | Typed context pipeline allows downstream agents to consume upstream agent outputs. | Planned in Phase 03. |
-| **REQ-OR-05** | Granular SSE Step Streaming | Streams single initial step `"Routing to Atlas Campus Multi-Agent System"`. | Stream per-agent execution steps (e.g. `"Academic Agent inspecting attendance"`, `"Campus Agent querying Lab 204"`). | Planned in Phase 03. |
-| **REQ-OR-06** | Grounded Response Synthesis | Merges agent text summaries and appends citations from knowledge retriever. | Response synthesis strictly cross-references verified citations and prevents hallucinations. | Verified functional. Planned enhancements in Phase 03. |
+| **REQ-DATA-01** | Kaggle Dataset Ingestion | `archive.zip` present in root (contains 100,000 rows CSV). | Automated, reproducible, validated ingestion pipeline for `student_placement_prediction_dataset_2026.csv`. | Planned in Phase 2. |
+| **REQ-DATA-02** | Data Classification & Separation | Demo profiles extracted in `demoStudents.js`. | Clear architectural separation between benchmark placement data and private student records; data provenance preserved. | Planned in Phase 2. |
+| **REQ-DATA-03** | Structured Relational Repository | 5 in-memory records in `demoStudents.js`. | SQLite/structured store with indexed queries (`student_id`, `branch`), parameterized queries, and point-of-access authorization checks. | Planned in Phase 2. |
+| **REQ-DATA-04** | Data Validation & Health | Unverified manual extractions. | Automated integrity checks (ranges, null checks, unique constraints, type casting). | Planned in Phase 2. |
 
 ---
 
-### C. Data and Knowledge
-| ID | Requirement | Current State | Target State | Gap / Resolution |
+### C. Super-Agent Intelligence and Question Answering (Phase 3)
+| ID | Requirement | Current State | Target State | Phase 3 Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| **REQ-DATA-01** | Student Record Persistence | 5 in-memory demo profiles in `demoStudents.js`. | Persistent relational/document store scoped per student with attendance, CGPA, and skills. | Planned in Phase 04: durable store with student isolation. |
-| **REQ-DATA-02** | Kaggle Dataset Classification | Labeled as `DEMO DATA · STUDENT PLACEMENT BENCHMARK`. | Kept as development benchmark data; isolated from real student records. | Enforced in code and UI labels. |
-| **REQ-DATA-03** | Maintenance Ticketing Store | Mutates in-memory array `DEMO_MAINTENANCE_TICKETS`. | Persists tickets with UUID, status tracking, location, and reporter ID. | Planned in Phase 04. |
-| **REQ-DATA-04** | Institutional Document RAG | 5 markdown documents scored via in-memory TF retriever (`retriever.js`). | Document ingestion CLI with chunk hashing, freshness timestamps, and section citations. | Planned in Phase 04. |
-| **REQ-DATA-05** | Citation Provenance | Returns `[Doc: title #Section] (chunkId)`. | Verifiable citation chips rendered in UI with document preview modal. | Grounding verified; UI chips refined in Phase 04/05. |
+| **REQ-INT-01** | Multi-Intent Query Decomposition | Regex-based detection in `routeQuery`. | Hybrid intent parsing with support for multi-intent questions ("Check my attendance and library hours"). | Planned in Phase 3. |
+| **REQ-INT-02** | Evidence-Grounded Synthesis | Template string concatenations. | Cohesive response synthesis cross-referencing agent findings and verified citations. | Planned in Phase 3. |
+| **REQ-INT-03** | Contextual Conversation Handling | Stateless single-turn orchestrator. | Multi-turn contextual continuity for follow-up questions while isolating user identity. | Planned in Phase 3. |
+| **REQ-INT-04** | Honest Limitation Handling | Generic fallback text. | Clear, honest explanations for unsupported queries, missing records, or denied permissions without hallucinations. | Planned in Phase 3. |
 
 ---
 
-### D. Security and Identity
-| ID | Requirement | Current State | Target State | Gap / Resolution |
+### D. Multi-Agent Orchestration and Reliability (Phase 4)
+| ID | Requirement | Current State | Target State | Phase 4 Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| **REQ-SEC-01** | Trusted Identity & Production Gate | Hardcoded `Alex Kumar (ID: 1)` in `server.js`. | Server-validated token/session in production; fail-closed gate rejecting client headers; quarantined dev simulation. | Critical Gap. Addressed in Phase 02 (Plan 02-01). |
-| **REQ-SEC-02** | Department-Scoped RBAC | No role enforcement. | Roles: `student` (self-only), `faculty` (department-scoped only, e.g. CSE faculty only accesses CSE students), `admin` (institutional audit). | Critical Gap. Addressed in Phase 02 (Plan 02-01). |
-| **REQ-SEC-03** | Point-of-Access Student Isolation | Any query can access any student in memory. | `assertStudentAccess` gate at repository access point. Cross-student or cross-department access returns 403 without data leakage. | Critical Gap. Addressed in Phase 02 (Plan 02-01). |
-| **REQ-SEC-04** | Cryptographic Confirmation Lifecycle | `requiresConfirmation: true` returned without token. | Server-validated token binding `userId`, `actionType`, SHA-256 payload hash, 5m TTL, and single-use replay prevention. | Critical Gap. Addressed in Phase 02 (Plan 02-01). |
-| **REQ-SEC-05** | Dev Simulator Environment Guard | No frontend persona switcher. | Dev simulator card in Settings with prominent testing banner; strictly omitted/disabled in production environments. | Critical Gap. Addressed in Phase 02 (Plan 02-01). |
+| **REQ-OR-01** | Task Execution Timeouts | Unbounded synchronous calls. | 8-second execution timeout per agent using `AbortController` preventing orchestrator hangs. | Planned in Phase 4. |
+| **REQ-OR-02** | Inter-Agent Context Handoff | Agents receive isolated queries. | Typed context pipeline allowing downstream agents to consume upstream agent outputs. | Planned in Phase 4. |
+| **REQ-OR-03** | Granular SSE Progress Streaming | Single initial step sent over SSE. | Granular per-agent SSE progress events (`agent_start`, `agent_step`, `agent_done`) streamed in real time. | Planned in Phase 4. |
+| **REQ-OR-04** | Partial Fault Recovery | Try/catch per agent. | Structured degraded execution returning completed agent findings with warning for failed non-critical agents. | Planned in Phase 4. |
 
 ---
 
-### E. Campus Workflows
-| ID | Requirement | Current State | Target State | Gap / Resolution |
+### E. Institutional Knowledge and RAG (Phase 5)
+| ID | Requirement | Current State | Target State | Phase 5 Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| **REQ-WF-01** | Academic Agent | Handles attendance audits, backlogs risk, CGPA, skills, placement packages. | Supports student academic standing and personalized recovery recommendations. | Functional in MVP. Deepen policy citations in Phase 03/04. |
-| **REQ-WF-02** | Campus Facilities Agent | Facilities hours, room directory, maintenance issue filing. | Interactive ticket creation with status check and location navigation. | Functional in MVP. Connect live persistence in Phase 04. |
-| **REQ-WF-03** | Event Agent | Hackathon 2026, GenAI workshop, placement fair schedules. | One-click "Add to Google Calendar" action integration via existing AGENTX tools. | Functional in MVP. Wire action chip in Phase 03/05. |
-| **REQ-WF-04** | Communication Agent | Circulars feed (#104, #98, #22), formal email drafting. | Draft campus message with recipient approval and verified circular search. | Functional in MVP. Complete approval flow in Phase 03. |
+| **REQ-RAG-01** | Document Ingestion & Validation | 5 markdown documents read directly. | Ingestion pipeline with content hashing, chunking, and metadata validation. | Planned in Phase 5. |
+| **REQ-RAG-02** | Citation Provenance | Basic chunk tags. | Verifiable citation provenance with chunk ID, document title, section heading, and freshness timestamp. | Planned in Phase 5. |
+| **REQ-RAG-03** | Grounded Policy Question Answering | Basic lexical matching. | Precision retrieval for attendance condonation, library borrowing rules, exam schedules, and services. | Planned in Phase 5. |
 
 ---
 
-### F. Reliability and Deployment
-| ID | Requirement | Current State | Target State | Gap / Resolution |
+### F. Complete Campus Workflows and Integrations (Phase 6)
+| ID | Requirement | Current State | Target State | Phase 6 Resolution |
 | :--- | :--- | :--- | :--- | :--- |
-| **REQ-REL-01** | Automated Unit Tests | 0 automated unit tests. | Native `node:test` suite covering agents, retriever, orchestrator, and security. | Critical Gap. Planned in Phase 06. |
-| **REQ-REL-02** | Integration Tests | 0 automated integration tests. | Tests for `/api/chat` SSE, `/api/atlas/orchestrate`, `/api/atlas/status`. | Critical Gap. Planned in Phase 06. |
-| **REQ-REL-03** | Regression Testing | Manual tests only. | Regression test suite covering AGENTX tools (Calendar, Gmail, Background jobs, History). | Planned in Phase 06. |
-| **REQ-REL-04** | Structured Logging | Basic `console.log`. | Structured JSON logging with request IDs, workflow IDs, execution latencies, and error codes. | Planned in Phase 06. |
-| **REQ-REL-05** | Production Nginx & VM Runbook | `atlas-nginx.conf` and `setup_vm.sh` exist. | Validated reverse-proxy routing for `/api/atlas`, WebSocket/SSE buffering disabled, SSL runbook. | Planned in Phase 06. |
+| **REQ-WF-01** | Academic Agent Live Workflows | Queries in-memory demo data. | Real queries against ingested dataset (attendance, backlogs, CGPA, skills, placement). | Planned in Phase 6. |
+| **REQ-WF-02** | Campus Facilities & Ticketing | In-memory maintenance tickets. | Durable ticketing workflow with status tracking, room directory, and confirmation gates. | Planned in Phase 6. |
+| **REQ-WF-03** | Events & Calendar Integration | Static events array. | Live campus events search and direct "Add to Google Calendar" action via existing AGENTX tool integration. | Planned in Phase 6. |
+| **REQ-WF-04** | Official Communications Workflow | In-memory circulars. | Search official circulars and draft formal campus broadcast with multi-step confirmation. | Planned in Phase 6. |
+
+---
+
+### G. Premium Frontend and Performance (Phase 7)
+| ID | Requirement | Current State | Target State | Phase 7 Resolution |
+| :--- | :--- | :--- | :--- | :--- |
+| **REQ-FE-01** | Ethereal Atlas UI & Design System | Implemented in Phase 01 (`App.css`). | Polished tokens, glassmorphism, responsive navigation across all viewports. | Baseline verified; polish in Phase 7. |
+| **REQ-FE-02** | Live Campus Sub-Views | Static demo arrays rendered. | Wire `AcademicsView`, `CampusView`, `EventsView`, `CommunicationView` to live backend APIs with loading skeletons and error retry. | Planned in Phase 7. |
+| **REQ-FE-03** | Chat Workstation & ThoughtLine | Working SSE streaming in `ChatArea.jsx`. | Real-time multi-agent step indicators, action confirmation modals, and markdown tables. | Planned in Phase 7. |
+| **REQ-FE-04** | Accessibility & Performance | WCAG 2.1 AA compliant. | Audited keyboard navigation, color contrast, and sub-100ms UI interaction latencies. | Planned in Phase 7. |
+
+---
+
+### H. Comprehensive Testing and Deployment Readiness (Phase 8)
+| ID | Requirement | Current State | Target State | Phase 8 Resolution |
+| :--- | :--- | :--- | :--- | :--- |
+| **REQ-TEST-01** | Multi-Layer Regression Suite | 21 security tests. | Comprehensive unit, integration, authorization, SSE streaming, and concurrency test suites. | Planned in Phase 8. |
+| **REQ-TEST-02** | Performance & Latency Benchmarks | Unmeasured. | Benchmarked latency, time-to-first-token, dataset query times, and memory footprint. | Planned in Phase 8. |
+| **REQ-TEST-03** | Production Deployment & Nginx | Draft configs. | Hardened Nginx configuration (`proxy_buffering off`), SSL setup, and complete operational runbook. | Planned in Phase 8. |

@@ -1,26 +1,29 @@
 # Atlas Project State
 
-**Active Milestone:** Milestone 1 — Full Product Completion Initiative  
-**Current Phase:** Phase 03: Multi-Agent Orchestration & Reliability  
+**Active Milestone:** Milestone 1 — Full Product Completion Initiative (8-Phase Directive)  
+**Current Phase:** Phase 2: Dataset Discovery, Ingestion, and Data Architecture  
 **Phase Status:** Ready for Planning & Execution  
-**Previous Phase:** Phase 02: Security, Authentication & Student Data Isolation (Executed & Verified)  
+**Foundational Work:** Phase 01 UI Foundation (`c5202d3`, `96f2e59`), Phase 1 Security Hardening (`71a70db` + Phase 1)  
 
-## Phase Completion Dashboard
-- [x] **Phase 01: UI Redesign & Atlas Experience** — 6/6 Plans Executed & Verified (100%)
-- [x] **Phase 02: Security, Authentication & Student Data Isolation** — 1/1 Plan Executed & Verified (100%)
-- [ ] **Phase 03: Multi-Agent Orchestration & Reliability** — 0/3 Plans Executed (0%)
-- [ ] **Phase 04: Institutional Data Persistence & Knowledge Governance** — 0/2 Plans Executed (0%)
-- [ ] **Phase 05: Frontend Live API Integration & Experience Polish** — 0/3 Plans Executed (0%)
-- [ ] **Phase 06: Test Automation, Diagnostics & Deployment Hardening** — 0/2 Plans Executed (0%)
+## 8-Phase Completion Dashboard
+- [x] **Phase 1: Security and Authentication Hardening** — 1/1 Plan Executed & Verified (100%)
+- [ ] **Phase 2: Dataset Discovery, Ingestion, and Data Architecture** — 0/1 Plans Executed (0%)
+- [ ] **Phase 3: Super-Agent Intelligence and Question Answering** — 0/1 Plans Executed (0%)
+- [ ] **Phase 4: Multi-Agent Orchestration and Reliability** — 0/1 Plans Executed (0%)
+- [ ] **Phase 5: Institutional Knowledge and RAG** — 0/1 Plans Executed (0%)
+- [ ] **Phase 6: Complete Campus Workflows and Integrations** — 0/1 Plans Executed (0%)
+- [ ] **Phase 7: Premium Frontend and Performance** — 0/1 Plans Executed (0%)
+- [ ] **Phase 8: Comprehensive Testing and Deployment Readiness** — 0/1 Plans Executed (0%)
 
 ## Key Metrics & Service Status
 - **Backend Service:** Running (`http://localhost:8080`, `atlas-backend`)
 - **Frontend Dev Server:** Running (`http://localhost:5173`, Vite)
 - **Production Build:** Passing cleanly (`npm --prefix frontend/frontend run build`)
-- **Git HEAD:** `96f2e59` (`docs(phase-01): record mandatory real backend /api/chat requirement and verification`)
-- **Backend Code Invariance:** Preserved 100%
+- **Git HEAD:** `71a70db` (`feat(phase-02): implement fail-closed security, student isolation, scoped RBAC, and action confirmation`)
+- **Test Suite:** 21 tests passing via `npm --prefix backend test`
 
-## Blockers & Critical Dependencies
-- Phase 02 (Security & Identity) is a mandatory dependency before exposing real student data or connecting live sub-views in Phase 05.
-- Multi-agent orchestration (Phase 03) requires authenticated user context from Phase 02 to properly scope agent executions.
-- Automated tests (Phase 06) will use Node 25's native `node:test` runner, requiring 0 extra npm dependencies.
+## Active Directives & Principles
+- **Fail-Closed Production:** Development simulation disabled in production; genuine verified token or 401.
+- **Strict Data Isolation:** Point-of-access student checks; department-scoped faculty RBAC.
+- **Data Provenance:** Kaggle benchmark data strictly separated from student records; real dataset in `archive.zip`.
+- **Zero NPM Dependencies:** Native Node.js `node:test` and crypto used for all security and validation suites.

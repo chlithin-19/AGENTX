@@ -80,7 +80,7 @@ export function createAtlasRouter() {
    */
   router.post('/orchestrate', async (req, res) => {
     try {
-      const { message, user: overrideUser } = req.body || {}
+      const { message } = req.body || {}
       if (!message || typeof message !== 'string' || !message.trim()) {
         return res.status(400).json({
           status: 'error',
@@ -89,8 +89,8 @@ export function createAtlasRouter() {
         })
       }
 
-      // Priority: validated req.user from identity middleware, then body override in dev
-      const user = req.user || overrideUser || null
+      // Exclusively use req.user established by extractIdentity middleware
+      const user = req.user || null
       const result = await orchestrate({ message, user })
       res.status(200).json(result)
     } catch (err) {

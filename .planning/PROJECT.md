@@ -15,10 +15,12 @@ Bring Atlas from its current MVP state to a reliable, secure, fully integrated p
 - **Security:** Authenticated student/faculty identity context, role-based authorization (RBAC), and approval controls for side-effect operations.
 - **Zero Unnecessary Packages:** Leverage native Node.js capabilities (including Node 25's native `node:test` and `node:assert`) before adding npm dependencies.
 
-## Milestone Roadmap
-- **Phase 01: UI Redesign & Atlas Experience** — Payrot-inspired ethereal UI, 7-destination router, ThoughtLine reasoning, and sub-views. *(Executed & Verified)*
-- **Phase 02: Security, Authentication & Student Data Isolation** — Session identity context, RBAC (Student/Faculty/Admin), student-level data isolation, and protected route middleware. *(Next Active Phase)*
-- **Phase 03: Multi-Agent Orchestration & Reliability** — Task timeouts, inter-agent context handoffs, partial failure recovery, and real-time per-agent SSE progress streaming.
-- **Phase 04: Institutional Data Persistence & Knowledge Governance** — Durable student-isolated database layer, maintenance ticket/event persistence, and document RAG ingestion pipeline.
-- **Phase 05: Frontend Live API Integration & Experience Polish** — Sub-view connection to backend endpoints, loading skeletons, error states, and direct action triggers.
-- **Phase 06: Full Test Automation & Production Deployment Hardening** — Native `node:test` regression suite, health checks, Nginx reverse-proxy hardening, and deployment runbooks.
+## Milestone Roadmap (8-Phase Full Product Completion)
+- **Phase 1: Security and Authentication Hardening** — Audit security baseline (`71a70db`), harden cryptographic JWT validation (`alg`, `exp`, `iss`, `aud`), fail-closed production gates, point-of-access student isolation, department-scoped faculty RBAC, and replay-prevented confirmation actions. *(Active Phase)*
+- **Phase 2: Dataset Discovery, Ingestion, and Data Architecture** — Ingest `archive.zip` (`student_placement_prediction_dataset_2026.csv`), validated schema, reproducible ingestion pipeline, data provenance, and strict separation between benchmark vs private student records.
+- **Phase 3: Super-Agent Intelligence and Question Answering** — Intent understanding, multi-intent decomposition, evidence-grounded synthesis, tool selection, model-provider fallback, and safe handling of unsupported/ambiguous questions.
+- **Phase 4: Multi-Agent Orchestration and Reliability** — Dependable task planning, typed inter-agent context handoffs, bounded execution timeouts via `AbortController`, cancellation, safe retries, partial-result recovery, and per-agent SSE progress streaming.
+- **Phase 5: Institutional Knowledge and RAG** — Validated document ingestion, vector/lexical retrieval, verifiable citations, freshness tracking, and source-grounded policy/procedural answers.
+- **Phase 6: Complete Campus Workflows and Integrations** — Connect Academic, Campus, Event, and Communication agents to real supported data and APIs, read/write workflows, and approval gates.
+- **Phase 7: Premium Frontend and Performance** — Polish Atlas UI design system (built in Phase 01), live campus sub-views, streaming chat experience, accessibility (WCAG 2.1 AA), responsive layouts, and performance optimization.
+- **Phase 8: Comprehensive Testing and Deployment Readiness** — Multi-layer test automation (regression, security, data, integration, SSE, E2E), system diagnostics, Nginx reverse-proxy hardening, and operational runbooks.
