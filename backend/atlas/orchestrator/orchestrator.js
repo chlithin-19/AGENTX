@@ -2,14 +2,15 @@
  * Atlas Campus Multi-Agent Orchestrator
  * 
  * Architecture Reference: AGENTX_TO_ATLAS_ARCHITECTURE_v2.md (Phase A, Sections 4 & 5)
- * Requirements: Phase A, G, H, I
+ * Requirements: Phase 3 (Super-Agent Intelligence, Multi-Intent Decomposition, Grounded Synthesis)
  * 
  * Responsibilities:
  * 1. Understand incoming natural-language user query.
- * 2. Intent decomposition: Identify single- or multi-agent routing.
- * 3. Construct an executable, transparent task plan.
- * 4. Execute agents sequentially with safe error isolation.
- * 5. Return a unified, structured Atlas response containing markdown summary, citations, and actions.
+ * 2. Intent decomposition: Split compound inquiries into discrete agent tasks.
+ * 3. Contextual conversation handling: Preserve domain context from history turns.
+ * 4. Transparent task plan DAG construction.
+ * 5. Sequential execution with safe fault isolation.
+ * 6. Evidence-grounded synthesis: Merge agent findings and knowledge citations without hallucinations.
  */
 
 import academicAgent from '../agents/academic.js'
@@ -26,50 +27,91 @@ const AGENT_REGISTRY = {
 }
 
 /**
- * Detect which agent(s) should handle the user query.
- * Supports multi-intent detection for sequential multi-agent execution.
+ * Decomposes a user query into discrete agent tasks with targeted sub-queries.
+ * Supports multi-intent compound sentences and contextual history resolution.
  * 
  * @param {string} query 
+ * @param {Array<Object>} [history=[]] - Previous conversation turns [{ role, content }]
+ * @returns {Array<{ agent: string, subQuery: string, contextual?: boolean }>}
+ */
+export function decomposeQuery(query, history = []) {
+  if (!query || typeof query !== 'string') return []
+  const clean = query.trim()
+  const q = clean.toLowerCase()
+
+  const tasks = []
+  const seenAgents = new Set()
+
+  // 1. Check for compound multi-intent clauses separated by conjunctions/punctuation
+  const clauseDelimiters = /\b(?:and\s+also|as\s+well\s+as|and|also|\.|\;|\bthen\b)\b/i
+  const rawClauses = clean
+    .split(clauseDelimiters)
+    .map(c => c.trim())
+    .filter(c => c.length > 2)
+
+  if (rawClauses.length > 1) {
+    for (const clause of rawClauses) {
+      const clauseLower = clause.toLowerCase()
+      for (const [key, agent] of Object.entries(AGENT_REGISTRY)) {
+        if (agent.canHandle(clauseLower) && !seenAgents.has(key)) {
+          seenAgents.add(key)
+          tasks.push({
+            agent: key,
+            subQuery: clause
+          })
+        }
+      }
+    }
+  }
+
+  // 2. If sub-clause splitting didn't detect all agents, check full query
+  for (const [key, agent] of Object.entries(AGENT_REGISTRY)) {
+    if (agent.canHandle(q) && !seenAgents.has(key)) {
+      seenAgents.add(key)
+      tasks.push({
+        agent: key,
+        subQuery: clean
+      })
+    }
+  }
+
+  // 3. Contextual conversation memory: Resolve follow-up inquiries using history
+  if (tasks.length === 0 && Array.isArray(history) && history.length > 0) {
+    const recentTurn = [...history].reverse().find(m => m.role === 'user' || m.role === 'assistant')
+    if (recentTurn && recentTurn.content) {
+      const combined = `${recentTurn.content} ${clean}`.toLowerCase()
+      for (const [key, agent] of Object.entries(AGENT_REGISTRY)) {
+        if (agent.canHandle(combined) && !seenAgents.has(key)) {
+          seenAgents.add(key)
+          tasks.push({
+            agent: key,
+            subQuery: clean,
+            contextual: true
+          })
+        }
+      }
+    }
+  }
+
+  return tasks
+}
+
+/**
+ * Detect which agent(s) should handle the user query.
+ * 
+ * @param {string} query 
+ * @param {Array<Object>} [history=[]]
  * @returns {Array<string>} List of agent keys in execution order
  */
-export function routeQuery(query) {
-  if (!query || typeof query !== 'string') return []
-  const q = query.toLowerCase()
-
-  const detected = []
-
-  // Check Academic Agent
-  // e.g. "academic profile", "attendance", "cgpa", "backlogs", "skills", "placement", "internships"
-  if (academicAgent.canHandle(q)) {
-    detected.push('academic')
-  }
-
-  // Check Campus Agent
-  // e.g. "facilities", "library", "lab 204", "classroom", "maintenance", "shuttle", "cafeteria"
-  if (campusAgent.canHandle(q)) {
-    detected.push('campus')
-  }
-
-  // Check Event Agent
-  // e.g. "events", "hackathon", "workshop", "career fair", "upcoming"
-  if (eventAgent.canHandle(q)) {
-    detected.push('event')
-  }
-
-  // Check Communication Agent
-  // e.g. "draft message", "send email", "announcements", "notifications", "circulars"
-  if (communicationAgent.canHandle(q)) {
-    detected.push('communication')
-  }
-
-  return detected
+export function routeQuery(query, history = []) {
+  return decomposeQuery(query, history).map(t => t.agent)
 }
 
 /**
  * Helper to check if a query belongs to the Atlas campus domain.
  */
-export function isAtlasQuery(query) {
-  return routeQuery(query).length > 0
+export function isAtlasQuery(query, history = []) {
+  return decomposeQuery(query, history).length > 0
 }
 
 /**
@@ -77,10 +119,11 @@ export function isAtlasQuery(query) {
  * 
  * @param {Object} params
  * @param {string} params.message - The natural language inquiry from the user
- * @param {Object} [params.user] - Optional user context (student profile / session)
+ * @param {Object} [params.user] - Authenticated user context from req.user
+ * @param {Array<Object>} [params.history=[]] - Conversation history for multi-turn context
  * @returns {Promise<Object>} Unified Atlas response payload
  */
-export async function orchestrate({ message, user = null }) {
+export async function orchestrate({ message, user = null, history = [] }) {
   const startTime = Date.now()
   const workflowId = `wf_atlas_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 
@@ -95,10 +138,10 @@ export async function orchestrate({ message, user = null }) {
   }
 
   const query = message.trim()
-  const detectedAgents = routeQuery(query)
+  const decomposedTasks = decomposeQuery(query, history)
 
-  // Fallback: If no specific agent matched, check knowledge retriever for general campus info
-  if (detectedAgents.length === 0) {
+  // Fallback 1: Knowledge Retriever for campus documents / policy questions
+  if (decomposedTasks.length === 0) {
     const ragResult = queryKnowledge(query, 2)
     if (ragResult.results.length > 0) {
       return {
@@ -116,7 +159,7 @@ export async function orchestrate({ message, user = null }) {
           }]
         },
         response: {
-          text: `### Campus Knowledge Retrieval (Demo)\n\n${ragResult.formattedContext}`,
+          text: `### Campus Policy & Guidelines Information\n\n${ragResult.formattedContext}`,
           agentSummaries: [ragResult.formattedContext]
         },
         citations: ragResult.citations,
@@ -126,24 +169,25 @@ export async function orchestrate({ message, user = null }) {
       }
     }
 
-    // Default friendly guide when query is out of campus scope
+    // Fallback 2: Honest explanation for out-of-scope / unsupported questions
     return {
       workflowId,
-      status: 'completed',
-      intents: ['general_inquiry'],
+      status: 'out_of_scope',
+      intents: ['out_of_scope'],
       plan: {
         planId: `plan_${Date.now()}`,
         totalTasks: 0,
         tasks: []
       },
       response: {
-        text: `### Atlas Campus AI Multi-Agent System\n\n` +
-          `I can assist you across four specialized campus domains:\n` +
-          `1. **Academic Agent:** View your attendance, CGPA, backlogs, coding skills, and placement readiness.\n` +
-          `2. **Campus Agent:** Locate buildings/rooms, check facility hours (Library, Cafeteria, Sports), and report maintenance issues.\n` +
-          `3. **Event Agent:** Discover upcoming campus events, hackathons, and technical workshops.\n` +
-          `4. **Communication Agent:** View official announcements, circulars, and draft formal campus inquiries.\n\n` +
-          `*Example: "Show my academic profile and tell me about upcoming events."*`,
+        text: `### Atlas Institutional Boundary Notice\n\n` +
+          `Your question falls outside supported campus domains. Atlas is strictly specialized for higher-education campus operations, authenticated student academic standing, physical facilities, event schedules, and official circulars. I do not invent or extrapolate general trivia.\n\n` +
+          `**Supported Campus Domains:**\n` +
+          `1. **Academic Standing:** Attendance audits, CGPA standing, active backlogs, coding skills, placement stats.\n` +
+          `2. **Campus Facilities:** Library hours, Dining hall schedules, classroom locations (e.g. Lab 204), maintenance requests.\n` +
+          `3. **Events & Calendar:** Hackathon 2026, GenAI workshops, career fairs, registration deadlines.\n` +
+          `4. **Communications:** Official circulars (#104, #98, #22), administrative advisories, message drafting.\n\n` +
+          `*Please ask a question related to your campus profile or institutional services.*`,
         agentSummaries: []
       },
       citations: [],
@@ -153,14 +197,14 @@ export async function orchestrate({ message, user = null }) {
     }
   }
 
-  // 1. Create Task Plan
+  // 1. Create Task Plan with decomposed sub-queries
   const planId = `plan_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
-  const tasks = detectedAgents.map((agentKey, idx) => ({
+  const tasks = decomposedTasks.map((item, idx) => ({
     id: `task_${idx + 1}`,
-    agent: agentKey,
-    action: `resolve_${agentKey}_intent`,
+    agent: item.agent,
+    action: `resolve_${item.agent}_intent`,
     status: 'pending',
-    input: { query }
+    input: { query: item.subQuery, fullQuery: query }
   }))
 
   const plan = {
@@ -169,7 +213,7 @@ export async function orchestrate({ message, user = null }) {
     tasks
   }
 
-  // 2. Sequential Execution with safe fault isolation (Phase I)
+  // 2. Sequential Execution with safe fault isolation
   const taskResults = []
   const summaries = []
   const allCitations = []
@@ -190,7 +234,7 @@ export async function orchestrate({ message, user = null }) {
     }
 
     try {
-      const result = await agent.execute(task, { message: query, user })
+      const result = await agent.execute(task, { message: task.input.query, fullMessage: query, user })
       task.status = result.status || 'completed'
       task.result = {
         action: result.action,
@@ -224,7 +268,7 @@ export async function orchestrate({ message, user = null }) {
       summaries.push({
         status: 'partial',
         agent: task.agent,
-        message: `Unable to complete ${task.agent} agent task.`,
+        message: `Unable to complete ${task.agent} agent inquiry.`,
         error: err.message
       })
     }
@@ -251,7 +295,7 @@ export async function orchestrate({ message, user = null }) {
     workflowId,
     status,
     query,
-    intents: detectedAgents,
+    intents: decomposedTasks.map(t => t.agent),
     plan: {
       planId,
       totalTasks: tasks.length,
@@ -269,6 +313,7 @@ export async function orchestrate({ message, user = null }) {
 }
 
 export default {
+  decomposeQuery,
   routeQuery,
   isAtlasQuery,
   orchestrate

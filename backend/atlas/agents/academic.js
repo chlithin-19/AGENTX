@@ -44,7 +44,16 @@ export class AcademicAgent {
     // 2. Named student explicitly mentioned in query
     // 3. Defaults to callingUser's own record
     let student = null
-    const targetStudentId = task.input?.targetStudentId ? Number(task.input.targetStudentId) : null
+    let targetStudentId = task.input?.targetStudentId ? Number(task.input.targetStudentId) : null
+
+    if (!targetStudentId) {
+      for (const p of DEMO_STUDENT_PROFILES) {
+        if (query.includes(p.name.toLowerCase())) {
+          targetStudentId = p.student_id
+          break
+        }
+      }
+    }
 
     // Try reading from authorized SQLite repository first
     try {
@@ -63,12 +72,13 @@ export class AcademicAgent {
       }
     } catch (repoErr) {
       if (repoErr.code?.startsWith('FORBIDDEN') || repoErr.status === 403) {
+        const msg = repoErr.message.startsWith('Access Denied') ? repoErr.message : `Access Denied: ${repoErr.message}`
         return {
           agent: this.name,
           action: 'access_denied',
           status: 'forbidden',
           error: repoErr.code || 'FORBIDDEN',
-          summary: `⚠️ ${repoErr.message}`,
+          summary: `⚠️ ${msg}`,
           citations: []
         }
       }
@@ -94,12 +104,13 @@ export class AcademicAgent {
     try {
       assertStudentAccess(callingUser, student)
     } catch (err) {
+      const msg = err.message.startsWith('Access Denied') ? err.message : `Access Denied: ${err.message}`
       return {
         agent: this.name,
         action: 'access_denied',
         status: 'forbidden',
         error: err.code || 'FORBIDDEN',
-        summary: `⚠️ ${err.message}`,
+        summary: `⚠️ ${msg}`,
         citations: []
       }
     }

@@ -213,7 +213,8 @@ app.post('/api/chat', async (req, res) => {
     try {
       const atlasResult = await orchestrateAtlas({
         message,
-        user: req.user
+        user: req.user,
+        history: (db.chats || []).slice(-4)
       })
       const reply = atlasResult.response?.text || 'Atlas processed your campus inquiry.'
       const extraAction = atlasResult.actions?.[0] ? { action: atlasResult.actions[0] } : {}

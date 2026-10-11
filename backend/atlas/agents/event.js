@@ -28,7 +28,7 @@ export class EventAgent {
     const query = String(task.input?.query || context.message || '').toLowerCase()
 
     // Sub-intent 1: Specific Hackathon query
-    if (/\b(hackathon|hack)\b/i.test(query)) {
+    if (/\b(hackathons?|hack)\b/i.test(query)) {
       const hack = DEMO_EVENTS.find(e => e.id === 'evt_hack_2026') || DEMO_EVENTS[0]
       const ragResult = queryKnowledge('hackathon guidelines and team formation', 1)
 
