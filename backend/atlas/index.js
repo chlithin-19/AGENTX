@@ -60,6 +60,13 @@ async function defaultActionExecutor(actionType, proposal, user) {
 export function createAtlasRouter() {
   const router = Router()
 
+  function resolveRequestUser(req) {
+    if (AUTH_CONFIG.isProduction) {
+      return req.user || null
+    }
+    return req.user || (AUTH_CONFIG.enableDevPersonas ? { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' } : null)
+  }
+
   /**
    * GET /api/atlas/status
    * Health, auth mode, and registry status of the Atlas multi-agent subsystem.
@@ -68,7 +75,7 @@ export function createAtlasRouter() {
     res.status(200).json({
       status: 'active',
       system: 'Atlas Campus Multi-Agent Intelligence Layer',
-      mode: 'DEMO DATA (Isolated / In-Memory)',
+      mode: AUTH_CONFIG.isProduction ? 'PRODUCTION (Authenticated / SQLite Relational DB)' : 'DEVELOPMENT (Simulated Persona / SQLite Relational DB)',
       authMode: AUTH_CONFIG.authMode,
       isProduction: AUTH_CONFIG.isProduction,
       enableDevPersonas: AUTH_CONFIG.enableDevPersonas,
@@ -192,7 +199,10 @@ export function createAtlasRouter() {
    */
   router.get('/academics/profile', (req, res) => {
     try {
-      const user = req.user || { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' }
+      const user = resolveRequestUser(req)
+      if (!user) {
+        return res.status(401).json({ status: 'error', error: 'AUTHENTICATION_REQUIRED', message: 'Authentication required to access academic metrics.' })
+      }
       const targetId = req.query.studentId ? Number(req.query.studentId) : (user.studentId || user.id || 1)
 
       const { studentRepo, academicRepo, placementRepo } = getCampusRepositories()
@@ -258,7 +268,10 @@ export function createAtlasRouter() {
    */
   router.get('/facilities/tickets', (req, res) => {
     try {
-      const user = req.user || { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' }
+      const user = resolveRequestUser(req)
+      if (!user) {
+        return res.status(401).json({ status: 'error', error: 'AUTHENTICATION_REQUIRED', message: 'Authentication required to view tickets.' })
+      }
       const { campusRepo } = getCampusRepositories()
       const role = user.role || 'student'
       const tickets = (role === 'admin' || role === 'faculty')
@@ -285,7 +298,10 @@ export function createAtlasRouter() {
         })
       }
 
-      const user = req.user || { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' }
+      const user = resolveRequestUser(req)
+      if (!user) {
+        return res.status(401).json({ status: 'error', error: 'AUTHENTICATION_REQUIRED', message: 'Authentication required to report a maintenance ticket.' })
+      }
       const { campusRepo } = getCampusRepositories()
       const rawPriority = String(priority || 'normal').toLowerCase()
       const validPriorities = ['low', 'normal', 'urgent', 'critical']
@@ -322,24 +338,45 @@ export function createAtlasRouter() {
 
   /**
    * POST /api/atlas/events/:eventId/register
-   * Registers user for an event and increments registeredCount.
+   * Registers authenticated user for an event and durably records in SQLite.
    */
   router.post('/events/:eventId/register', (req, res) => {
-    const { eventId } = req.params
-    const evt = DEMO_EVENTS.find(e => e.id === eventId)
-    if (!evt) {
-      return res.status(404).json({ status: 'error', error: 'NOT_FOUND', message: `Event "${eventId}" not found.` })
-    }
-    if (evt.registeredCount >= evt.capacity) {
-      return res.status(400).json({ status: 'error', error: 'CAPACITY_REACHED', message: 'Event has reached full capacity.' })
-    }
+    try {
+      const user = resolveRequestUser(req)
+      if (!user) {
+        return res.status(401).json({ status: 'error', error: 'AUTHENTICATION_REQUIRED', message: 'Authentication required to register for campus events.' })
+      }
+      const { eventId } = req.params
+      const evt = DEMO_EVENTS.find(e => e.id === eventId)
+      if (!evt) {
+        return res.status(404).json({ status: 'error', error: 'NOT_FOUND', message: `Event "${eventId}" not found.` })
+      }
+      if (evt.registeredCount >= evt.capacity) {
+        return res.status(400).json({ status: 'error', error: 'CAPACITY_REACHED', message: 'Event has reached full capacity.' })
+      }
 
-    evt.registeredCount += 1
-    res.status(200).json({
-      status: 'success',
-      message: `Successfully registered for "${evt.title}".`,
-      data: evt
-    })
+      const { campusRepo } = getCampusRepositories()
+      const durableReg = campusRepo.registerForEvent({
+        eventId,
+        userId: user.id || user.studentId || 1,
+        userName: user.name || 'Alex Kumar'
+      })
+
+      evt.registeredCount = Math.max(evt.registeredCount + 1, durableReg.totalRegistrations)
+      res.status(200).json({
+        status: 'success',
+        message: `Successfully registered for "${evt.title}".`,
+        registrationId: durableReg.id,
+        data: evt
+      })
+    } catch (err) {
+      const statusCode = err.status || (err.code === 'ALREADY_REGISTERED' ? 409 : 500)
+      res.status(statusCode).json({
+        status: 'error',
+        error: err.code || 'REGISTRATION_FAILED',
+        message: err.message
+      })
+    }
   })
 
   /**

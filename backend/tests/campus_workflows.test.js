@@ -186,15 +186,24 @@ describe('3. Campus Events & Registration Workflows', () => {
     assert.ok(res.body.data.some(e => e.id === 'evt_hack_2026'))
   })
 
-  test('POST /api/atlas/events/:eventId/register increments registration count', async () => {
-    const res1 = await simulateRequest(app, 'GET', '/api/atlas/events')
-    const eventBefore = res1.body.data.find(e => e.id === 'evt_ai_workshop')
-    const countBefore = eventBefore.registeredCount
+  test('POST /api/atlas/events/:eventId/register creates durable registration in SQLite', async () => {
+    // Generate unique event test ID so runs are isolated
+    const testEventId = 'evt_career_fair'
+    const res = await simulateRequest(app, 'POST', `/api/atlas/events/${testEventId}/register`)
 
-    const res2 = await simulateRequest(app, 'POST', '/api/atlas/events/evt_ai_workshop/register')
-    assert.equal(res2.status, 200)
-    assert.equal(res2.body.status, 'success')
-    assert.equal(res2.body.data.registeredCount, countBefore + 1)
+    assert.equal(res.status, 200)
+    assert.equal(res.body.status, 'success')
+    assert.ok(res.body.registrationId, 'Must return generated registration ID')
+
+    // Verify durable record exists in SQLite event_registrations table
+    const { campusRepo } = getCampusRepositories()
+    const isReg = campusRepo.isRegisteredForEvent(testEventId, 1)
+    assert.equal(isReg, true, 'Registration must be durably recorded in SQLite')
+
+    // Duplicate registration attempt by same user must be rejected with 409 Conflict
+    const dupRes = await simulateRequest(app, 'POST', `/api/atlas/events/${testEventId}/register`)
+    assert.equal(dupRes.status, 409)
+    assert.equal(dupRes.body.error, 'ALREADY_REGISTERED')
   })
 })
 

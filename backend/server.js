@@ -33,6 +33,14 @@ app.use(cors())
 app.use(express.json({ limit: '1mb' }))
 app.use('/api', extractIdentity)
 
+// Mount Atlas Campus Multi-Agent Intelligence Layer
+const atlasRouter = createAtlasRouter()
+app.use('/api/atlas', atlasRouter)
+app.post('/api/actions/confirm', (req, res, next) => {
+  req.url = '/actions/confirm'
+  atlasRouter.handle(req, res, next)
+})
+
 // Log every request into the hits buffer (shown at /developer/apihits)
 app.use((req, res, next) => {
   const t0 = Date.now()
@@ -208,13 +216,14 @@ app.post('/api/chat', async (req, res) => {
   }
   
   // ---- Atlas Campus Multi-Agent Query ----
-  if (isAtlasQuery(message)) {
+  const atlasHistory = (db.messages || []).slice(-4)
+  if (isAtlasQuery(message, atlasHistory)) {
     send({ step: 'Routing to Atlas Campus Multi-Agent System' })
     try {
       const atlasResult = await orchestrateAtlas({
         message,
         user: req.user,
-        history: (db.chats || []).slice(-4),
+        history: atlasHistory,
         onProgress: (p) => {
           if (p.type === 'task_start') {
             const agentName = p.agent ? p.agent.charAt(0).toUpperCase() + p.agent.slice(1) : 'Atlas'

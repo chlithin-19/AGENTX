@@ -19,7 +19,7 @@ The Atlas Campus Platform is an enterprise multi-agent intelligence system built
 |                  Backend API Gateway (Express / Node.js)                 |
 |  - Fail-Closed Identity Extractor (HMAC-SHA256 Token Verifier)           |
 |  - SSE Event-Stream Router & Client Disconnect Safety                    |
-|  - Express Mounts: /api/chat, /api/actions/confirm, /api/atlas/*        |
+|  - Express Mounts: /api/chat, /api/atlas/* (with /api/actions/confirm alias)
 +--------------------------------------------------------------------------+
                                      |
                                      v
@@ -103,6 +103,10 @@ Tokens must be signed by the institutional Identity Provider (IdP) using `HS256`
 3. **Mandatory Expiry:** Tokens missing the `exp` claim or tokens past expiration are rejected with HTTP 401.
 4. **Header Spoofing Prevention:** Any request providing `x-atlas-dev-persona-id` in production is rejected with HTTP 400.
 
+> [!IMPORTANT]
+> **Production Deployment Prerequisite — External Identity Provider (Unresolved):**
+> Atlas enforces strict fail-closed token verification but does NOT operate an internal user-registration or password database. Production operation requires an institutional Identity Provider (IdP) (e.g., University Single Sign-On, Shibboleth, Okta, or Keycloak via OIDC) that issues HMAC-SHA256 tokens signed with `ATLAS_JWT_SECRET`. Without an active IdP or provisioned tokens, production routes fail closed with HTTP 401. Production readiness remains gated until this external integration is configured.
+
 ---
 
 ## 4. Consequential Action Confirmation Protocol
@@ -181,7 +185,7 @@ Atlas utilizes native `node:sqlite` connected to `backend/data/campus.db`. The d
 ### Durability Pragmas
 - `PRAGMA journal_mode = WAL;` (Enables concurrent reads and writes).
 - `PRAGMA busy_timeout = 5000;` (Waits up to 5 seconds for write locks).
-- `PRAGMA foreign_keys = ON;` (Enforces referential integrity across 8 tables).
+- `PRAGMA foreign_keys = ON;` (Enforces referential integrity across 9 relational tables including maintenance_tickets and event_registrations).
 
 ### Online Hot Backup Procedure
 To perform a live, hot backup of `campus.db` without stopping the application service:

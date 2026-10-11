@@ -138,3 +138,20 @@ CREATE TABLE IF NOT EXISTS provenance_log (
     classification TEXT NOT NULL,
     status TEXT NOT NULL
 );
+
+-- -----------------------------------------------------------------------------
+-- 9. Campus Event Registrations Table
+-- Durable tracking of authenticated student registrations for campus events.
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS event_registrations (
+    id TEXT PRIMARY KEY,
+    event_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    registered_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(event_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_reg_event ON event_registrations(event_id);
+CREATE INDEX IF NOT EXISTS idx_event_reg_user ON event_registrations(user_id);
+

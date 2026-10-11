@@ -221,8 +221,8 @@ export class AcademicAgent {
           salaryPackageLpa: isPlaced ? `${student.salary_package_lpa} LPA` : 'N/A'
         },
         summary: isPlaced
-          ? `${subjectPrefix} placement status is **Placed** with a verified compensation package of **₹${student.salary_package_lpa} LPA**.`
-          : `${subjectPrefix} placement status is currently **Not Placed**. Historical data shows students in ${student.branch} have a ${COHORT_BENCHMARKS.overallPlacementRate} placement rate.`,
+          ? `${subjectPrefix} placement record indicates **Placed** with an indicative package of **₹${student.salary_package_lpa} LPA** (Benchmark Dataset).`
+          : `${subjectPrefix} placement record is currently **Not Placed**. Historical placement benchmark for ${student.branch} indicates a ${COHORT_BENCHMARKS.overallPlacementRate} placement rate.`,
         citations: []
       }
     }
@@ -250,7 +250,7 @@ export class AcademicAgent {
         `- **Attendance:** ${student.attendance_percentage}% (Required: > 75%)\n` +
         `- **Active Backlogs:** ${student.backlogs}\n` +
         `- **Placement Readiness Score:** ${student.coding_skill_score}/100 (Coding), ${student.aptitude_score}/100 (Aptitude)\n` +
-        `- **Placement Status:** ${student.placement_status}${student.salary_package_lpa > 0 ? ` (₹${student.salary_package_lpa} LPA)` : ''}`,
+        `- **Placement Status:** ${student.placement_status}${student.salary_package_lpa > 0 ? ` (₹${student.salary_package_lpa} LPA - Benchmark Record)` : ''}`,
       citations: []
     }
   }
