@@ -499,6 +499,15 @@ export async function orchestrate({
 
         if (res.actionPayload) {
           allActions.push(res.actionPayload)
+        } else if (res.confirmation) {
+          allActions.push({
+            type: res.confirmation.actionType,
+            actionType: res.confirmation.actionType,
+            confirmationToken: res.confirmation.confirmationToken,
+            proposal: res.confirmation.proposal,
+            requiresConfirmation: true,
+            label: `Confirm ${res.confirmation.actionType}`
+          })
         }
       } else {
         errorCount++

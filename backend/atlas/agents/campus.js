@@ -66,6 +66,14 @@ export class CampusAgent {
         status: 'completed',
         data: ticket,
         confirmation,
+        actionPayload: {
+          type: 'campus.create_maintenance_ticket',
+          actionType: 'campus.create_maintenance_ticket',
+          confirmationToken: confirmation.confirmationToken,
+          proposal,
+          requiresConfirmation: true,
+          label: `Submit Maintenance Request for ${location}`
+        },
         summary: `### Maintenance Request Submitted (Demo Proposal):\n` +
           `- **Ticket ID:** \`${ticket.id}\`\n` +
           `- **Location:** ${ticket.location}\n` +

@@ -25,10 +25,15 @@ async function defaultActionExecutor(actionType, proposal, user) {
   if (actionType === 'campus.create_maintenance_ticket') {
     try {
       const { campusRepo } = getCampusRepositories()
+      let prio = (proposal.priority || 'normal').toLowerCase()
+      if (prio === 'medium') prio = 'normal'
+      if (prio === 'high') prio = 'urgent'
+      if (!['low', 'normal', 'urgent', 'critical'].includes(prio)) prio = 'normal'
+
       return campusRepo.createMaintenanceTicket({
         location: proposal.location,
         issue: proposal.issue,
-        priority: (proposal.priority || 'normal').toLowerCase(),
+        priority: prio,
         reportedBy: user?.name || proposal.reportedBy || 'Alex Kumar',
         reporterId: user?.id || user?.studentId || null
       })
