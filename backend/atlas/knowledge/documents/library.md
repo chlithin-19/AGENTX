@@ -4,10 +4,10 @@
 > **Effective Year:** 2026  
 > **Source ID:** `doc_library_guide_2026`  
 
-## 1. Operating Hours & Location
+## 1. Library Operating Hours & Schedule
 The Central Library is located in the Central Library Building (CLB).
-- **General Timings:** Monday through Saturday, 8:00 AM to 10:00 PM.
-- **Sunday Timings:** 10:00 AM to 5:00 PM.
+- **General Timings & Weekdays:** Monday through Saturday, 8:00 AM to 10:00 PM (closes at 10:00 PM on weekdays).
+- **Sunday Timings:** 10:00 AM to 5:00 PM (closes at 5:00 PM).
 - **Examination Extended Hours:** During pre-exam and examination weeks, the Ground Floor Air-Conditioned Reading Hall remains open until 12:00 Midnight.
 
 ## 2. Circulation & Borrowing Rules
