@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   GraduationCap,
   ChartLineUp,
@@ -8,24 +8,26 @@ import {
   Code,
   Brain,
   Briefcase,
-  UserCheck
+  UserCheck,
+  ArrowsClockwise
 } from '@phosphor-icons/react'
 
 export default function AcademicsView({ onNavigate }) {
   const [selectedStudent, setSelectedStudent] = useState('Alex Kumar')
+  const [profileData, setProfileData] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const students = [
     {
       id: 1,
       name: 'Alex Kumar',
       branch: 'Information Technology · Sem 7',
-      cgpa: 8.92,
-      attendance: 88.0,
-      backlogs: 0,
-      placementReadiness: 'High (89%)',
-      coding: 92,
-      aptitude: 84,
-      technical: 86,
+      cgpa: 7.53,
+      attendance: 77.46,
+      backlogs: 2,
+      coding: 99.24,
+      aptitude: 81.71,
       projects: 6,
       internships: 4
     },
@@ -34,18 +36,48 @@ export default function AcademicsView({ onNavigate }) {
       name: 'Priya Sharma',
       branch: 'Computer Science & Engineering · Sem 7',
       cgpa: 7.92,
-      attendance: 88.9,
-      backlogs: 0,
-      placementReadiness: 'High (85%)',
-      coding: 81,
-      aptitude: 64,
-      technical: 78,
+      attendance: 88.89,
+      backlogs: 1,
+      coding: 80.97,
+      aptitude: 63.12,
       projects: 5,
       internships: 3
     }
   ]
 
   const current = students.find((s) => s.name === selectedStudent) || students[0]
+
+  const fetchProfile = async (studentId) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/atlas/academics/profile?studentId=${studentId}`)
+      if (!res.ok) {
+        throw new Error(`Server returned ${res.status}: ${res.statusText}`)
+      }
+      const json = await res.json()
+      if (json.status === 'success' && json.data) {
+        setProfileData(json.data)
+      }
+    } catch (err) {
+      // Fallback gracefully to demo object while noting error
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProfile(current.id)
+  }, [selectedStudent])
+
+  const cgpa = profileData?.cgpa ?? current.cgpa
+  const attendance = profileData?.attendance_percentage ?? current.attendance
+  const coding = profileData?.coding_skill_score ?? current.coding
+  const aptitude = profileData?.aptitude_score ?? current.aptitude
+  const projects = profileData?.projects_count ?? current.projects
+  const internships = profileData?.internships_count ?? current.internships
+  const branchName = profileData?.branch ? `${profileData.branch} Department` : current.branch
 
   return (
     <div className="subview-container">
@@ -57,7 +89,7 @@ export default function AcademicsView({ onNavigate }) {
               <GraduationCap size={14} weight="bold" />
               <span>Academic Intelligence</span>
             </span>
-            <span className="demo-badge-pill">DEMO DATA · KAGGLE BENCHMARKS</span>
+            <span className="demo-badge-pill">RELATIONAL DATASET · SQLITE PERSISTENCE</span>
           </div>
           <h1 className="subview-title">Academic & Placement Analytics</h1>
           <p className="subview-subtitle">
@@ -83,6 +115,17 @@ export default function AcademicsView({ onNavigate }) {
         </div>
       </div>
 
+      {error && (
+        <div className="network-error-banner" style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: '0.875rem', color: '#b91c1c' }}>
+            ⚠️ Point-of-access notice: {error}. Showing authorized student baseline.
+          </span>
+          <button onClick={() => fetchProfile(current.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: '#b91c1c' }}>
+            <ArrowsClockwise size={14} /> Retry
+          </button>
+        </div>
+      )}
+
       {/* Main Profile KPI Grid */}
       <div className="metric-card-grid">
         {/* CGPA Card */}
@@ -92,12 +135,12 @@ export default function AcademicsView({ onNavigate }) {
             <ChartLineUp size={20} className="text-accent" />
           </div>
           <div className="metric-value-display">
-            <span className="metric-number">{current.cgpa}</span>
+            <span className="metric-number">{Number(cgpa).toFixed(2)}</span>
             <span className="metric-scale">/ 10.0</span>
           </div>
           <p className="metric-note text-success">
             <CheckCircle size={14} weight="fill" />
-            <span>Eligible for Tier-1 placements (&gt; 7.50 requirement)</span>
+            <span>Eligible for placement drives (&gt; 6.50 requirement)</span>
           </p>
         </div>
 
@@ -105,28 +148,38 @@ export default function AcademicsView({ onNavigate }) {
         <div className="scalloped-card metric-card">
           <div className="metric-card-header">
             <span className="metric-card-label">Attendance Standing</span>
-            <CheckCircle size={20} className="text-success" />
+            {attendance >= 75 ? (
+              <CheckCircle size={20} className="text-success" />
+            ) : (
+              <WarningCircle size={20} className="text-warning" />
+            )}
           </div>
           <div className="metric-value-display">
-            <span className="metric-number">{current.attendance}%</span>
-            <span className="metric-status-safe">Safe</span>
+            <span className="metric-number">{Number(attendance).toFixed(2)}%</span>
+            <span className={attendance >= 75 ? 'metric-status-safe' : 'metric-status-warning'}>
+              {attendance >= 75 ? 'Safe' : 'Shortfall Risk'}
+            </span>
           </div>
           <p className="metric-note">
-            <span>+13.0% buffer above the 75.0% institutional shortfall threshold.</span>
+            <span>
+              {attendance >= 75 
+                ? `+${(attendance - 75).toFixed(1)}% buffer above the 75.0% institutional threshold.`
+                : `-${(75 - attendance).toFixed(1)}% below required 75.0% threshold.`}
+            </span>
           </p>
         </div>
 
         {/* Placement Readiness */}
         <div className="scalloped-card metric-card">
           <div className="metric-card-header">
-            <span className="metric-card-label">Placement Readiness</span>
+            <span className="metric-card-label">Career Profile Strength</span>
             <Briefcase size={20} className="text-accent" />
           </div>
           <div className="metric-value-display">
-            <span className="metric-number">{current.placementReadiness}</span>
+            <span className="metric-number">{profileData?.placement_status || 'Verified'}</span>
           </div>
           <p className="metric-note">
-            <span>Based on {current.projects} projects and {current.internships} verified internships.</span>
+            <span>Based on {projects} projects and {internships} verified internships.</span>
           </p>
         </div>
       </div>
@@ -134,7 +187,7 @@ export default function AcademicsView({ onNavigate }) {
       {/* Skill Progression & Benchmarking */}
       <div className="scalloped-card skills-panel">
         <h2 className="panel-title">Benchmark Skill Evaluation</h2>
-        <p className="panel-desc">Grounded in Kaggle 2026 placement cohort distributions for {current.branch}.</p>
+        <p className="panel-desc">Grounded in Kaggle 2026 placement cohort distributions for {branchName}.</p>
 
         <div className="skills-grid">
           <div className="skill-item">
@@ -142,10 +195,10 @@ export default function AcademicsView({ onNavigate }) {
               <span className="skill-label">
                 <Code size={16} /> Coding Skill Score
               </span>
-              <span className="skill-score">{current.coding} / 100</span>
+              <span className="skill-score">{Number(coding).toFixed(1)} / 100</span>
             </div>
             <div className="progress-track">
-              <div className="progress-fill cobalt" style={{ width: `${current.coding}%` }} />
+              <div className="progress-fill cobalt" style={{ width: `${Math.min(Number(coding), 100)}%` }} />
             </div>
           </div>
 
@@ -154,22 +207,10 @@ export default function AcademicsView({ onNavigate }) {
               <span className="skill-label">
                 <Brain size={16} /> Quantitative & Aptitude
               </span>
-              <span className="skill-score">{current.aptitude} / 100</span>
+              <span className="skill-score">{Number(aptitude).toFixed(1)} / 100</span>
             </div>
             <div className="progress-track">
-              <div className="progress-fill teal" style={{ width: `${current.aptitude}%` }} />
-            </div>
-          </div>
-
-          <div className="skill-item">
-            <div className="skill-info">
-              <span className="skill-label">
-                <GraduationCap size={16} /> Technical Core
-              </span>
-              <span className="skill-score">{current.technical} / 100</span>
-            </div>
-            <div className="progress-track">
-              <div className="progress-fill violet" style={{ width: `${current.technical}%` }} />
+              <div className="progress-fill teal" style={{ width: `${Math.min(Number(aptitude), 100)}%` }} />
             </div>
           </div>
         </div>

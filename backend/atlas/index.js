@@ -13,7 +13,7 @@ import { orchestrate, routeQuery, isAtlasQuery, isIdempotent } from './orchestra
 import { DEMO_STUDENT_PROFILES } from './data/demoStudents.js'
 import { DEMO_FACILITIES, DEMO_CAMPUS_SERVICES, createDemoMaintenanceTicket } from './data/demoCampus.js'
 import { DEMO_EVENTS } from './data/demoEvents.js'
-import { DEMO_ANNOUNCEMENTS, draftCampusMessage } from './data/demoCommunication.js'
+import { DEMO_ANNOUNCEMENTS, DEMO_NOTIFICATIONS, draftCampusMessage } from './data/demoCommunication.js'
 import { AUTH_CONFIG, executeConfirmedAction } from './security/index.js'
 
 import { getCampusRepositories } from './campus/repositories/index.js'
@@ -179,6 +179,179 @@ export function createAtlasRouter() {
         timestamp: new Date().toISOString()
       })
     }
+  })
+
+  /**
+   * GET /api/atlas/academics/profile
+   * Returns authenticated user's academic and placement profile from campus.db.
+   */
+  router.get('/academics/profile', (req, res) => {
+    try {
+      const user = req.user || { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' }
+      const targetId = req.query.studentId ? Number(req.query.studentId) : (user.studentId || user.id || 1)
+
+      const { studentRepo, academicRepo, placementRepo } = getCampusRepositories()
+      const student = studentRepo.getStudentById(targetId, user)
+      if (!student) {
+        return res.status(404).json({ status: 'error', error: 'NOT_FOUND', message: 'Student profile not found.' })
+      }
+      const academic = academicRepo.getAcademicRecord(targetId, user)
+      const placement = placementRepo.getPlacementProfile(targetId, user)
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          ...student,
+          ...(academic || {}),
+          ...(placement || {})
+        }
+      })
+    } catch (err) {
+      const statusCode = err.status || (err.code?.startsWith('FORBIDDEN') ? 403 : 500)
+      res.status(statusCode).json({
+        status: 'error',
+        error: err.code || 'PROFILE_FETCH_FAILED',
+        message: err.message
+      })
+    }
+  })
+
+  /**
+   * GET /api/atlas/academics/benchmarks
+   * Returns cohort benchmarks from cohort_benchmarks table.
+   */
+  router.get('/academics/benchmarks', (req, res) => {
+    try {
+      const { placementRepo } = getCampusRepositories()
+      const branch = req.query.branch ? String(req.query.branch).trim().toUpperCase() : null
+      if (branch) {
+        const bm = placementRepo.getCohortBenchmark(branch)
+        return res.status(200).json({ status: 'success', data: bm ? [bm] : [] })
+      }
+      const all = placementRepo.getAllCohortBenchmarks()
+      res.status(200).json({ status: 'success', data: all })
+    } catch (err) {
+      res.status(500).json({ status: 'error', error: 'BENCHMARK_FETCH_FAILED', message: err.message })
+    }
+  })
+
+  /**
+   * GET /api/atlas/facilities
+   * Returns active campus facilities and services.
+   */
+  router.get('/facilities', (req, res) => {
+    res.status(200).json({
+      status: 'success',
+      data: DEMO_FACILITIES,
+      services: DEMO_CAMPUS_SERVICES
+    })
+  })
+
+  /**
+   * GET /api/atlas/facilities/tickets
+   * Lists maintenance tickets for authenticated user (or all tickets if faculty/admin).
+   */
+  router.get('/facilities/tickets', (req, res) => {
+    try {
+      const user = req.user || { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' }
+      const { campusRepo } = getCampusRepositories()
+      const role = user.role || 'student'
+      const tickets = (role === 'admin' || role === 'faculty')
+        ? campusRepo.listAllTickets(50)
+        : campusRepo.listTicketsByReporter(user.id || user.studentId || 1)
+      res.status(200).json({ status: 'success', data: tickets })
+    } catch (err) {
+      res.status(500).json({ status: 'error', error: 'TICKETS_FETCH_FAILED', message: err.message })
+    }
+  })
+
+  /**
+   * POST /api/atlas/facilities/tickets
+   * Creates a durable maintenance ticket in SQLite campus.db.
+   */
+  router.post('/facilities/tickets', (req, res) => {
+    try {
+      const { location, issue, priority } = req.body || {}
+      if (!location || !issue) {
+        return res.status(400).json({
+          status: 'error',
+          error: 'BAD_REQUEST',
+          message: 'Both "location" and "issue" are required to report a maintenance ticket.'
+        })
+      }
+
+      const user = req.user || { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' }
+      const { campusRepo } = getCampusRepositories()
+      const rawPriority = String(priority || 'normal').toLowerCase()
+      const validPriorities = ['low', 'normal', 'urgent', 'critical']
+      const normalizedPriority = rawPriority === 'high' ? 'urgent' : (validPriorities.includes(rawPriority) ? rawPriority : 'normal')
+
+      const ticket = campusRepo.createMaintenanceTicket({
+        location,
+        issue,
+        priority: normalizedPriority,
+        reportedBy: user.name || 'Alex Kumar',
+        reporterId: user.id || user.studentId || 1
+      })
+
+      res.status(201).json({
+        status: 'success',
+        message: 'Maintenance ticket created successfully.',
+        data: ticket
+      })
+    } catch (err) {
+      res.status(500).json({ status: 'error', error: 'TICKET_CREATE_FAILED', message: err.message })
+    }
+  })
+
+  /**
+   * GET /api/atlas/events
+   * Returns list of campus events and registration status.
+   */
+  router.get('/events', (req, res) => {
+    res.status(200).json({
+      status: 'success',
+      data: DEMO_EVENTS
+    })
+  })
+
+  /**
+   * POST /api/atlas/events/:eventId/register
+   * Registers user for an event and increments registeredCount.
+   */
+  router.post('/events/:eventId/register', (req, res) => {
+    const { eventId } = req.params
+    const evt = DEMO_EVENTS.find(e => e.id === eventId)
+    if (!evt) {
+      return res.status(404).json({ status: 'error', error: 'NOT_FOUND', message: `Event "${eventId}" not found.` })
+    }
+    if (evt.registeredCount >= evt.capacity) {
+      return res.status(400).json({ status: 'error', error: 'CAPACITY_REACHED', message: 'Event has reached full capacity.' })
+    }
+
+    evt.registeredCount += 1
+    res.status(200).json({
+      status: 'success',
+      message: `Successfully registered for "${evt.title}".`,
+      data: evt
+    })
+  })
+
+  /**
+   * GET /api/atlas/circulars
+   * Returns verified institutional announcements and notifications.
+   */
+  router.get('/circulars', (req, res) => {
+    const category = req.query.category ? String(req.query.category).toLowerCase() : null
+    let list = DEMO_ANNOUNCEMENTS
+    if (category) {
+      list = list.filter(a => a.category.toLowerCase() === category)
+    }
+    res.status(200).json({
+      status: 'success',
+      data: list,
+      notifications: DEMO_NOTIFICATIONS
+    })
   })
 
   return router

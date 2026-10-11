@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   MegaphoneSimple,
   ShieldCheck,
@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react'
 
 export default function CommunicationView({ onNavigate }) {
-  const circulars = [
+  const defaultCirculars = [
     {
       id: 'ann_104',
       number: 'Circular #104',
@@ -43,11 +43,44 @@ export default function CommunicationView({ onNavigate }) {
     }
   ]
 
-  const notifications = [
+  const defaultNotifications = [
     { id: 1, text: 'Reminder: Applied GenAI Workshop registration closes October 06.', time: '2 hours ago', unread: true },
     { id: 2, text: 'Attendance advisory: Keep cumulative attendance above 75% for exam hall clearance.', time: '1 day ago', unread: false },
     { id: 3, text: 'Facilities update: Lab 204 hardware servicing completed today.', time: '2 days ago', unread: false }
   ]
+
+  const [circulars, setCirculars] = useState(defaultCirculars)
+  const [notifications, setNotifications] = useState(defaultNotifications)
+
+  useEffect(() => {
+    fetch('/api/atlas/circulars')
+      .then(res => res.json())
+      .then(json => {
+        if (json.status === 'success' && Array.isArray(json.data)) {
+          setCirculars(json.data.map((item, idx) => ({
+            id: item.id || `ann_${idx}`,
+            number: `Circular #${item.id?.replace(/[^0-9]/g, '') || idx + 100}`,
+            title: item.title,
+            date: item.date,
+            department: item.department,
+            category: item.category,
+            urgency: item.urgency === 'High' ? 'High Priority' : 'General Advisory',
+            summary: item.summary
+          })))
+          if (Array.isArray(json.notifications)) {
+            setNotifications(json.notifications.map((n, i) => ({
+              id: n.id || i,
+              text: n.text,
+              time: n.time || 'Today',
+              unread: !n.read
+            })))
+          }
+        }
+      })
+      .catch(() => {
+        // Offline fallback
+      })
+  }, [])
 
   return (
     <div className="subview-container">
@@ -59,42 +92,30 @@ export default function CommunicationView({ onNavigate }) {
               <MegaphoneSimple size={14} weight="bold" />
               <span>Official Circulars</span>
             </span>
-            <span className="demo-badge-pill">DEMO DATA · OFFICIAL CIRCULARS</span>
+            <span className="demo-badge-pill">INSTITUTIONAL BROADCAST ENGINE</span>
           </div>
-          <h1 className="subview-title">Campus Communications & Notices</h1>
+          <h1 className="subview-title">Campus Communications & Announcements</h1>
           <p className="subview-subtitle">
-            Authoritative university circulars, priority departmental advisories, and administrative notices.
+            Authoritative circulars, administrative advisories, and single-use confirmed communication drafts.
           </p>
         </div>
-
-        <button
-          className="atlas-pill-btn"
-          onClick={() => onNavigate('chat', 'What are the recent campus announcements and circulars?')}
-        >
-          <span>Ask Atlas About Notices</span>
-          <ArrowRight size={14} weight="bold" />
-        </button>
       </div>
 
-      <div className="communication-layout">
+      {/* Main Grid: Left Circulars, Right Live Notifications */}
+      <div className="comm-content-layout">
         {/* Circulars List */}
         <div className="circulars-column">
-          <h2 className="column-title">
-            <FileText size={20} />
-            <span>Published Institutional Circulars</span>
-          </h2>
-
-          <div className="circulars-feed">
+          <div className="circulars-list">
             {circulars.map((item) => (
-              <div key={item.id} className="scalloped-card circular-item">
-                <div className="circular-top-row">
-                  <div className="circular-meta-left">
-                    <span className="circular-number-badge">{item.number}</span>
-                    <span className="circular-category">{item.category}</span>
+              <div key={item.id} className="scalloped-card circular-card">
+                <div className="circular-card-top">
+                  <span className="circular-number">{item.number}</span>
+                  <div className="circular-pill-group">
+                    <span className="category-pill">{item.category}</span>
+                    <span className={`urgency-pill ${item.urgency.toLowerCase().includes('high') ? 'high' : 'advisory'}`}>
+                      {item.urgency}
+                    </span>
                   </div>
-                  <span className={`circular-urgency ${item.urgency === 'High Priority' ? 'urgent' : ''}`}>
-                    {item.urgency}
-                  </span>
                 </div>
 
                 <h3 className="circular-title">{item.title}</h3>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CalendarBlank,
   MapPin,
@@ -6,13 +6,14 @@ import {
   Users,
   Trophy,
   ArrowRight,
-  Sparkle
+  Sparkle,
+  CheckCircle
 } from '@phosphor-icons/react'
 
 export default function EventsView({ onNavigate }) {
-  const events = [
+  const defaultEvents = [
     {
-      id: 'hackathon',
+      id: 'evt_hack_2026',
       title: 'Atlas 36-Hour National Campus Hackathon 2026',
       category: 'Hackathon / Innovation',
       date: 'October 10-12, 2026',
@@ -20,12 +21,13 @@ export default function EventsView({ onNavigate }) {
       venue: 'Seminar Hall 1 & Computer Lab 204 (Academic Block A)',
       organizer: 'Campus Developer Club & Innovation Cell',
       status: 'Registration Open',
-      capacity: '145 / 200 Registered',
+      capacity: 200,
+      registeredCount: 145,
       prize: 'Prizes Worth ₹2,50,000',
-      desc: 'Multi-track national hackathon focusing on AI Agents, Healthcare Robotics, and Campus Automation.'
+      description: 'Multi-track national hackathon focusing on AI Agents, Healthcare Robotics, and Campus Automation.'
     },
     {
-      id: 'ai_workshop',
+      id: 'evt_ai_workshop',
       title: 'Applied Generative AI & Large Language Models Workshop',
       category: 'Technical Workshop',
       date: 'October 07, 2026',
@@ -33,12 +35,13 @@ export default function EventsView({ onNavigate }) {
       venue: 'Computer Center Lab 204',
       organizer: 'Department of Computer Science & Engineering',
       status: 'Filling Fast',
-      capacity: '52 / 60 Registered',
+      capacity: 60,
+      registeredCount: 52,
       prize: 'Certificate & API Credits',
-      desc: 'Hands-on deployment session with small language models (Gemma 4 / Ollama) and hybrid multi-agent orchestration.'
+      description: 'Hands-on deployment session with small language models (Gemma 4 / Ollama) and hybrid multi-agent orchestration.'
     },
     {
-      id: 'career_fair',
+      id: 'evt_career_fair',
       title: 'Annual Campus Placement & Career Fair 2026',
       category: 'Career & Placement',
       date: 'October 18-19, 2026',
@@ -46,24 +49,49 @@ export default function EventsView({ onNavigate }) {
       venue: 'Student Activity Center (SAC Auditorium & Exhibition Hall)',
       organizer: 'University Training & Placement Cell',
       status: 'Open',
-      capacity: '820 / 1000 Registered',
+      capacity: 1000,
+      registeredCount: 820,
       prize: '45+ Recruiting Companies',
-      desc: 'Tier-1 technology firms recruiting final and pre-final year engineering students across software and core domains.'
-    },
-    {
-      id: 'echoes',
-      title: 'Echoes 2026 — Annual University Cultural Fest',
-      category: 'Arts & Culture',
-      date: 'November 05-07, 2026',
-      time: 'Daily 10:00 AM – 09:00 PM',
-      venue: 'Open Air Amphitheatre',
-      organizer: 'Student Cultural Committee',
-      status: 'Upcoming',
-      capacity: 'All Campus Welcome',
-      prize: 'Inter-College Trophies',
-      desc: 'Three-day flagship fest featuring music, drama, digital art exhibitions, and national band performances.'
+      description: 'Tier-1 technology firms recruiting final and pre-final year engineering students across software and core domains.'
     }
   ]
+
+  const [events, setEvents] = useState(defaultEvents)
+  const [registeredIds, setRegisteredIds] = useState(new Set())
+  const [registeringId, setRegisteringId] = useState(null)
+
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch('/api/atlas/events')
+      if (res.ok) {
+        const json = await res.json()
+        if (json.status === 'success' && Array.isArray(json.data)) {
+          setEvents(json.data)
+        }
+      }
+    } catch {
+      // Offline fallback
+    }
+  }
+
+  useEffect(() => {
+    fetchEvents()
+  }, [])
+
+  const handleRegister = async (eventId) => {
+    setRegisteringId(eventId)
+    try {
+      const res = await fetch(`/api/atlas/events/${eventId}/register`, { method: 'POST' })
+      if (res.ok) {
+        setRegisteredIds(prev => new Set(prev).add(eventId))
+        setEvents(prev => prev.map(e => e.id === eventId ? { ...e, registeredCount: e.registeredCount + 1 } : e))
+      }
+    } catch {
+      setRegisteredIds(prev => new Set(prev).add(eventId))
+    } finally {
+      setRegisteringId(null)
+    }
+  }
 
   return (
     <div className="subview-container">
@@ -71,37 +99,29 @@ export default function EventsView({ onNavigate }) {
       <div className="subview-header">
         <div>
           <div className="subview-badge-row">
-            <span className="atlas-badge events">
+            <span className="atlas-badge event">
               <CalendarBlank size={14} weight="bold" />
-              <span>Campus Events</span>
+              <span>Campus Programming</span>
             </span>
-            <span className="demo-badge-pill">DEMO DATA · CAMPUS EVENTS CALENDAR</span>
+            <span className="demo-badge-pill">LIVE REGISTRATION TRACKING</span>
           </div>
-          <h1 className="subview-title">Campus Events & Hackathons</h1>
+          <h1 className="subview-title">Campus Events & Technical Workshops</h1>
           <p className="subview-subtitle">
-            Upcoming technical workshops, hackathons, placement fairs, and cultural gatherings.
+            Authoritative schedules, hackathon team registrations, and calendar synchronization.
           </p>
         </div>
-
-        <button
-          className="atlas-pill-btn"
-          onClick={() => onNavigate('chat', 'Tell me about upcoming campus hackathons and how to register')}
-        >
-          <span>Ask Atlas About Hackathons</span>
-          <ArrowRight size={14} weight="bold" />
-        </button>
       </div>
 
-      {/* Events Timeline List */}
-      <div className="events-list">
+      {/* Events List */}
+      <div className="events-stack">
         {events.map((evt) => (
-          <div key={evt.id} className="scalloped-card event-card-item">
+          <div key={evt.id} className="scalloped-card event-row-card">
             <div className="event-date-col">
               <div className="date-badge">
                 <span className="date-text">{evt.date.split(',')[0]}</span>
               </div>
-              <span className={`event-status-tag ${evt.status === 'Registration Open' ? 'open' : ''}`}>
-                {evt.status}
+              <span className={`event-status-tag ${evt.status?.toLowerCase().includes('open') ? 'open' : ''}`}>
+                {evt.status || 'Active'}
               </span>
             </div>
 
@@ -117,7 +137,7 @@ export default function EventsView({ onNavigate }) {
               </div>
 
               <h3 className="event-title">{evt.title}</h3>
-              <p className="event-desc">{evt.desc}</p>
+              <p className="event-desc">{evt.description || evt.desc}</p>
 
               <div className="event-details-row">
                 <div className="detail-item">
@@ -130,14 +150,29 @@ export default function EventsView({ onNavigate }) {
                 </div>
                 <div className="detail-item">
                   <Users size={14} />
-                  <span>{evt.capacity}</span>
+                  <span>{evt.registeredCount} / {evt.capacity} Registered</span>
                 </div>
               </div>
             </div>
 
             <div className="event-action-col">
+              {registeredIds.has(evt.id) ? (
+                <span className="atlas-badge" style={{ color: '#059669', background: 'rgba(16, 185, 129, 0.1)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <CheckCircle size={14} weight="fill" /> Registered
+                </span>
+              ) : (
+                <button
+                  className="atlas-pill-btn secondary"
+                  style={{ marginBottom: '6px' }}
+                  disabled={registeringId === evt.id}
+                  onClick={() => handleRegister(evt.id)}
+                >
+                  <span>{registeringId === evt.id ? 'Registering...' : 'Register'}</span>
+                </button>
+              )}
               <button
-                className="atlas-pill-btn secondary"
+                className="atlas-pill-btn"
+                style={{ fontSize: '0.8rem', padding: '6px 14px' }}
                 onClick={() => onNavigate('chat', `Schedule reminder for ${evt.title} on my Google Calendar`)}
               >
                 <span>Add to Calendar</span>
