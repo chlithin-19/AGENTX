@@ -189,6 +189,9 @@ describe('3. Campus Events & Registration Workflows', () => {
   test('POST /api/atlas/events/:eventId/register creates durable registration in SQLite', async () => {
     // Generate unique event test ID so runs are isolated
     const testEventId = 'evt_career_fair'
+    const { campusRepo } = getCampusRepositories()
+    campusRepo.db.prepare('DELETE FROM event_registrations WHERE event_id = ? AND user_id = ?').run(testEventId, '1')
+
     const res = await simulateRequest(app, 'POST', `/api/atlas/events/${testEventId}/register`)
 
     assert.equal(res.status, 200)
@@ -196,7 +199,6 @@ describe('3. Campus Events & Registration Workflows', () => {
     assert.ok(res.body.registrationId, 'Must return generated registration ID')
 
     // Verify durable record exists in SQLite event_registrations table
-    const { campusRepo } = getCampusRepositories()
     const isReg = campusRepo.isRegisteredForEvent(testEventId, 1)
     assert.equal(isReg, true, 'Registration must be durably recorded in SQLite')
 
