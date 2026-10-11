@@ -10,6 +10,11 @@ import { get, save, id, logEvent, bumpUsage } from './store.js'
 import { OAUTH_CONFIG, isConfigured, buildAuthUrl, exchangeCode } from './oauth.js'
 import { TOOLS, TOOL_LABELS, ensureGoogleToken, gmailSend as _gmailSend, linkedinPost as _linkedinPost, calendarCreate as _calendarCreate, webSearch as _webSearch } from './tools.js'
 import { renderPDF, renderExcel, renderDocx } from './docs.js'
+import { createAtlasRouter, isAtlasQuery, orchestrate as orchestrateAtlas } from './atlas/index.js'
+import { validateSecurityConfig, extractIdentity, AUTH_CONFIG } from './atlas/security/index.js'
+
+// Validate security configuration on startup (fails closed on unsafe production configuration)
+validateSecurityConfig()
 
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -26,6 +31,7 @@ const STARTED = Date.now()
 const app = express()
 app.use(cors())
 app.use(express.json({ limit: '1mb' }))
+app.use('/api', extractIdentity)
 
 // Log every request into the hits buffer (shown at /developer/apihits)
 app.use((req, res, next) => {
@@ -78,6 +84,9 @@ function systemPrompt(lang = null) {
 
 Known facts:\n${facts.slice(0, 800)}`
 }
+
+// ---------- Atlas Campus Intelligence Layer (Phase 2A) ----------
+app.use('/api/atlas', createAtlasRouter())
 
 // ---------- Health / models ----------
 app.get('/api/health', async (req, res) => {
@@ -197,7 +206,30 @@ app.post('/api/chat', async (req, res) => {
     pushMsg('assistant', reply, { action: { type: 'job.queued', connected: true, done: true, doneLabel: 'Queued as background task' } })
     send({ token: reply }); send({ done: true }); return res.end()
   }
+  
+  // ---- Atlas Campus Multi-Agent Query ----
+  if (isAtlasQuery(message)) {
+    send({ step: 'Routing to Atlas Campus Multi-Agent System' })
+    try {
+      const atlasResult = await orchestrateAtlas({
+        message,
+        user: req.user
+      })
+      const reply = atlasResult.response?.text || 'Atlas processed your campus inquiry.'
+      const extraAction = atlasResult.actions?.[0] ? { action: atlasResult.actions[0] } : {}
+      pushMsg('assistant', reply, extraAction)
 
+      const words = reply.match(/\S+\s*/g) || [reply]
+      for (const chunk of words) {
+        send({ token: chunk })
+      }
+      send({ done: true })
+      return res.end()
+    } catch (err) {
+      console.error('[Atlas Chat Route Error]', err)
+      // Fall through to standard agentic pipeline if unexpected error
+    }
+  }
 
   // ---- Image Generation intent in chat ----
   const imgMatch = message.match(/\b(?:generate|create|make|draw|show|render)\s+(?:an?\s+)?(?:image|picture|photo|illustration|drawing|art|graphic)\s+(?:of\s+)?(.+)/i)

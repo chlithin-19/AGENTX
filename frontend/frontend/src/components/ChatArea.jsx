@@ -131,7 +131,8 @@ export default function ChatArea({ initialPrompt = '' }) {
   const loadHistory = async (isManualRefresh = false) => {
     if (isManualRefresh) setIsRefreshing(true)
     try {
-      const res = await fetch('/api/history')
+      const headers = import.meta.env.DEV ? { 'x-atlas-dev-persona-id': localStorage.getItem('atlas_dev_persona_id') || '1' } : {}
+      const res = await fetch('/api/history', { headers })
       if (res.ok) {
         const data = await res.json()
         if (Array.isArray(data) && data.length > 0) {
@@ -198,7 +199,10 @@ export default function ChatArea({ initialPrompt = '' }) {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(import.meta.env.DEV ? { 'x-atlas-dev-persona-id': localStorage.getItem('atlas_dev_persona_id') || '1' } : {})
+        },
         body: JSON.stringify({
           message: textToSend,
           mode: autoMode ? 'auto' : 'manual',
