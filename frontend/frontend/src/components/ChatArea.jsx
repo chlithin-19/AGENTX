@@ -289,6 +289,35 @@ export default function ChatArea({ initialPrompt = '' }) {
   const handleExecuteAction = async (msgId, action, messageText) => {
     setActionInProgress(prev => ({ ...prev, [msgId]: true }))
     try {
+      if (action.confirmationToken) {
+        const res = await fetch('/api/atlas/actions/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ confirmationToken: action.confirmationToken })
+        })
+        const data = await res.json()
+        if (res.ok && data.status === 'success') {
+          setMessages(prev =>
+            prev.map(m =>
+              m.id === msgId
+                ? {
+                    ...m,
+                    action: {
+                      ...m.action,
+                      done: true,
+                      doneLabel: 'Action Confirmed & Executed ✓'
+                    }
+                  }
+                : m
+            )
+          )
+          return
+        } else {
+          alert(`Confirmation error: ${data.message || data.error || 'Failed to confirm action'}`)
+          return
+        }
+      }
+
       if (action.type === 'calendar.create') {
         const res = await fetch('/api/actions/calendar/create', {
           method: 'POST',
@@ -525,14 +554,16 @@ export default function ChatArea({ initialPrompt = '' }) {
                 <div className="action-box">
                   <div className="action-box-header">
                     <div className="action-box-title">
-                      {m.action.type === 'calendar.create' && <Calendar size={18} weight="fill" />}
-                      {m.action.type === 'email.send' && <EnvelopeSimple size={18} weight="fill" />}
-                      {m.action.type === 'linkedin.post' && <LinkedinLogo size={18} weight="fill" />}
+                      {m.action.confirmationToken && <Sparkle size={18} weight="fill" color="var(--accent-primary, #2563eb)" />}
+                      {!m.action.confirmationToken && m.action.type === 'calendar.create' && <Calendar size={18} weight="fill" />}
+                      {!m.action.confirmationToken && m.action.type === 'email.send' && <EnvelopeSimple size={18} weight="fill" />}
+                      {!m.action.confirmationToken && m.action.type === 'linkedin.post' && <LinkedinLogo size={18} weight="fill" />}
                       <span>
-                        {m.action.type === 'calendar.create' && 'Calendar Action'}
-                        {m.action.type === 'email.send' && `Send Email to ${m.action.to}`}
-                        {m.action.type === 'linkedin.post' && 'LinkedIn Post'}
-                        {m.action.type === 'job.queued' && 'Background Task'}
+                        {m.action.confirmationToken && (m.action.label || 'Verified Action Proposal (Approval Required)')}
+                        {!m.action.confirmationToken && m.action.type === 'calendar.create' && 'Calendar Action'}
+                        {!m.action.confirmationToken && m.action.type === 'email.send' && `Send Email to ${m.action.to}`}
+                        {!m.action.confirmationToken && m.action.type === 'linkedin.post' && 'LinkedIn Post'}
+                        {!m.action.confirmationToken && m.action.type === 'job.queued' && 'Background Task'}
                       </span>
                     </div>
                   </div>
