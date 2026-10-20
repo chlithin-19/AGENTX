@@ -29,7 +29,7 @@ export class AcademicAgent {
    */
   canHandle(query) {
     const q = String(query).toLowerCase()
-    return /\b(academic|attendance|cgpa|gpa|grades?|marks?|backlogs?|skills?|coding score|aptitude|placement status|placement package|salary|internships?|projects?|study hours)\b/i.test(q)
+    return /\b(academic|attendance|cgpa|gpa|grades?|marks?|backlogs?|skills?|coding score|aptitude|placement|placements?|package|salary|benchmarks?|internships?|projects?|study hours)\b/i.test(q)
   }
 
   /**
@@ -208,7 +208,7 @@ export class AcademicAgent {
     }
 
     // Sub-intent 5: Placement status / package
-    if (/\b(placement status|placed|package|salary|offer)\b/i.test(query)) {
+    if (/\b(placement|placements?|package|salary|offer|benchmarks?)\b/i.test(query)) {
       const isPlaced = student.placement_status === 'Placed'
       return {
         agent: this.name,

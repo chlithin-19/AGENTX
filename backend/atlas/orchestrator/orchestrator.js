@@ -116,7 +116,8 @@ export function decomposeQuery(query, history = []) {
   }
 
   // 3. Contextual conversation memory: Resolve follow-up inquiries using history
-  if (tasks.length === 0 && Array.isArray(history) && history.length > 0) {
+  const isFollowUpMarker = /\b(it|its|their|they|them|there|this|that|these|those|the same|hours?|timings?|when|where|what time|tell me more|more info|what about|and\??)\b/i.test(clean)
+  if (tasks.length === 0 && isFollowUpMarker && Array.isArray(history) && history.length > 0) {
     const recentTurn = [...history].reverse().find(m => m.role === 'user' || m.role === 'assistant')
     if (recentTurn && recentTurn.content) {
       const combined = `${recentTurn.content} ${clean}`.toLowerCase()

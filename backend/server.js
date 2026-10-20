@@ -216,7 +216,7 @@ app.post('/api/chat', async (req, res) => {
   }
   
   // ---- Atlas Campus Multi-Agent Query ----
-  const atlasHistory = (db.messages || []).slice(-4)
+  const atlasHistory = (db.messages || []).slice(0, -1).slice(-4)
   if (isAtlasQuery(message, atlasHistory)) {
     send({ step: 'Routing to Atlas Campus Multi-Agent System' })
     try {
@@ -463,6 +463,9 @@ Write in first person, confident and authentic. Output ONLY the post text — no
     } catch (e) { if (!full) full = `⚠️ ${e.message}` }
 
     if (!full) full = "I couldn't complete that — try again."
+    if (tokens === 0 && full) {
+      for (const chunk of full.match(/\S+\s*/g) || [full]) send({ token: chunk })
+    }
     const action = detectAction(message)
     if (action) action.connected = !!db.integrations.find(x => x.id === action.provider)?.connected
     pushMsg('assistant', full, action ? { action } : {})
@@ -522,6 +525,9 @@ Write in first person, confident and authentic. Output ONLY the post text — no
     finalText = r.full; tokens = r.tokens
   } catch (e) { if (!finalText) finalText = `⚠️ ${e.message}` }
   if (!finalText) finalText = context.trim() || "I couldn't complete that — try again."
+  if (tokens === 0 && finalText) {
+    for (const chunk of finalText.match(/\S+\s*/g) || [finalText]) send({ token: chunk })
+  }
 
   pushMsg('assistant', finalText, attachments.length ? { attachments } : {})
   bumpUsage({ tokens, chats: 1 })
@@ -750,6 +756,7 @@ async function reason(system, user, opts = {}, history = []) {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
         body: JSON.stringify({ model: REASON_MODEL, temperature: opts.temperature ?? 0.6, max_tokens: opts.num_predict ?? 500,
           messages: [{ role: 'system', content: system }, ...history, { role: 'user', content: user }] }),
+        signal: AbortSignal.timeout(4000)
       })
       if (r.ok) { const j = await r.json(); const t = j.choices?.[0]?.message?.content?.trim(); if (t) { bumpGroq(j.usage?.total_tokens || Math.round(t.length / 4), ki); return t } break }
       if (r.status === 429) { keyIdx++; continue } // this key is out of quota → rotate to the next
@@ -808,6 +815,7 @@ async function streamLLM(messages, onToken, opts = {}) {
       const r = await fetch(REASON_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
         body: JSON.stringify({ model: REASON_MODEL, stream: true, temperature: opts.temperature ?? 0.6, max_tokens: opts.num_predict ?? 500, messages, stream_options: { include_usage: true } }),
+        signal: AbortSignal.timeout(4000)
       })
       if (r.status === 429) { keyIdx++; continue } // this key is out of quota → rotate to the next
       if (r.ok && r.body) {
@@ -839,6 +847,7 @@ async function streamLLM(messages, onToken, opts = {}) {
     const up = await fetch(`${OLLAMA}/api/chat`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: AGENT_MODEL, stream: true, keep_alive: -1, messages }),
+      signal: AbortSignal.timeout(3000)
     })
     if (up.ok && up.body) {
       const reader = up.body.getReader(); const dec = new TextDecoder(); let buf = ''
@@ -847,6 +856,12 @@ async function streamLLM(messages, onToken, opts = {}) {
         buf += dec.decode(value, { stream: true }); const lines = buf.split('\n'); buf = lines.pop() || ''
         for (const line of lines) { if (!line.trim()) continue; let o; try { o = JSON.parse(line) } catch { continue } const t = o.message?.content; if (t) { full += t; onToken(t) } if (o.eval_count) tokens = o.eval_count }
       }
+    }
+  } catch (err) {
+    if (!full) {
+      const degraded = "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars."
+      full = degraded
+      onToken(degraded)
     }
   } finally { localInFlight = false }
   return { full, tokens }
