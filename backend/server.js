@@ -720,6 +720,7 @@ async function genText(system, prompt, opts = {}) {
   const up = await fetch(`${OLLAMA}/api/chat`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ model: AGENT_MODEL, stream: true, keep_alive: -1, options: opts, messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }] }),
+    signal: AbortSignal.timeout(3000)
   })
   if (!up.ok || !up.body) throw new Error(`ollama ${up.status}`)
   let out = ''
@@ -732,54 +733,174 @@ async function genText(system, prompt, opts = {}) {
   return out.trim()
 }
 
-// Reasoning/content brain: a free cloud LLM (Groq Llama-3.3-70B by default) when a key
-// is configured, else falls back to the local 3B. Tool/intent routing stays on the local
-// model; this is only for writing and reasoning quality.
-// REASON_API_KEY may be a COMMA-SEPARATED list of Groq keys; we rotate to the next when one is rate-limited.
+// Reasoning/content brain: Google Gemini Cloud Brain with verified native REST SSE streaming,
+// falling back to local Ollama if available or honest degraded campus mode.
 const REASON_KEYS = (process.env.GEMINI_API_KEY || process.env.GEMINI_KEY || process.env.REASON_API_KEY || '').split(',').map(s => s.trim()).filter(Boolean)
 let keyIdx = 0
 const REASON_KEY = REASON_KEYS[0] || '' // for Whisper STT + status flag
-const REASON_URL = process.env.REASON_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
-const REASON_MODEL = process.env.GEMINI_MODEL || process.env.REASON_MODEL || 'gemini-3.8-flash'
-// Local 3B fallback: allowed, but STRICTLY one generation at a time. Concurrent local inferences
-// are what pegged the 2-vCPU box and crashed it; a single one is slow but survivable.
+const CLOUD_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', process.env.GEMINI_MODEL, process.env.REASON_MODEL].filter((v, i, a) => Boolean(v) && a.indexOf(v) === i)
 const ALLOW_LOCAL = process.env.ALLOW_LOCAL_FALLBACK !== '0'
 let localInFlight = false
 
-async function reason(system, user, opts = {}, history = []) {
-  for (let i = 0; i < REASON_KEYS.length; i++) {
-    const ki = keyIdx % REASON_KEYS.length
-    const key = REASON_KEYS[ki]
-    try {
-      const r = await fetch(REASON_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({ model: REASON_MODEL, temperature: opts.temperature ?? 0.6, max_tokens: opts.num_predict ?? 500,
-          messages: [{ role: 'system', content: system }, ...history, { role: 'user', content: user }] }),
-        signal: AbortSignal.timeout(4000)
-      })
-      if (r.ok) { const j = await r.json(); const t = j.choices?.[0]?.message?.content?.trim(); if (t) { bumpGroq(j.usage?.total_tokens || Math.round(t.length / 4), ki); return t } break }
-      if (r.status === 429) { keyIdx++; continue } // this key is out of quota → rotate to the next
-      logEvent('Reasoning model error', `${REASON_MODEL} ${r.status}`, 'error'); break
-    } catch (e) { logEvent('Reasoning model down', e.message, 'error'); break }
+// Helper: convert standard chat messages to Google GenAI REST schema
+function formatGeminiPayload(messages, opts = {}) {
+  let systemText = ''
+  const contents = []
+  for (const m of messages) {
+    if (m.role === 'system') {
+      systemText += (systemText ? '\n\n' : '') + (m.content || '')
+    } else {
+      const role = m.role === 'assistant' ? 'model' : 'user'
+      const text = m.content || ''
+      if (contents.length > 0 && contents[contents.length - 1].role === role) {
+        contents[contents.length - 1].parts[0].text += '\n\n' + text
+      } else {
+        contents.push({ role, parts: [{ text }] })
+      }
+    }
   }
-  // No cloud brain. Background work skips; if another local job is running, skip too (never stack).
+  if (contents.length === 0) {
+    contents.push({ role: 'user', parts: [{ text: 'Hello' }] })
+  } else if (contents[0].role === 'model') {
+    contents.unshift({ role: 'user', parts: [{ text: 'Hello' }] })
+  }
+  const payload = { contents }
+  if (systemText) {
+    payload.system_instruction = { parts: [{ text: systemText }] }
+  }
+  if (opts.temperature !== undefined || opts.num_predict !== undefined) {
+    payload.generationConfig = {
+      temperature: opts.temperature ?? 0.6,
+      maxOutputTokens: opts.num_predict ?? 800
+    }
+  }
+  return payload
+}
+
+async function streamGemini(messages, onToken, opts = {}) {
+  if (!REASON_KEYS.length) return null
+  for (let k = 0; k < REASON_KEYS.length; k++) {
+    const ki = (keyIdx + k) % REASON_KEYS.length
+    const key = REASON_KEYS[ki]
+    for (const model of CLOUD_MODELS) {
+      try {
+        const payload = formatGeminiPayload(messages, opts)
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`
+        const r = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(6000)
+        })
+        if (r.status === 429) {
+          keyIdx++
+          break
+        }
+        if (r.ok && r.body) {
+          keyIdx = ki
+          let full = ''
+          let tokens = 0
+          const reader = r.body.getReader()
+          const dec = new TextDecoder()
+          let buf = ''
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            buf += dec.decode(value, { stream: true })
+            const lines = buf.split('\n')
+            buf = lines.pop() || ''
+            for (const line of lines) {
+              const l = line.trim()
+              if (!l.startsWith('data:')) continue
+              const data = l.slice(5).trim()
+              if (!data) continue
+              try {
+                const o = JSON.parse(data)
+                const t = o.candidates?.[0]?.content?.parts?.[0]?.text
+                if (t) {
+                  full += t
+                  onToken(t)
+                }
+                if (o.usageMetadata?.totalTokenCount) {
+                  tokens = o.usageMetadata.totalTokenCount
+                }
+              } catch { /* ignore stream parse error */ }
+            }
+          }
+          if (full) {
+            tokens = tokens || Math.round(full.length / 4)
+            bumpGroq(tokens, ki)
+            return { full, tokens }
+          }
+        }
+      } catch (err) {
+        logEvent('Gemini stream error', `${model}: ${err.message}`, 'warn')
+      }
+    }
+  }
+  return null
+}
+
+async function reason(system, user, opts = {}, history = []) {
+  const messages = [
+    { role: 'system', content: system },
+    ...history,
+    { role: 'user', content: user }
+  ]
+  if (REASON_KEYS.length) {
+    for (let k = 0; k < REASON_KEYS.length; k++) {
+      const ki = (keyIdx + k) % REASON_KEYS.length
+      const key = REASON_KEYS[ki]
+      for (const model of CLOUD_MODELS) {
+        try {
+          const payload = formatGeminiPayload(messages, opts)
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`
+          const r = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(5000)
+          })
+          if (r.status === 429) {
+            keyIdx++
+            break
+          }
+          if (r.ok) {
+            const j = await r.json()
+            const text = j.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+            if (text) {
+              keyIdx = ki
+              const tokens = j.usageMetadata?.totalTokenCount || Math.round(text.length / 4)
+              bumpGroq(tokens, ki)
+              return text
+            }
+          }
+        } catch (e) {
+          logEvent('Reasoning model down', `${model}: ${e.message}`, 'warn')
+        }
+      }
+    }
+  }
+
+  // Fallback to local Ollama if configured and healthy
   if (opts.cloudOnly || !ALLOW_LOCAL || localInFlight) return ''
   localInFlight = true
   try {
     const ctx = history.length ? '\n\nRecent conversation:\n' + history.map(h => `${h.role}: ${h.content}`).join('\n') : ''
     return await genText(system + ctx, user, opts)
-  } finally { localInFlight = false }
+  } catch {
+    return ''
+  } finally {
+    localInFlight = false
+  }
 }
 
-// Track Groq consumption so the Usage page can show it (and you can watch the free tier).
+// Track Groq/Gemini consumption so the Usage page can show it
 db.usage.groq = db.usage.groq || { requests: 0, tokens: 0, since: new Date().toISOString(), today: { date: '', requests: 0, tokens: 0 } }
 if (!db.usage.groq.today) db.usage.groq.today = { date: '', requests: 0, tokens: 0 }
-// Groq free-tier daily limits (approximate; override via env if yours differ).
-const GROQ_RPD = Number(process.env.GROQ_RPD || 1000)     // requests/day
-const GROQ_TPD = Number(process.env.GROQ_TPD || 100000)   // tokens/day (Groq free tier for 70B)
+const GROQ_RPD = Number(process.env.GROQ_RPD || 1000)
+const GROQ_TPD = Number(process.env.GROQ_TPD || 100000)
 
-// Per-day counters for every free-tier service, so the Usage page can show limits vs used.
 db.usage.services = db.usage.services || { date: '', gmail: 0, calendar: 0, linkedin: 0, instagram: 0, websearch: 0 }
 function bumpService(name) {
   const s = db.usage.services
@@ -787,7 +908,6 @@ function bumpService(name) {
   if (s.date !== d) { for (const k of Object.keys(s)) if (k !== 'date') s[k] = 0; s.date = d }
   s[name] = (s[name] || 0) + 1; save()
 }
-// Wrap the action helpers so each real send/post/search is counted against its free tier.
 const gmailSend = (...a) => { bumpService('gmail'); return _gmailSend(...a) }
 const linkedinPost = (...a) => { bumpService('linkedin'); return _linkedinPost(...a) }
 const calendarCreate = (...a) => { bumpService('calendar'); return _calendarCreate(...a) }
@@ -796,7 +916,7 @@ const webSearch = (...a) => { bumpService('websearch'); return _webSearch(...a) 
 function bumpGroq(tokens = 0, ki = 0) {
   const g = db.usage.groq
   g.requests++; g.tokens += (tokens || 0)
-  const d = new Date(Date.now() + IST).toISOString().slice(0, 10) // IST day
+  const d = new Date(Date.now() + IST).toISOString().slice(0, 10)
   if (g.today.date !== d) g.today = { date: d, requests: 0, tokens: 0, keys: [] }
   if (!g.today.keys) g.today.keys = []
   g.today.requests++; g.today.tokens += (tokens || 0)
@@ -805,66 +925,48 @@ function bumpGroq(tokens = 0, ki = 0) {
   save()
 }
 
-// Streaming chat: Groq 70B (fast + accurate) when a key is set, else local Ollama. Calls onToken per chunk.
+// Streaming chat: Cloud Gemini native REST SSE, with local Ollama and clean degraded offline fallbacks.
 async function streamLLM(messages, onToken, opts = {}) {
-  let full = '', tokens = 0
-  for (let i = 0; i < REASON_KEYS.length; i++) {
-    const ki = keyIdx % REASON_KEYS.length
-    const key = REASON_KEYS[ki]
+  // 1. Try Cloud Brain (Gemini Native REST SSE stream)
+  const cloudResult = await streamGemini(messages, onToken, opts)
+  if (cloudResult && cloudResult.full) {
+    return cloudResult
+  }
+
+  // 2. Try Local Ollama if available
+  if (ALLOW_LOCAL && !localInFlight) {
+    localInFlight = true
     try {
-      const r = await fetch(REASON_URL, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({ model: REASON_MODEL, stream: true, temperature: opts.temperature ?? 0.6, max_tokens: opts.num_predict ?? 500, messages, stream_options: { include_usage: true } }),
-        signal: AbortSignal.timeout(4000)
+      const up = await fetch(`${OLLAMA}/api/chat`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: AGENT_MODEL, stream: true, keep_alive: -1, messages }),
+        signal: AbortSignal.timeout(2000)
       })
-      if (r.status === 429) { keyIdx++; continue } // this key is out of quota → rotate to the next
-      if (r.ok && r.body) {
-        const rd = r.body.getReader(); const dec = new TextDecoder(); let bf = ''
+      if (up.ok && up.body) {
+        let full = '', tokens = 0
+        const reader = up.body.getReader(); const dec = new TextDecoder(); let buf = ''
         while (true) {
-          const { done, value } = await rd.read(); if (done) break
-          bf += dec.decode(value, { stream: true }); const parts = bf.split('\n'); bf = parts.pop() || ''
-          for (const line of parts) {
-            const l = line.trim(); if (!l.startsWith('data:')) continue
-            const data = l.slice(5).trim(); if (data === '[DONE]') continue
-            let o; try { o = JSON.parse(data) } catch { continue }
-            const t = o.choices?.[0]?.delta?.content; if (t) { full += t; onToken(t) }
-            if (o.usage?.total_tokens) tokens = o.usage.total_tokens
+          const { done, value } = await reader.read(); if (done) break
+          buf += dec.decode(value, { stream: true }); const lines = buf.split('\n'); buf = lines.pop() || ''
+          for (const line of lines) {
+            if (!line.trim()) continue; let o; try { o = JSON.parse(line) } catch { continue }
+            const t = o.message?.content; if (t) { full += t; onToken(t) }
+            if (o.eval_count) tokens = o.eval_count
           }
         }
-        if (full) { bumpGroq(tokens || Math.round(full.length / 4), ki); return { full, tokens: tokens || Math.round(full.length / 4) } }
-        break
+        if (full) return { full, tokens }
       }
-      logEvent('Chat reasoning error', String(r.status), 'error'); break
-    } catch (e) { logEvent('Chat reasoning down', e.message, 'error'); break }
-  }
-  // No cloud brain. If disabled or another local job is running, send a quick note (don't stack → no crash).
-  if (!ALLOW_LOCAL || localInFlight) {
-    const m = "I'm at capacity right now — the fast AI service is busy. Give me a moment and try again."
-    onToken(m); return { full: m, tokens: 0 }
-  }
-  localInFlight = true
-  try {
-    const up = await fetch(`${OLLAMA}/api/chat`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: AGENT_MODEL, stream: true, keep_alive: -1, messages }),
-      signal: AbortSignal.timeout(3000)
-    })
-    if (up.ok && up.body) {
-      const reader = up.body.getReader(); const dec = new TextDecoder(); let buf = ''
-      while (true) {
-        const { done, value } = await reader.read(); if (done) break
-        buf += dec.decode(value, { stream: true }); const lines = buf.split('\n'); buf = lines.pop() || ''
-        for (const line of lines) { if (!line.trim()) continue; let o; try { o = JSON.parse(line) } catch { continue } const t = o.message?.content; if (t) { full += t; onToken(t) } if (o.eval_count) tokens = o.eval_count }
-      }
+    } catch {
+      /* Ollama offline or timed out */
+    } finally {
+      localInFlight = false
     }
-  } catch (err) {
-    if (!full) {
-      const degraded = "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars."
-      full = degraded
-      onToken(degraded)
-    }
-  } finally { localInFlight = false }
-  return { full, tokens }
+  }
+
+  // 3. Fallback: Honest degraded campus offline mode (immediate, no timeout delay)
+  const degraded = "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars."
+  onToken(degraded)
+  return { full: degraded, tokens: 0 }
 }
 
 // ---------- Idle self-work: keep the agent productive, but yield to the user ----------

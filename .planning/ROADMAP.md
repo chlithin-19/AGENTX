@@ -148,10 +148,93 @@ The full product completion initiative transitions Atlas from an in-memory campu
   - Maintain WCAG 2.1 AA accessibility and responsive layout across desktop, tablet, and mobile.
 
 ### Phase 8 — Comprehensive Testing and Deployment Readiness
-- **Status:** DEPENDS ON ALL PRECEDING PHASES.
+- **Status:** COMPLETED & VERIFIED (Milestone 1).
 - **Goal:** Build comprehensive multi-layer automated tests, optimize based on measurements, verify deployment configuration, and document operations.
 - **Key Deliverables:**
-  - Complete regression suite covering unit, integration, authorization, SSE streaming, and concurrency.
-  - Measure latency, time-to-first-token, memory use, and dataset query performance.
+  - Complete regression suite covering unit, integration, authorization, SSE streaming, and concurrency (91/91 tests passing).
+  - Production build verified with Vite 5.4.
   - Production Nginx configuration with unbuffered SSE (`proxy_buffering off;`).
-  - Production deployment runbook with environment variable checklist, secret provisioning, and disaster recovery procedures.
+  - Baseline production deployment runbook in `DEPLOYMENT.md`.
+
+---
+
+## Milestone 2: Verified Production Deployment Readiness Initiative
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Phase 09: Priority A — Reliable AI Inference & Provider Routing │
+│ (Native GenAI SSE Stream, Model Fallbacks, Zero Network Stalls) │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Phase 10: Priority B — Complete Data & Agent Functionality      │
+│ (SQLite Provenance, Kaggle Separation, RAG Citations, 4 Agents) │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Phase 11: Priority C — Production-Grade Identity & Security     │
+│ (Fail-Closed Token Gate, IdP Spec, Student Isolation, RBAC)     │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Phase 12: Priority D — Reliability, Performance & UX            │
+│ (Live Views Audit, Sub-100ms UI, TTFT Measurements, WAL Safety) │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Phase 13: Priority E — Operational Readiness & Final Acceptance │
+│ (Hot WAL Backups, Nginx SSE Rules, Disaster Runbook, Full Matrix│
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Phase 09 — Priority A: Reliable AI Inference & Provider Routing
+- **Status:** ACTIVE EXECUTION.
+- **Goal:** Establish robust, verified AI model connectivity. Migrate from the stalling OpenAI-compatible endpoint to native Google GenAI REST SSE streaming (`gemini-3.5-flash` with fallback to `gemini-3.5-flash-lite`). Maintain clean degraded local responses without timeout hangs when offline.
+- **Key Deliverables:**
+  - Update `streamLLM` and `reason` in `backend/server.js` to use verified native REST endpoints with SSE streaming.
+  - Model reachability diagnostics and graceful fallback between cloud providers and local offline mode.
+  - Test general-purpose reasoning requests and campus queries via `/api/chat` with measured latency.
+  - Automated tests covering stream chunking, timeouts, provider failures, and degraded mode.
+
+### Phase 10 — Priority B: Complete Data & Agent Functionality
+- **Status:** DEPENDS ON PHASE 09.
+- **Goal:** Verify Academic, Campus, Event, and Communication agents across live API routes and SQLite database. Ensure strict provenance separation between Kaggle benchmark data and official student records.
+- **Key Deliverables:**
+  - Verify all 4 specialized agents with real requests and parameterized SQLite queries.
+  - Verify maintenance work orders durability in `maintenance_tickets` table.
+  - Verify event registration durability and duplicate rejection in `event_registrations` table.
+  - Verify RAG knowledge catalog SHA-256 chunk fingerprinting and authoritative citation emission.
+  - Verify authorization gating for all consequential actions.
+
+### Phase 11 — Priority C: Production-Grade Identity and Security
+- **Status:** DEPENDS ON PHASE 10.
+- **Goal:** Document and harden production identity integration. Specify exact OIDC/SAML token claims structure and verification. Enforce student-level isolation, faculty department RBAC, and single-use confirmation token locks.
+- **Key Deliverables:**
+  - Formal institutional IdP integration specification in `DEPLOYMENT.md`.
+  - Fail-closed production gate verification (HTTP 401 without verified token; HTTP 400 on spoofed persona headers).
+  - Student data isolation tests ensuring cross-student queries return 403.
+  - Department-scoped faculty RBAC tests.
+  - Two-phase confirmation protocol verification with atomic consumption and replay prevention.
+
+### Phase 12 — Priority D: Reliability, Performance, and User Experience
+- **Status:** DEPENDS ON PHASE 11.
+- **Goal:** Verify every frontend view against live backend APIs. Test loading states, empty states, error banners, and degraded-mode notices. Measure representative latencies and ensure SQLite WAL concurrency under load.
+- **Key Deliverables:**
+  - End-to-end verification of `AcademicsView`, `CampusView`, `EventsView`, `CommunicationView`, and `SettingsView`.
+  - Zero UI freezing or hanging states on network errors or slow responses.
+  - Streaming SSE latency and time-to-first-token (TTFT) benchmarking.
+  - SQLite WAL mode concurrency and non-blocking read verification.
+
+### Phase 13 — Priority E: Deployment, Operational Runbooks & Acceptance
+- **Status:** DEPENDS ON ALL PRECEDING PHASES.
+- **Goal:** Validate environment variable enforcement, Nginx reverse-proxy unbuffered SSE configuration, automated SQLite hot backups (`VACUUM INTO`), disaster recovery procedures, and final acceptance criteria.
+- **Key Deliverables:**
+  - Startup security configuration validation test (`validateSecurityConfig()`).
+  - Automated test verifying live hot backup creation via SQLite `VACUUM INTO`.
+  - Comprehensive operations runbook in `DEPLOYMENT.md`.
+  - Complete regression test suite execution (100% passing) and final acceptance report.
+

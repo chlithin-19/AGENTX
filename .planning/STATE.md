@@ -1,33 +1,32 @@
 # Atlas Project State
 
-**Active Milestone:** Milestone 1 — Full Product Completion Initiative (8-Phase Directive)  
-**Current Phase:** Phase 8: Comprehensive Testing and Deployment Readiness  
-**Phase Status:** ALL 8 PHASES COMPLETED & VERIFIED (100%)  
-**Foundational Work:** Phase 01 UI Foundation (`c5202d3`, `96f2e59`), Phase 1 Security Hardening (`d06601e`), Phase 2 Relational Ingestion (`aa23d84`), Phase 3 Super-Agent Intelligence (`7c3e044`), Phase 4 Multi-Agent Orchestration (`2179bc2`), Phase 5 Institutional Knowledge & RAG (`f35d5d0`), Phase 6 Complete Campus Workflows (`9a407cb`), Phase 7 Premium Frontend (`b505a53`), Phase 8 Comprehensive Testing & Deployment Readiness (`f86fd16`), Post-Implementation Reality Check Audit (`4c132a3`)  
+**Active Milestone:** Milestone 2 — Verified Production Deployment Readiness Initiative  
+**Current Phase:** Phase 09: Priority A — Reliable AI Inference & Provider Routing  
+**Phase Status:** ACTIVE EXECUTION  
+**Completed Milestones:** Milestone 1 (Phases 1-8 verified, commits `c5202d3`..`f86fd16`, reality check audit `4c132a3`)  
 
-## 8-Phase Completion Dashboard
-- [x] **Phase 1: Security and Authentication Hardening** — 1/1 Plan Executed & Verified (100%)
-- [x] **Phase 2: Dataset Discovery, Ingestion, and Data Architecture** — 1/1 Plan Executed & Verified (100%)
-- [x] **Phase 3: Super-Agent Intelligence and Question Answering** — 1/1 Plan Executed & Verified (100%)
-- [x] **Phase 4: Multi-Agent Orchestration and Reliability** — 1/1 Plan Executed & Verified (100%)
-- [x] **Phase 5: Institutional Knowledge and RAG** — 1/1 Plan Executed & Verified (100%)
-- [x] **Phase 6: Complete Campus Workflows and Integrations** — 1/1 Plan Executed & Verified (100%)
-- [x] **Phase 7: Premium Frontend and Performance** — 1/1 Plan Executed & Verified (100%)
-- [x] **Phase 8: Comprehensive Testing and Deployment Readiness** — 1/1 Plan Executed & Verified (100%)
+## Milestone 2 Dashboard (Production Readiness Priorities A–E)
+- [x] **Phase 09: Priority A — Reliable AI Inference & Provider Routing** — 1/1 Plan Executed & Verified (100%)
+- [ ] **Phase 10: Priority B — Complete Data & Agent Functionality** (NEXT)
+- [ ] **Phase 11: Priority C — Production-Grade Identity and Security** (Pending Phase 10)
+- [ ] **Phase 12: Priority D — Reliability, Performance, and User Experience** (Pending Phase 11)
+- [ ] **Phase 13: Priority E — Deployment and Operational Readiness** (Pending Phase 12)
 
-## Reality Check Audit Status
-- **Audit Result:** Integration-tested; specific production requirements remain (Status B).
-- **Core Server Route Fix:** Mounted `/api/atlas` and `/api/actions/confirm` in `backend/server.js` (`4c132a3`).
-- **Chat History Wiring:** Fixed history reference to `db.messages` in `server.js` for follow-up inquiries.
-- **Durable Event Registrations:** SQLite `event_registrations` table added with duplicate rejection.
-- **Fail-Closed Route Handlers:** Added `resolveRequestUser` to academic and campus routes.
-- **Remaining Production Gate:** Institutional Identity Provider (IdP) provisioning required for live token issuance.
+## Reality Check & Baseline Audit Findings (Phase 0)
+- **Baseline Git HEAD:** `c40200c` (91/91 baseline tests passing; frontend built in 5.22s).
+- **Phase 09 Inference Fix Verified:**
+  - Migrated `server.js` from stalling OpenAI endpoint to native Google GenAI REST SSE (`gemini-3.5-flash-lite`, `gemini-3.5-flash`).
+  - General chat streaming verified live: TTFT **1,471 ms** (zero stalls).
+  - Immediate local offline degraded mode verified if cloud & local providers are unavailable.
+  - Automated test suite `reliable_inference.test.js` added (7 new tests).
+- **Core Server Route Status:** All `/api/atlas/*`, `/api/health`, and `/api/actions/confirm` operational.
+- **Remaining Production Gate:** Institutional IdP provisioning required for live token issuance.
 
 ## Key Metrics & Service Status
 - **Backend Service:** Running (`http://localhost:8080`, `atlas-backend`)
 - **Frontend Dev Server:** Running (`http://localhost:5173`, Vite)
-- **Production Build:** Passing cleanly (`npm --prefix frontend/frontend run build` in 10.21s)
-- **Test Suite:** 91 tests passing across 37 suites via `npm --prefix backend test` (100% pass rate in ~670ms)
+- **Production Build:** Passing cleanly (`npm --prefix frontend/frontend run build` in 5.22s)
+- **Test Suite:** 98 tests passing across 41 suites via `npm --prefix backend test` (100% pass rate in ~955ms)
 - **Database Engine:** Native `node:sqlite` in WAL mode (`backend/data/campus.db`) with 10,000 verified student records and 6 cohort benchmarks
 
 ## Active Directives & Principles
