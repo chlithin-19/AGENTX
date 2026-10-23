@@ -920,7 +920,7 @@ async function streamLLM(messages, onToken, opts = {}) {
       const up = await fetch(`${OLLAMA}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ model: AGENT_MODEL, stream: true, keep_alive: -1, messages }),
-        signal: AbortSignal.timeout(10000)
+        signal: AbortSignal.timeout(20000)
       })
       if (up.ok && up.body) {
         let full = '', tokens = 0

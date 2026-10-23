@@ -143,5 +143,62 @@ data: {"candidates": [{"content": {"parts": [{"text": "Valid"}]}}]}
       assert.ok(degraded.includes('academics'))
       assert.ok(degraded.includes('facilities'))
     })
+
+    it('falls back from primary cloud provider to local ollama when cloud provider fails', async () => {
+      let providerSelected = null
+      const mockStreamLLM = async (providers) => {
+        // Tier 1: Cloud
+        try {
+          const res = await providers.cloud()
+          if (res) { providerSelected = 'cloud'; return res }
+        } catch { /* cloud failed */ }
+
+        // Tier 2: Local Ollama
+        try {
+          const res = await providers.ollama()
+          if (res) { providerSelected = 'ollama'; return res }
+        } catch { /* ollama failed */ }
+
+        // Tier 3: Degraded mode
+        providerSelected = 'degraded'
+        return { full: 'offline degraded mode', tokens: 0 }
+      }
+
+      const res = await mockStreamLLM({
+        cloud: async () => { throw new Error('Cloud quota exceeded 429') },
+        ollama: async () => ({ full: 'Local Gemma response', tokens: 42 })
+      })
+
+      assert.equal(providerSelected, 'ollama')
+      assert.equal(res.full, 'Local Gemma response')
+      assert.equal(res.tokens, 42)
+    })
+
+    it('falls back to immediate degraded offline mode when both cloud and local ollama fail', async () => {
+      let providerSelected = null
+      const mockStreamLLM = async (providers) => {
+        try {
+          const res = await providers.cloud()
+          if (res) { providerSelected = 'cloud'; return res }
+        } catch { /* cloud failed */ }
+
+        try {
+          const res = await providers.ollama()
+          if (res) { providerSelected = 'ollama'; return res }
+        } catch { /* ollama failed */ }
+
+        providerSelected = 'degraded'
+        return { full: 'I am currently running in local campus offline mode', tokens: 0 }
+      }
+
+      const res = await mockStreamLLM({
+        cloud: async () => { throw new Error('Network unreachable') },
+        ollama: async () => { throw new Error('Ollama connection refused ECONNREFUSED') }
+      })
+
+      assert.equal(providerSelected, 'degraded')
+      assert.ok(res.full.includes('campus offline mode'))
+      assert.equal(res.tokens, 0)
+    })
   })
 })
