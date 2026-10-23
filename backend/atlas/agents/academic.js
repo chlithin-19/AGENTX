@@ -29,6 +29,14 @@ export class AcademicAgent {
    */
   canHandle(query) {
     const q = String(query).toLowerCase()
+    // Exclude explicit calendar scheduling actions even if they mention projects or academic meetings
+    if (/\b(add|create|schedule|put|set\s?up|book)\b/i.test(q) && /\b(calendar|meeting|appointment|reminder)\b/i.test(q)) {
+      return false
+    }
+    // Exclude explicit email sending/drafting actions
+    if (/\b(send|draft|compose)\b/i.test(q) && /\b(email|mail)\b/i.test(q)) {
+      return false
+    }
     return /\b(academic|attendance|cgpa|gpa|grades?|marks?|backlogs?|skills?|coding score|aptitude|placement|placements?|package|salary|benchmarks?|internships?|projects?|study hours)\b/i.test(q)
   }
 
@@ -119,6 +127,19 @@ export class AcademicAgent {
     const subjectPrefix = isSelfQuery ? 'Your' : `${student.name}'s`
     const pronounSubject = isSelfQuery ? 'You' : student.name
 
+    // Fetch dynamic cohort statistics directly from SQLite repository benchmarks
+    let cohortBenchmark = null
+    try {
+      const { placementRepo } = getCampusRepositories()
+      cohortBenchmark = placementRepo.getCohortBenchmark(student.branch)
+    } catch {
+      // fallback to static cohort benchmarks if database uninitialized
+    }
+    const branchAvgCgpa = cohortBenchmark?.average_cgpa ?? (COHORT_BENCHMARKS.branches[student.branch]?.avgCgpa || 7.50)
+    const branchAvgAttendance = cohortBenchmark?.average_attendance ?? (COHORT_BENCHMARKS.overallAverageAttendance || 84.8)
+    const branchPlacementRate = cohortBenchmark ? `${cohortBenchmark.placement_rate}%` : (COHORT_BENCHMARKS.overallPlacementRate || '54%')
+    const benchmarkDisclaimer = '\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*'
+
     // Sub-intent 1: Attendance inquiry
     if (/\b(attendance|present|absent|classes?)\b/i.test(query)) {
       const rawAtt = student.attendance_percentage
@@ -139,9 +160,9 @@ export class AcademicAgent {
           branch: student.branch,
           attendancePercentage: att,
           statusNote,
-          cohortAverage: COHORT_BENCHMARKS.overallAverageAttendance
+          cohortAverage: branchAvgAttendance
         },
-        summary: `${subjectPrefix} recorded attendance is **${att}%** (${student.branch} Department). ${statusNote}`,
+        summary: `${subjectPrefix} recorded attendance is **${att}%** (${student.branch} Department; cohort benchmark average: ${branchAvgAttendance}%). ${statusNote}`,
         citations: []
       }
     }
@@ -175,9 +196,9 @@ export class AcademicAgent {
           studentId: student.student_id,
           name: student.name,
           cgpa: student.cgpa,
-          branchAvgCgpa: COHORT_BENCHMARKS.branches[student.branch]?.avgCgpa || 7.50
+          branchAvgCgpa
         },
-        summary: `${subjectPrefix} cumulative GPA (CGPA) is **${student.cgpa} / 10.0** (Department average for ${student.branch}: ${COHORT_BENCHMARKS.branches[student.branch]?.avgCgpa || 7.50}).`,
+        summary: `${subjectPrefix} cumulative GPA (CGPA) is **${student.cgpa} / 10.0** (Department average for ${student.branch}: ${branchAvgCgpa}).`,
         citations: []
       }
     }
@@ -218,11 +239,12 @@ export class AcademicAgent {
           studentId: student.student_id,
           name: student.name,
           placementStatus: student.placement_status,
-          salaryPackageLpa: isPlaced ? `${student.salary_package_lpa} LPA` : 'N/A'
+          salaryPackageLpa: isPlaced ? `${student.salary_package_lpa} LPA` : 'N/A',
+          cohortPlacementRate: branchPlacementRate
         },
         summary: isPlaced
-          ? `${subjectPrefix} placement record indicates **Placed** with an indicative package of **₹${student.salary_package_lpa} LPA** (Benchmark Dataset).`
-          : `${subjectPrefix} placement record is currently **Not Placed**. Historical placement benchmark for ${student.branch} indicates a ${COHORT_BENCHMARKS.overallPlacementRate} placement rate.`,
+          ? `${subjectPrefix} placement record indicates **Placed** with an indicative package of **₹${student.salary_package_lpa} LPA** (Historical Benchmark Record).${benchmarkDisclaimer}`
+          : `${subjectPrefix} placement record is currently **Not Placed**. Historical placement benchmark for ${student.branch} indicates a **${branchPlacementRate}** placement rate (${cohortBenchmark?.total_students || 1000} student cohort).${benchmarkDisclaimer}`,
         citations: []
       }
     }
@@ -243,14 +265,16 @@ export class AcademicAgent {
         codingScore: student.coding_skill_score,
         aptitudeScore: student.aptitude_score,
         placementStatus: student.placement_status,
-        salaryPackageLpa: student.salary_package_lpa
+        salaryPackageLpa: student.salary_package_lpa,
+        branchAvgCgpa,
+        branchPlacementRate
       },
       summary: `### Academic Profile: ${student.name} (${student.branch} Department)\n` +
-        `- **CGPA:** ${student.cgpa} / 10.0\n` +
-        `- **Attendance:** ${student.attendance_percentage}% (Required: > 75%)\n` +
+        `- **CGPA:** ${student.cgpa} / 10.0 (Dept Avg: ${branchAvgCgpa})\n` +
+        `- **Attendance:** ${student.attendance_percentage}% (Required: > 75% · Dept Avg: ${branchAvgAttendance}%)\n` +
         `- **Active Backlogs:** ${student.backlogs}\n` +
         `- **Placement Readiness Score:** ${student.coding_skill_score}/100 (Coding), ${student.aptitude_score}/100 (Aptitude)\n` +
-        `- **Placement Status:** ${student.placement_status}${student.salary_package_lpa > 0 ? ` (₹${student.salary_package_lpa} LPA - Benchmark Record)` : ''}`,
+        `- **Placement Status:** ${student.placement_status}${student.salary_package_lpa > 0 ? ` (₹${student.salary_package_lpa} LPA - Benchmark Record)` : ''}${benchmarkDisclaimer}`,
       citations: []
     }
   }

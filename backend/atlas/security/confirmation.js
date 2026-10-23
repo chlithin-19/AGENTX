@@ -14,7 +14,8 @@ import { SecurityError } from './authorization.js'
 export const ALLOWLISTED_ACTION_TYPES = Object.freeze([
   'campus.create_maintenance_ticket',
   'communication.draft_broadcast',
-  'calendar.create_event'
+  'calendar.create_event',
+  'email.send'
 ])
 
 // In-memory confirmation intent store (token -> record)

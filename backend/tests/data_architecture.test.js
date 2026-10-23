@@ -22,7 +22,8 @@ import {
   validateRow,
   ingestDataset,
   SCHEMA_PATH,
-  CSV_PATH
+  CSV_PATH,
+  DEFAULT_DB_PATH
 } from '../atlas/campus/ingestion/ingestDataset.js'
 import {
   StudentRepository,
@@ -312,3 +313,135 @@ describe('5. Maintenance Ticket Durability & Operations', () => {
     assert.equal(reporterList[0].id, ticket.id)
   })
 })
+
+describe('6. Dataset Provenance, Reconciliation & Ingestion Idempotency', () => {
+  test('reconciles 100,000-row CSV source with 10,000 SQLite cohort records', () => {
+    const csvExists = existsSync(CSV_PATH)
+    assert.ok(csvExists, 'Kaggle dataset CSV must exist')
+
+    const db = new DatabaseSync(DEFAULT_DB_PATH)
+    const studentCount = db.prepare('SELECT count(*) as c FROM students').get().c
+    const benchmarkCount = db.prepare('SELECT count(*) as c FROM cohort_benchmarks').get().c
+    const provRow = db.prepare('SELECT * FROM provenance_log ORDER BY id DESC LIMIT 1').get()
+
+    assert.equal(studentCount, 10000, 'Ingested student cohort must contain 10,000 verified records')
+    assert.equal(benchmarkCount, 6, 'Must calculate aggregate cohort benchmarks for all 6 departments')
+    assert.ok(provRow, 'Must record ingestion provenance')
+    assert.equal(provRow.status, 'SUCCESS')
+    assert.equal(provRow.classification, 'HISTORICAL_BENCHMARK_DATASET')
+  })
+
+  test('repeated batch ingestion is idempotent and does not create duplicate records', () => {
+    const memDb = new DatabaseSync(':memory:')
+    memDb.exec('PRAGMA foreign_keys = ON;')
+    memDb.exec(readFileSync(SCHEMA_PATH, 'utf8'))
+
+    // Ingest student 101 twice
+    const insertStmt = memDb.prepare(`
+      INSERT OR REPLACE INTO students (student_id, name, age, gender, branch_code, college_tier)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `)
+
+    insertStmt.run(101, 'Student A', 21, 'Male', 'CSE', 'Tier 1')
+    insertStmt.run(101, 'Student A Updated', 21, 'Male', 'CSE', 'Tier 1')
+
+    const count = memDb.prepare('SELECT count(*) as c FROM students WHERE student_id = 101').get().c
+    const student = memDb.prepare('SELECT name FROM students WHERE student_id = 101').get()
+
+    assert.equal(count, 1, 'Idempotent ingestion must never produce duplicate student records')
+    assert.equal(student.name, 'Student A Updated')
+  })
+})
+
+describe('7. Dynamic Academic Agent Calculation & Action Executor Boundaries', () => {
+  test('AcademicAgent calculates department average and placement rate dynamically from SQLite benchmarks', async () => {
+    const { default: academicAgent } = await import('../atlas/agents/academic.js')
+    const callingUser = { id: 1, studentId: 1, role: 'student', branch: 'IT', name: 'Alex Kumar' }
+
+    // Test attendance query
+    const attResult = await academicAgent.execute({ input: { query: 'What is my attendance?' } }, { user: callingUser })
+    assert.equal(attResult.status, 'completed')
+    assert.ok(attResult.summary.includes('77.46%'))
+    assert.ok(attResult.summary.includes('IT Department'))
+    assert.ok(attResult.data.cohortAverage > 80, 'Must include real cohort benchmark average')
+
+    // Test CGPA query
+    const cgpaResult = await academicAgent.execute({ input: { query: 'What is my current CGPA?' } }, { user: callingUser })
+    assert.equal(cgpaResult.status, 'completed')
+    assert.ok(cgpaResult.summary.includes('7.53 / 10.0'))
+    assert.ok(cgpaResult.summary.includes('Department average for IT: 7.5'))
+
+    // Test placement status query with explicit non-guarantee statistical disclaimer
+    const placeResult = await academicAgent.execute({ input: { query: 'Check my placement status and department benchmark' } }, { user: callingUser })
+    assert.equal(placeResult.status, 'completed')
+    assert.ok(placeResult.summary.includes('Benchmark Notice') || placeResult.summary.includes('Historical Benchmark Record'))
+    assert.ok(placeResult.summary.includes('not constitute an authoritative institutional guarantee'))
+  })
+
+  test('defaultActionExecutor rejects email.send and calendar.create_event when simulated tokens are supplied', async () => {
+    const { createConfirmationIntent, executeConfirmedAction } = await import('../atlas/security/index.js')
+    const { defaultActionExecutor } = await import('../atlas/index.js')
+    const { get } = await import('../store.js')
+
+    const dbStore = get()
+    dbStore.integrations = dbStore.integrations || []
+    
+    // Set simulated tokens
+    let gmailInt = dbStore.integrations.find(x => x.id === 'gmail')
+    if (!gmailInt) {
+      gmailInt = { id: 'gmail', connected: true, token: 'dev_simulated_token' }
+      dbStore.integrations.push(gmailInt)
+    } else {
+      gmailInt.token = 'dev_simulated_token'
+    }
+
+    const callingUser = { id: 1, studentId: 1, role: 'student' }
+
+    // Propose an email action
+    const emailIntent = createConfirmationIntent({
+      userId: 1,
+      actionType: 'email.send',
+      proposal: { to: 'prof@campus.edu', body: 'Requesting permission' }
+    })
+
+    // Execute via executeConfirmedAction + defaultActionExecutor: must reject simulated token with REAL_CREDENTIALS_REQUIRED
+    await assert.rejects(
+      async () => {
+        await executeConfirmedAction({
+          token: emailIntent.confirmationToken,
+          reqUser: callingUser,
+          actionExecutor: defaultActionExecutor
+        })
+      },
+      (err) => err.code === 'REAL_CREDENTIALS_REQUIRED'
+    )
+
+    // Propose a calendar action with simulated token
+    let calInt = dbStore.integrations.find(x => x.id === 'calendar')
+    if (!calInt) {
+      calInt = { id: 'calendar', connected: true, token: 'dev_simulated_token' }
+      dbStore.integrations.push(calInt)
+    } else {
+      calInt.token = 'dev_simulated_token'
+    }
+
+    const calIntent = createConfirmationIntent({
+      userId: 1,
+      actionType: 'calendar.create_event',
+      proposal: { title: 'Project Demo', date: '2026-10-25' }
+    })
+
+    // Execute via executeConfirmedAction + defaultActionExecutor: must reject simulated token with REAL_CREDENTIALS_REQUIRED
+    await assert.rejects(
+      async () => {
+        await executeConfirmedAction({
+          token: calIntent.confirmationToken,
+          reqUser: callingUser,
+          actionExecutor: defaultActionExecutor
+        })
+      },
+      (err) => err.code === 'REAL_CREDENTIALS_REQUIRED'
+    )
+  })
+})
+

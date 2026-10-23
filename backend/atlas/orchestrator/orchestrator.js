@@ -153,6 +153,13 @@ export function routeQuery(query, history = []) {
  * Helper to check if a query belongs to the Atlas campus domain.
  */
 export function isAtlasQuery(query, history = []) {
+  if (!query || typeof query !== 'string') return false
+  const q = query.trim().toLowerCase()
+  // Personal calendar management belongs to personal calendar action tools, not campus agents
+  if (/\b(add|create|schedule|put|set\s?up|book|mark|note|remind)\b/i.test(q) &&
+      /\b(calendar|meetings?|appointments?|syncs?|calls?|reminders?)\b/i.test(q)) {
+    return false
+  }
   return decomposeQuery(query, history).length > 0
 }
 

@@ -96,13 +96,21 @@ async function calendarList(it, { days = 7 } = {}) {
 }
 
 
-// Create one or more Google Calendar events. Each: { title, date 'YYYY-MM-DD', start 'HH:MM'|null, durationHours }
+// Create one or more Google Calendar events. Each: { title, date 'YYYY-MM-DD', start 'HH:MM'|null, durationHours, reminderMinutes, description, location }
 export async function calendarCreate(it, events) {
   const token = await ensureGoogleToken(it)
   const created = []
   for (const e of events) {
     if (!e.title || !e.date) continue
     const body = { summary: e.title }
+    if (e.description) body.description = e.description
+    if (e.location) body.location = e.location
+    if (e.reminderMinutes) {
+      body.reminders = {
+        useDefault: false,
+        overrides: [{ method: 'popup', minutes: Number(e.reminderMinutes) }]
+      }
+    }
     if (e.start) {
       const startDate = new Date(`${e.date}T${e.start}:00+05:30`)
       const endDate = new Date(startDate.getTime() + (e.durationHours || 1) * 3600000)
@@ -116,8 +124,12 @@ export async function calendarCreate(it, events) {
       method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    if (r.ok) { const j = await r.json(); created.push({ title: e.title, link: j.htmlLink }) }
-    else throw new Error(`Calendar create ${r.status}: ${(await r.text()).slice(0, 160)}`)
+    if (r.ok) {
+      const j = await r.json()
+      created.push({ id: j.id, title: e.title, link: j.htmlLink, start: j.start })
+    } else {
+      throw new Error(`Calendar create ${r.status}: ${(await r.text()).slice(0, 160)}`)
+    }
   }
   return created
 }
@@ -230,7 +242,8 @@ export async function gmailSend(it, to, text, attachment) {
     body: JSON.stringify({ raw }),
   })
   if (!r.ok) throw new Error(`Gmail send ${r.status}: ${(await r.text()).slice(0, 200)}`)
-  return { subject }
+  const j = await r.json()
+  return { id: j.id, threadId: j.threadId, subject }
 }
 
 export async function linkedinPost(it, text) {

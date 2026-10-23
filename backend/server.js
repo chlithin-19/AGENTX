@@ -325,17 +325,10 @@ app.post('/api/chat', async (req, res) => {
     const facts = db.memories.length ? db.memories.map(m => `- ${m.text}`).join('\n') : '- (none on file)'
     let draft = ''
     try {
-      const r = await fetch(`${OLLAMA}/api/chat`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: AGENT_MODEL, stream: false, keep_alive: -1,
-          messages: [
-            { role: 'system', content: `You write professional emails on the user's behalf. Output ONLY the email: a "Subject:" line, a blank line, the body, then a sign-off with the user's REAL name from the facts below. Match the length and detail the user asks for (default concise; if they ask for "detailed" or "longer", expand it). No emojis or jokes unless asked. NEVER use placeholders like [Your Name], [Company], or [Date] — use the real facts or leave them out. If the user asks to revise the previous draft, edit that same email.\n\nFacts about the user:\n${facts}` },
-            ...db.messages.slice(-6).map(m => ({ role: m.role, content: m.content })),
-          ],
-        }),
-      })
-      draft = ((await r.json()).message?.content || '').trim()
+      const sys = `You write professional emails on the user's behalf. Output ONLY the email: a "Subject:" line, a blank line, the body, then a sign-off with the user's REAL name from the facts below. Match the length and detail the user asks for (default concise; if they ask for "detailed" or "longer", expand it). No emojis or jokes unless asked. NEVER use placeholders like [Your Name], [Company], or [Date] — use the real facts or leave them out. If the user asks to revise the previous draft, edit that same email.\n\nFacts about the user:\n${facts}`
+      const userContext = db.messages.slice(-6).map(m => `${m.role}: ${m.content}`).join('\n')
+      const r = await reason(sys, userContext, { num_predict: 400 })
+      draft = r?.full ? r.full.trim() : ''
     } catch { /* fall through */ }
     draft = draft.replace(/^\s*```[a-z]*\s*/i, '').replace(/\s*```\s*$/, '').trim() // unwrap code fences
     if (!draft) draft = 'Subject: (draft failed)\n\nPlease try again.'
@@ -365,23 +358,15 @@ app.post('/api/chat', async (req, res) => {
     const facts = publicFacts() // public post — never leak contact emails/phones
     let draft = ''
     try {
-      const r = await fetch(`${OLLAMA}/api/chat`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: AGENT_MODEL, stream: false, keep_alive: -1,
-          messages: [
-            { role: 'system', content: `You are an expert LinkedIn ghostwriter for the user. Write a substantive, engaging post (~130-200 words) with:
+      const sys = `You are an expert LinkedIn ghostwriter for the user. Write a substantive, engaging post (~130-200 words) with:
 - A strong one-line hook to open
 - 2-3 short paragraphs with SPECIFIC, concrete details and a genuine insight or mini-story (no vague hype)
 - A closing question or call-to-action that invites engagement
 - 3-5 relevant hashtags on the final line
-Write in first person, confident and authentic. Output ONLY the post text — no "Subject:", no email greeting/sign-off, no code fences, no placeholders. ${NO_CONTACTS} If the user asks to revise the previous post, edit that same post.\n\nAbout the user:\n${facts}` },
-            ...db.messages.slice(-6).map(m => ({ role: m.role, content: m.content })),
-          ],
-          options: { temperature: 0.85, num_predict: 400 },
-        }),
-      })
-      draft = stripContacts(((await r.json()).message?.content || '').trim())
+Write in first person, confident and authentic. Output ONLY the post text — no "Subject:", no email greeting/sign-off, no code fences, no placeholders. ${NO_CONTACTS} If the user asks to revise the previous post, edit that same post.\n\nAbout the user:\n${facts}`
+      const userContext = db.messages.slice(-6).map(m => `${m.role}: ${m.content}`).join('\n')
+      const r = await reason(sys, userContext, { temperature: 0.85, num_predict: 400 })
+      draft = r?.full ? stripContacts(r.full.trim()) : ''
     } catch { /* fall through */ }
     draft = draft.replace(/^\s*```[a-z]*\s*/i, '').replace(/\s*```\s*$/, '').trim()
     if (!draft) draft = 'Draft failed — please try again.'
@@ -405,25 +390,14 @@ Write in first person, confident and authentic. Output ONLY the post text — no
     /\b(calendar|events?|meetings?|appointments?|syncs?|calls?|reminders?)\b/i.test(message)
   if (wantCreate) {
     const calInt = db.integrations.find(x => x.id === 'calendar')
-    if (!calInt?.connected) {
-      const reply = "Google Calendar isn't connected — connect it in Integrations first."
-      pushMsg('assistant', reply); send({ token: reply }); send({ done: true }); return res.end()
-    }
-    send({ step: 'Reading the details' })
+    send({ step: 'Reading event details' })
     const today = new Date().toISOString().slice(0, 10)
     let events = []
     try {
-      const r = await fetch(`${OLLAMA}/api/chat`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: AGENT_MODEL, stream: false, keep_alive: -1,
-          messages: [
-            { role: 'system', content: `Today is ${today}. Extract every calendar event the user mentions in the conversation. Output ONLY a JSON array (no prose). Each item: {"title": string, "date": "YYYY-MM-DD", "start": "HH:MM" or null, "durationHours": number}. Assume year 2026 if unstated. If no time is given, set "start" to null.` },
-            ...db.messages.slice(-8).map(m => ({ role: m.role, content: m.content })),
-          ],
-        }),
-      })
-      const content = (await r.json()).message?.content || ''
+      const sys = `Today is ${today}. Extract every calendar event the user mentions in the conversation. Output ONLY a JSON array (no prose). Each item: {"title": string, "date": "YYYY-MM-DD", "start": "HH:MM" or null, "durationHours": number}. Assume year 2026 if unstated. If no time is given, set "start" to null.`
+      const userContext = db.messages.slice(-8).map(m => `${m.role}: ${m.content}`).join('\n')
+      const r = await reason(sys, userContext, { num_predict: 300 })
+      const content = r?.full || ''
       const jm = content.match(/\[[\s\S]*\]/)
       if (jm) events = JSON.parse(jm[0])
     } catch { /* parse failure below */ }
@@ -433,9 +407,10 @@ Write in first person, confident and authentic. Output ONLY the post text — no
       const cleanTitle = message.replace(/\b(add|create|schedule|put|set up|book|mark|on|at|for|to my calendar|to calendar|calendar)\b/gi, ' ').replace(/\s+/g, ' ').trim()
       events = [{ title: cleanTitle || 'Scheduled Event', date: today, start: timeMatch ? timeMatch[1] : null, durationHours: 1 }]
     }
-    const summary = 'I can add these to your calendar:\n\n' + events.map(e => `• ${e.title} — ${e.date}${e.start ? ' at ' + e.start : ' (all day)'}`).join('\n')
-    const action = { type: 'calendar.create', events, connected: true, label: `Add ${events.length} event${events.length > 1 ? 's' : ''}` }
-    if (auto) {
+    const connNote = !calInt?.connected ? '\n\n*(Note: Connect Google Calendar in Settings > Integrations to sync events)*' : ''
+    const summary = 'I can add these to your calendar:\n\n' + events.map(e => `• ${e.title} — ${e.date}${e.start ? ' at ' + e.start : ' (all day)'}`).join('\n') + connNote
+    const action = { type: 'calendar.create', events, connected: !!calInt?.connected, label: `Add ${events.length} event${events.length > 1 ? 's' : ''}` }
+    if (auto && calInt?.connected) {
       send({ step: 'Adding to calendar' })
       try { const c = await calendarCreate(calInt, events); action.done = true; action.doneLabel = `Added ${c.length} event${c.length > 1 ? 's' : ''}`; logEvent('Added calendar events', events.map(e => e.title).join(', '), 'success') }
       catch (e) { action.error = e.message }
@@ -572,10 +547,15 @@ function detectAction(msg) {
 // ---------- Agent actions (execute on the user's behalf, after approval) ----------
 app.post('/api/actions/email/send', async (req, res) => {
   const it = db.integrations.find(x => x.id === 'gmail')
-  if (!it?.token) return res.status(400).json({ error: 'Gmail not connected' })
+  if (!it?.token) return res.status(400).json({ error: 'Gmail not connected. Please connect your Google account in Settings > Integrations.' })
   const to = String(req.body?.to || '').trim()
   const text = String(req.body?.text || '').trim()
   if (!to || !text) return res.status(400).json({ error: 'to and text required' })
+
+  if (it.token?.startsWith('token_') || it.token?.startsWith('dev_') || it.token?.startsWith('simulated_')) {
+    return res.status(403).json({ error: 'Cannot send live email with development or simulated token. Connect a genuine Google Workspace account in Integrations.' })
+  }
+
   try {
     const token = await ensureGoogleToken(it)
     const subjMatch = text.match(/subject:\s*(.+)/i)
@@ -583,22 +563,24 @@ app.post('/api/actions/email/send', async (req, res) => {
     const body = text.replace(/subject:\s*.+\r?\n?/i, '').trim()
     const rfc822 = [`To: ${to}`, `Subject: ${subject}`, 'Content-Type: text/plain; charset="UTF-8"', 'MIME-Version: 1.0', '', body].join('\r\n')
     const raw = Buffer.from(rfc822).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-    if (it.token?.startsWith('token_') || it.token?.startsWith('dev_')) {
-      logEvent('Sent an email (Dev)', `To ${to} · ${subject}`, 'success')
-      return res.json({ ok: true })
-    }
+
     const r = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ raw }),
     })
-    if (!r.ok) throw new Error(`Gmail send ${r.status}: ${(await r.text()).slice(0, 200)}`)
-    logEvent('Sent an email', `To ${to} · ${subject}`, 'success')
-    res.json({ ok: true })
+    if (!r.ok) {
+      const errText = await r.text()
+      const status = r.status === 401 ? 401 : 502
+      logEvent('Gmail send error', `Status ${r.status}: ${errText.slice(0, 100)}`, 'error')
+      return res.status(status).json({ error: `Gmail provider rejected request (${r.status}): ${errText.slice(0, 150)}` })
+    }
+    const data = await r.json()
+    logEvent('Sent an email', `To ${to} · ${subject} (ID: ${data.id})`, 'success')
+    res.json({ ok: true, id: data.id, threadId: data.threadId, to, subject })
   } catch (e) {
     if (e.message.includes('401') || e.message.includes('invalid_grant')) {
-      logEvent('Sent an email (Local Queue)', `To ${to}`, 'info')
-      return res.json({ ok: true, notice: 'Email recorded locally (reconnect Gmail in Integrations for live sending)' })
+      return res.status(401).json({ error: 'Gmail authorization expired or invalid. Please re-authenticate Google Workspace in Integrations.' })
     }
     res.status(502).json({ error: String(e.message || e) })
   }
@@ -606,23 +588,21 @@ app.post('/api/actions/email/send', async (req, res) => {
 
 app.post('/api/actions/calendar/create', async (req, res) => {
   const it = db.integrations.find(x => x.id === 'calendar')
-  if (!it?.token) return res.status(400).json({ error: 'Calendar not connected' })
+  if (!it?.token) return res.status(400).json({ error: 'Calendar not connected. Please connect Google Calendar in Settings > Integrations.' })
   const events = req.body?.events
-  if (!Array.isArray(events) || !events.length) return res.status(400).json({ error: 'events required' })
+  if (!Array.isArray(events) || !events.length) return res.status(400).json({ error: 'events array required' })
+
+  if (it.token?.startsWith('token_') || it.token?.startsWith('dev_') || it.token?.startsWith('simulated_')) {
+    return res.status(403).json({ error: 'Cannot create live calendar events with development or simulated token. Connect a genuine Google account in Integrations.' })
+  }
+
   try {
-    if (it.token?.startsWith('token_') || it.token?.startsWith('dev_')) {
-      logEvent('Added calendar events (Dev)', events.map(e => e.title).join(', '), 'success')
-      return res.json({ ok: true, count: events.length })
-    }
     const c = await calendarCreate(it, events)
     logEvent('Added calendar events', events.map(e => e.title).join(', '), 'success')
-    res.json({ ok: true, count: c.length })
+    res.json({ ok: true, count: c.length, events: c })
   } catch (e) {
-    if (e.message.includes('401') || e.message.includes('invalid_grant')) {
-      logEvent('Added calendar events (Local)', events.map(e => e.title).join(', '), 'info')
-      return res.json({ ok: true, count: events.length, notice: 'Event recorded locally (reconnect Google Calendar for live cloud sync)' })
-    }
-    res.status(502).json({ error: String(e.message || e) })
+    const status = e.message.includes('401') || e.message.includes('invalid_grant') ? 401 : 502
+    res.status(status).json({ error: `Calendar provider error: ${String(e.message || e)}` })
   }
 })
 
@@ -940,7 +920,7 @@ async function streamLLM(messages, onToken, opts = {}) {
       const up = await fetch(`${OLLAMA}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ model: AGENT_MODEL, stream: true, keep_alive: -1, messages }),
-        signal: AbortSignal.timeout(2000)
+        signal: AbortSignal.timeout(10000)
       })
       if (up.ok && up.body) {
         let full = '', tokens = 0

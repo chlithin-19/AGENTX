@@ -49,6 +49,60 @@ async function defaultActionExecutor(actionType, proposal, user) {
     return draftCampusMessage(proposal)
   }
 
+  if (actionType === 'email.send') {
+    const { get } = await import('../store.js')
+    const { ensureGoogleToken, gmailSend } = await import('../tools.js')
+    const it = get().integrations?.find(x => x.id === 'gmail')
+    if (!it?.token) {
+      const err = new Error('Gmail integration is not connected. Connect your Google account in Settings > Integrations.')
+      err.code = 'INTEGRATION_NOT_CONNECTED'
+      err.status = 400
+      throw err
+    }
+    if (it.token.startsWith('dev_') || it.token.startsWith('token_') || it.token.startsWith('simulated_')) {
+      const err = new Error('Cannot execute external email action with simulated/development tokens. Real Google OAuth credentials are required.')
+      err.code = 'REAL_CREDENTIALS_REQUIRED'
+      err.status = 403
+      throw err
+    }
+    const token = await ensureGoogleToken(it)
+    const result = await gmailSend(it, proposal.to, proposal.text || proposal.body, proposal.attachment)
+    return {
+      success: true,
+      provider: 'google_gmail',
+      id: result.id,
+      threadId: result.threadId,
+      recipient: proposal.to,
+      subject: result.subject
+    }
+  }
+
+  if (actionType === 'calendar.create_event') {
+    const { get } = await import('../store.js')
+    const { ensureGoogleToken, calendarCreate } = await import('../tools.js')
+    const it = get().integrations?.find(x => x.id === 'calendar')
+    if (!it?.token) {
+      const err = new Error('Google Calendar integration is not connected. Connect Google Calendar in Settings > Integrations.')
+      err.code = 'INTEGRATION_NOT_CONNECTED'
+      err.status = 400
+      throw err
+    }
+    if (it.token.startsWith('dev_') || it.token.startsWith('token_') || it.token.startsWith('simulated_')) {
+      const err = new Error('Cannot execute external calendar action with simulated/development tokens. Real Google OAuth credentials are required.')
+      err.code = 'REAL_CREDENTIALS_REQUIRED'
+      err.status = 403
+      throw err
+    }
+    const events = Array.isArray(proposal) ? proposal : [proposal]
+    const created = await calendarCreate(it, events)
+    return {
+      success: true,
+      provider: 'google_calendar',
+      count: created.length,
+      events: created
+    }
+  }
+
   throw new Error(`Execution handler not configured for action type "${actionType}".`)
 }
 
@@ -399,9 +453,10 @@ export function createAtlasRouter() {
   return router
 }
 
-export { orchestrate, routeQuery, isAtlasQuery, isIdempotent }
+export { defaultActionExecutor, orchestrate, routeQuery, isAtlasQuery, isIdempotent }
 
 export default {
+  defaultActionExecutor,
   createAtlasRouter,
   orchestrate,
   routeQuery,
