@@ -1,12 +1,12 @@
 // Generic OAuth2 authorization-code flow, config-driven for all providers.
-// ponytail: in-memory state map (lost on restart) — fine, OAuth states are short-lived.
+import './env.js'
 import { randomBytes, createHash } from 'node:crypto'
 
-const APP_BASE = (process.env.APP_BASE || 'http://localhost:8080').replace(/\/+$/, '')
-export const getCallbackUri = (id) => `${APP_BASE}/api/oauth/${id}/callback`
+export const getAppBase = () => (process.env.APP_BASE || 'http://localhost:8080').replace(/\/+$/, '')
+export const getCallbackUri = (id) => `${getAppBase()}/api/oauth/${id}/callback`
 export const CB = getCallbackUri
 
-// OAuth servers. Credentials come from env (see .env).
+// OAuth servers. Credentials come from env (see backend/.env).
 const SERVERS = {
   github: {
     authorize: 'https://github.com/login/oauth/authorize',
@@ -37,7 +37,7 @@ export const OAUTH_CONFIG = {
   github: { server: 'github', scope: 'repo read:org read:user' },
   google: {
     server: 'google',
-    scope: 'openid email profile https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/calendar.events',
+    scope: 'openid email profile',
   },
   gmail: { server: 'google', scope: 'https://www.googleapis.com/auth/gmail.modify' },
   calendar: { server: 'google', scope: 'https://www.googleapis.com/auth/calendar.events' },
@@ -45,7 +45,7 @@ export const OAUTH_CONFIG = {
   linkedin: { server: 'linkedin', scope: 'openid profile w_member_social' },
 }
 
-const states = new Map() // state -> { id, verifier, created }
+const states = new Map() // state -> { id, verifier, created, returnTo }
 setInterval(() => {
   const cutoff = Date.now() - 10 * 60 * 1000
   for (const [k, v] of states) if (v.created < cutoff) states.delete(k)
@@ -84,8 +84,8 @@ export function buildAuthUrl(id, options = {}) {
   return `${s.authorize}?${params.toString()}`
 }
 
-// Exchange the callback code for tokens. Returns { access_token, refresh_token, expires_in, returnTo } or throws.
-export async function exchangeCode(id, code, state) {
+// Exchange the callback code for tokens. Returns { access_token, refresh_token, expires_in, returnTo, userInfo } or throws.
+export async function exchangeCode(id, code, state, customFetcher = fetch) {
   const cfg = OAUTH_CONFIG[id]
   const entry = states.get(state)
   if (!cfg || !entry || entry.id !== id) throw new Error('invalid state')
@@ -107,10 +107,27 @@ export async function exchangeCode(id, code, state) {
     body.set('client_secret', s.secret())
   }
 
-  const r = await fetch(s.token, { method: 'POST', headers, body })
+  const r = await customFetcher(s.token, { method: 'POST', headers, body })
   const data = await r.json().catch(() => ({}))
   if (!r.ok || data.error || !data.access_token) {
     throw new Error(data.error_description || data.error || `token exchange failed (${r.status})`)
   }
-  return { ...data, returnTo: entry.returnTo }
+
+  let userInfo = null
+  if (data.id_token) {
+    try {
+      const payloadPart = data.id_token.split('.')[1]
+      userInfo = JSON.parse(Buffer.from(payloadPart, 'base64url').toString('utf8'))
+    } catch {}
+  }
+
+  return { ...data, userInfo, returnTo: entry.returnTo }
+}
+
+// Test / debug state map helper
+export function _setMockState(state, entry) {
+  states.set(state, entry)
+}
+export function _clearMockState(state) {
+  states.delete(state)
 }

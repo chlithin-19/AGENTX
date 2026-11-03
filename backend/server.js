@@ -1,7 +1,5 @@
+import './env.js'
 import { existsSync, writeFileSync, readFileSync, mkdirSync, unlinkSync } from 'node:fs'
-if (process.loadEnvFile && existsSync('.env')) {
-  try { process.loadEnvFile('.env') } catch (e) { /* ignore */ }
-}
 import { GoogleGenAI } from '@google/genai';
 import express from 'express'
 
@@ -1357,6 +1355,8 @@ const publicIntegration = (it) => ({
   id: it.id, name: it.name, connected: !!it.connected,
   connected_at: it.connected_at || null,
   configured: isConfigured(it.id),
+  user_email: it.user_email || null,
+  user_name: it.user_name || null,
 })
 app.get('/api/integrations', (req, res) => res.json(db.integrations.map(publicIntegration)))
 
@@ -1397,15 +1397,32 @@ function getSafeFrontendRedirect(req, integrationId, params = {}, candidateRetur
   return `${origin}/?tab=settings&integration=${encodeURIComponent(integrationId)}${qs ? '&' + qs : ''}`
 }
 
-// Start OAuth: browser hits this directly (full-page redirect to provider).
-app.get('/api/integrations/:id/connect', (req, res) => {
+// Start OAuth: browser or client hits this (redirects to provider or returns url json).
+const handleOAuthConnect = (req, res) => {
   const it = db.integrations.find(x => x.id === req.params.id)
-  if (!it) return res.status(404).json({ error: 'not found' })
-  const returnTo = resolveFrontendOrigin(req)
+  if (!it) {
+    if (req.query.json === '1' || req.headers.accept?.includes('application/json')) {
+      return res.status(404).json({ ok: false, error: 'not_found', message: `Integration '${req.params.id}' not found` })
+    }
+    return res.status(404).send('unknown integration')
+  }
+  const returnTo = resolveFrontendOrigin(req, req.query.returnTo)
   const url = buildAuthUrl(it.id, { returnTo })
-  if (!url) return res.redirect(getSafeFrontendRedirect(req, it.id, { error: 'not_configured' }))
+  if (!url) {
+    if (req.query.json === '1' || req.headers.accept?.includes('application/json')) {
+      return res.status(400).json({ ok: false, error: 'not_configured', message: `OAuth credentials not configured for ${it.name || it.id}` })
+    }
+    return res.redirect(getSafeFrontendRedirect(req, it.id, { error: 'not_configured' }))
+  }
+  if (req.query.json === '1' || (req.headers.accept?.includes('application/json') && !req.headers.accept?.includes('text/html'))) {
+    return res.json({ ok: true, id: it.id, url })
+  }
   res.redirect(url)
-})
+}
+
+app.get('/api/integrations/:id/connect', handleOAuthConnect)
+app.get('/api/oauth/:id', handleOAuthConnect)
+app.get('/api/oauth/:id/connect', handleOAuthConnect)
 
 // OAuth callback: exchange code, store token, mark connected, bounce back to the app.
 app.get('/api/oauth/:id/callback', async (req, res) => {
@@ -1420,6 +1437,12 @@ app.get('/api/oauth/:id/callback', async (req, res) => {
     it.token = tok.access_token
     if (tok.refresh_token) it.refresh_token = tok.refresh_token
     it.expires_at = tok.expires_in ? Date.now() + tok.expires_in * 1000 : null
+
+    if (tok.userInfo) {
+      it.user_email = tok.userInfo.email || null
+      it.user_name = tok.userInfo.name || null
+      it.user_picture = tok.userInfo.picture || null
+    }
 
     // If connecting master Google Workspace integration, propagate credentials to Gmail and Calendar
     if (it.id === 'google') {

@@ -45,533 +45,6 @@
   ],
   "messages": [
     {
-      "id": "mvzpz3jfpnl3",
-      "role": "user",
-      "content": "What is my current CGPA?",
-      "created_at": "2026-11-02T20:36:46.635Z"
-    },
-    {
-      "id": "mvzpz3jijwtx",
-      "role": "assistant",
-      "content": "Your cumulative GPA (CGPA) is **7.53 / 10.0** (Department average for IT: 7.5).",
-      "created_at": "2026-11-02T20:36:46.638Z"
-    },
-    {
-      "id": "mvzpz3jmiv7c",
-      "role": "user",
-      "content": "What is my attendance and what are the library operating hours?",
-      "created_at": "2026-11-02T20:36:46.642Z"
-    },
-    {
-      "id": "mvzpz3jpp0s8",
-      "role": "assistant",
-      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).\n\n---\n\n### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
-      "created_at": "2026-11-02T20:36:46.645Z"
-    },
-    {
-      "id": "mvzpz3jtfhpr",
-      "role": "user",
-      "content": "What is the IT department placement benchmark and what hackathons are scheduled?",
-      "created_at": "2026-11-02T20:36:46.649Z"
-    },
-    {
-      "id": "mvzpz3jw7l0h",
-      "role": "assistant",
-      "content": "Your placement record is currently **Not Placed**. Historical placement benchmark for IT indicates a **53.28%** placement rate (1980 student cohort).\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*\n\n---\n\n### Atlas 36-Hour National Campus Hackathon 2026\n- **Dates:** October 10-12, 2026 (Friday 06:00 PM to Sunday 06:00 AM)\n- **Venue:** Seminar Hall 1 & Computer Lab 204 (Academic Block A)\n- **Organizer:** Campus Developer Club & Innovation Cell\n- **Registration:** Open (145 / 200 slots filled)\n- **Deadline:** October 08, 2026\n- **Portal Link:** [Event Registration](https://campus.edu/events/hackathon2026)\n\n**Overview:** A 36-hour multi-track hackathon focusing on AI Agents, Healthcare Tech, and Campus Automation. Prizes worth ₹2,50,000.\n\n**Verified Campus Citations:**\n- *Campus Events & Student Life Guidelines (Demo Document)* (General Guidelines) `[doc_events_guide_2026_sec_1]`",
-      "created_at": "2026-11-02T20:36:46.652Z"
-    },
-    {
-      "id": "mvzpz3k06127",
-      "role": "user",
-      "content": "Tell me about the Central Library facilities",
-      "created_at": "2026-11-02T20:36:46.656Z"
-    },
-    {
-      "id": "mvzpz3k41bll",
-      "role": "assistant",
-      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
-      "created_at": "2026-11-02T20:36:46.660Z"
-    },
-    {
-      "id": "mvzpz3k86ctx",
-      "role": "user",
-      "content": "What are its operating hours?",
-      "created_at": "2026-11-02T20:36:46.664Z"
-    },
-    {
-      "id": "mvzpz3kcrfo5",
-      "role": "assistant",
-      "content": "### Key Campus Facilities Available:\n• **Central Library**\n  - Location: Central Library Building (Ground & 1st Floor)\n  - Hours: Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n• **Sports & Fitness Center**\n  - Location: Student Activity Center (SAC)\n  - Hours: Daily: 6:00 AM - 9:00 AM & 4:30 PM - 8:30 PM\n• **Campus Food Court & Cafeteria**\n  - Location: Ground Floor, Student Activity Center\n  - Hours: Daily: 7:30 AM - 9:30 PM\n• **Campus Health Center**\n  - Location: Ground Floor, Science Block\n  - Hours: 24/7 Emergency Care; Regular Outpatient: 9:00 AM - 5:00 PM\n\n**Verified Campus Citations:**\n- *Campus Facilities & Infrastructure Directory (Demo Document)* (2. Sports & Recreational Facilities) `[doc_facilities_directory_2026_sec_3]`\n- *Central Library & Digital Resources Guide (Demo Document)* (3. Library Facilities) `[doc_library_guide_2026_sec_4]`",
-      "created_at": "2026-11-02T20:36:46.668Z"
-    },
-    {
-      "id": "mvzpz3khs2wi",
-      "role": "user",
-      "content": "What are the official regulations on attendance shortage and condonation?",
-      "created_at": "2026-11-02T20:36:46.673Z"
-    },
-    {
-      "id": "mvzpz3kk5psb",
-      "role": "assistant",
-      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).",
-      "created_at": "2026-11-02T20:36:46.676Z"
-    },
-    {
-      "id": "mvzpz3koq1br",
-      "role": "user",
-      "content": "What is the capital of France?",
-      "created_at": "2026-11-02T20:36:46.680Z"
-    },
-    {
-      "id": "mvzpzj0mikby",
-      "role": "assistant",
-      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
-      "created_at": "2026-11-02T20:37:06.694Z"
-    },
-    {
-      "id": "mvzpzj0y433z",
-      "role": "user",
-      "content": "Show me Priya Sharma's backlogs and grades",
-      "created_at": "2026-11-02T20:37:06.706Z"
-    },
-    {
-      "id": "mvzpzj13s3an",
-      "role": "assistant",
-      "content": "⚠️ Access Denied: You do not have permission to access records outside your student account.",
-      "created_at": "2026-11-02T20:37:06.711Z"
-    },
-    {
-      "id": "mvzpzj18ns02",
-      "role": "user",
-      "content": "Draft an email to prof.sharma@campus.edu asking for research project guidance",
-      "created_at": "2026-11-02T20:37:06.716Z"
-    },
-    {
-      "id": "mvzpzj1di51o",
-      "role": "assistant",
-      "content": "### Drafted Campus Communication (Approval Required):\n- **To:** `campus-office@campus.edu`\n- **Subject:** Inquiry Regarding Campus Services\n\n```text\nDear Campus Administration,\n\nI am writing to respectfully inquire regarding the schedule and procedures announced for the upcoming semester activities.\n\nThank you.\n\nSincerely,\nAlex Kumar\n```\n\n*Action Guard: Message is held in draft state. Confirmation token: `3184096834...`*\n\n---\n\n### Academic Profile: Alex Kumar (IT Department)\n- **CGPA:** 7.53 / 10.0 (Dept Avg: 7.5)\n- **Attendance:** 77.46386310081202% (Required: > 75% · Dept Avg: 85.06%)\n- **Active Backlogs:** 2\n- **Placement Readiness Score:** 99.23856840567274/100 (Coding), 81.70772170173693/100 (Aptitude)\n- **Placement Status:** Not Placed\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*",
-      "created_at": "2026-11-02T20:37:06.721Z",
-      "action": {
-        "requiresConfirmation": true,
-        "confirmationToken": "3184096834f78b7fd0c3c8aed44998c6b54248516cf6fe0f70f007c40e1c11a4",
-        "type": "communication.send",
-        "provider": "campus_mail",
-        "recipient": "campus-office@campus.edu",
-        "subject": "Inquiry Regarding Campus Services",
-        "body": "Dear Campus Administration,\n\nI am writing to respectfully inquire regarding the schedule and procedures announced for the upcoming semester activities.\n\nThank you.\n\nSincerely,\nAlex Kumar",
-        "label": "Send message to campus-office@campus.edu"
-      }
-    },
-    {
-      "id": "mvzpzj1qgy53",
-      "role": "user",
-      "content": "Add a project review meeting to my calendar on 2026-10-25 at 3:00 PM with a 30 minute reminder",
-      "created_at": "2026-11-02T20:37:06.734Z"
-    },
-    {
-      "id": "mvzpzldc07qw",
-      "role": "assistant",
-      "content": "I can add these to your calendar:\n\n• a project review meeting 2026-10-25 3:00 PM with a 30 minute reminder — 2026-11-02 at 3:00 PM\n\n*(Note: Connect Google Calendar in Settings > Integrations to sync events)*",
-      "created_at": "2026-11-02T20:37:09.744Z",
-      "action": {
-        "type": "calendar.create",
-        "events": [
-          {
-            "title": "a project review meeting 2026-10-25 3:00 PM with a 30 minute reminder",
-            "date": "2026-11-02",
-            "start": "3:00 PM",
-            "durationHours": 1
-          }
-        ],
-        "connected": false,
-        "label": "Add 1 event"
-      }
-    },
-    {
-      "id": "mvzpzldsk0lk",
-      "role": "user",
-      "content": "search the web for latest quantum computing milestones 2026",
-      "created_at": "2026-11-02T20:37:09.760Z"
-    },
-    {
-      "id": "mvzq01lim70c",
-      "role": "assistant",
-      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
-      "created_at": "2026-11-02T20:37:30.774Z",
-      "attachments": [
-        {
-          "type": "web",
-          "title": "Top 15 Quantum Computing Breakthroughs of 2026: Quantum Echoes to Fault ...",
-          "subtitle": "amitray.com",
-          "url": "https://amitray.com/top-quantum-computing-breakthroughs-2026/",
-          "domain": "amitray.com"
-        },
-        {
-          "type": "web",
-          "title": "The Latest Quantum Computing Breakthroughs of 2026, Explained",
-          "subtitle": "insidedeeptech.com",
-          "url": "https://www.insidedeeptech.com/the-latest-quantum-computing-breakthroughs-of-2026-explained/",
-          "domain": "insidedeeptech.com"
-        },
-        {
-          "type": "web",
-          "title": "State of Quantum Computing 2026: Hardware, Funding and Milestones",
-          "subtitle": "entangledfuture.com",
-          "url": "https://entangledfuture.com/guides/state-of-quantum-computing-2026/",
-          "domain": "entangledfuture.com"
-        },
-        {
-          "type": "web",
-          "title": "Quantum Computing Milestones 2026 - Presenc AI",
-          "subtitle": "presenc.ai",
-          "url": "https://presenc.ai/research/quantum-computing-milestones-2026",
-          "domain": "presenc.ai"
-        },
-        {
-          "type": "web",
-          "title": "Quantum Computing Milestones 2025-2026: IBM, Google, IonQ, Quantinuum ...",
-          "subtitle": "technerdo.com",
-          "url": "https://www.technerdo.com/blog/quantum-computing-milestones-2026",
-          "domain": "technerdo.com"
-        }
-      ]
-    },
-    {
-      "id": "mvzq01lw3yvy",
-      "role": "user",
-      "content": "What is quantum foam in cosmological physics?",
-      "created_at": "2026-11-02T20:37:30.788Z"
-    },
-    {
-      "id": "mvzq0h217cm3",
-      "role": "assistant",
-      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
-      "created_at": "2026-11-02T20:37:50.809Z"
-    },
-    {
-      "id": "mvzq19syw64v",
-      "role": "user",
-      "content": "What is quantum foam in cosmological physics?",
-      "created_at": "2026-11-02T20:38:28.066Z"
-    },
-    {
-      "id": "mvzq1p93verb",
-      "role": "assistant",
-      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
-      "created_at": "2026-11-02T20:38:48.087Z"
-    },
-    {
-      "id": "mvzq4dgnokgj",
-      "role": "user",
-      "content": "What is my attendance percentage and academic standing?",
-      "created_at": "2026-11-02T20:40:52.775Z"
-    },
-    {
-      "id": "mvzq4dh69ecp",
-      "role": "assistant",
-      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).",
-      "created_at": "2026-11-02T20:40:52.794Z"
-    },
-    {
-      "id": "mvzq4dhfxeg0",
-      "role": "user",
-      "content": "What is my CGPA and what is the department average for IT?",
-      "created_at": "2026-11-02T20:40:52.803Z"
-    },
-    {
-      "id": "mvzq4dhkv2uc",
-      "role": "assistant",
-      "content": "Your cumulative GPA (CGPA) is **7.53 / 10.0** (Department average for IT: 7.5).",
-      "created_at": "2026-11-02T20:40:52.808Z"
-    },
-    {
-      "id": "mvzq4dhqu28h",
-      "role": "user",
-      "content": "What is my placement status and package?",
-      "created_at": "2026-11-02T20:40:52.814Z"
-    },
-    {
-      "id": "mvzq4dhvyit3",
-      "role": "assistant",
-      "content": "Your placement record is currently **Not Placed**. Historical placement benchmark for IT indicates a **53.28%** placement rate (1980 student cohort).\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*",
-      "created_at": "2026-11-02T20:40:52.819Z"
-    },
-    {
-      "id": "mvzq4di00pvq",
-      "role": "user",
-      "content": "What are the operating hours and location of the Central Library?",
-      "created_at": "2026-11-02T20:40:52.824Z"
-    },
-    {
-      "id": "mvzq4diea6ea",
-      "role": "assistant",
-      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
-      "created_at": "2026-11-02T20:40:52.838Z"
-    },
-    {
-      "id": "mvzq4dikuiyy",
-      "role": "user",
-      "content": "The water dispenser on the 2nd floor of Block B is leaking water, please report a maintenance ticket",
-      "created_at": "2026-11-02T20:40:52.844Z"
-    },
-    {
-      "id": "mvzq4diqg1g8",
-      "role": "assistant",
-      "content": "### Maintenance Request Submitted (Demo Proposal):\n- **Ticket ID:** `MR-2026-00103`\n- **Location:** Lab 204\n- **Category:** General Maintenance\n- **Status:** Submitted\n- **Assigned Unit:** Campus Facilities Support\n\n*Action Guard: Confirmation token `a0e998abde...` generated.*",
-      "created_at": "2026-11-02T20:40:52.850Z",
-      "action": {
-        "type": "campus.create_maintenance_ticket",
-        "actionType": "campus.create_maintenance_ticket",
-        "confirmationToken": "a0e998abdedc2a28b135f81cb60e00bdf205ff6b1e7e2639e2c1ed37340d61e4",
-        "proposal": {
-          "location": "Lab 204",
-          "issue": "the water dispenser on the 2nd floor of block b is leaking water, please report a maintenance ticket",
-          "priority": "Medium",
-          "reportedBy": "Alex Kumar"
-        },
-        "requiresConfirmation": true,
-        "label": "Submit Maintenance Request for Lab 204"
-      }
-    },
-    {
-      "id": "mvzq4dj3jn5m",
-      "role": "user",
-      "content": "Are there any upcoming hackathons or workshops on campus?",
-      "created_at": "2026-11-02T20:40:52.863Z"
-    },
-    {
-      "id": "mvzq4dj8ami7",
-      "role": "assistant",
-      "content": "### Atlas 36-Hour National Campus Hackathon 2026\n- **Dates:** October 10-12, 2026 (Friday 06:00 PM to Sunday 06:00 AM)\n- **Venue:** Seminar Hall 1 & Computer Lab 204 (Academic Block A)\n- **Organizer:** Campus Developer Club & Innovation Cell\n- **Registration:** Open (145 / 200 slots filled)\n- **Deadline:** October 08, 2026\n- **Portal Link:** [Event Registration](https://campus.edu/events/hackathon2026)\n\n**Overview:** A 36-hour multi-track hackathon focusing on AI Agents, Healthcare Tech, and Campus Automation. Prizes worth ₹2,50,000.\n\n**Verified Campus Citations:**\n- *Campus Events & Student Life Guidelines (Demo Document)* (General Guidelines) `[doc_events_guide_2026_sec_1]`",
-      "created_at": "2026-11-02T20:40:52.868Z"
-    },
-    {
-      "id": "mvzq4djjgss5",
-      "role": "user",
-      "content": "What are the official campus announcements and circulars?",
-      "created_at": "2026-11-02T20:40:52.879Z"
-    },
-    {
-      "id": "mvzq4djo3uq3",
-      "role": "assistant",
-      "content": "### Official Campus Announcements & Circulars:\n• **Mid-Semester Examination Schedule Published** (2026-10-01 · Controller of Examinations)\n  Mid-term examinations will commence from October 26, 2026. Hall tickets available on the student portal. [Priority: High]\n\n• **Central Library Extended Reading Room Hours** (2026-09-28 · Library Services)\n  Central Library reading hall will remain open until midnight (12:00 AM) during exam preparation month. [Priority: Medium]\n\n• **Phase-1 Campus Placement Drive Guidelines** (2026-09-25 · Training & Placement Office)\n  All eligible final year students with 0 active backlogs must verify their resume by October 10. [Priority: High]",
-      "created_at": "2026-11-02T20:40:52.884Z"
-    },
-    {
-      "id": "mvzq4djtomn1",
-      "role": "user",
-      "content": "Please draft an inquiry to the library regarding weekend book return",
-      "created_at": "2026-11-02T20:40:52.889Z"
-    },
-    {
-      "id": "mvzq4djyxytj",
-      "role": "assistant",
-      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n---\n\n### Drafted Campus Communication (Approval Required):\n- **To:** `library@campus.edu`\n- **Subject:** Inquiry Regarding Extended Central Library Operating Hours\n\n```text\nDear Library Administration,\n\nI am an undergraduate student writing to inquire about the current operating hours of the Central Library and whether the ground-floor reading room will remain open extended hours during the upcoming examination weeks.\n\nThank you for your guidance.\n\nSincerely,\nAlex Kumar\nStudent ID: 1\n```\n\n*Action Guard: Message is held in draft state. Confirmation token: `e459a6494b...`*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
-      "created_at": "2026-11-02T20:40:52.894Z",
-      "action": {
-        "requiresConfirmation": true,
-        "confirmationToken": "e459a6494b4f65c4b775b5c7da5521e6d60a45a0779dfe88d5d1e2485d8365f5",
-        "type": "communication.send",
-        "provider": "campus_mail",
-        "recipient": "library@campus.edu",
-        "subject": "Inquiry Regarding Extended Central Library Operating Hours",
-        "body": "Dear Library Administration,\n\nI am an undergraduate student writing to inquire about the current operating hours of the Central Library and whether the ground-floor reading room will remain open extended hours during the upcoming examination weeks.\n\nThank you for your guidance.\n\nSincerely,\nAlex Kumar\nStudent ID: 1",
-        "label": "Send message to library@campus.edu"
-      }
-    },
-    {
-      "id": "mvzq4dk7xozt",
-      "role": "user",
-      "content": "What is my current CGPA?",
-      "created_at": "2026-11-02T20:40:52.903Z"
-    },
-    {
-      "id": "mvzq4dkahhip",
-      "role": "assistant",
-      "content": "Your cumulative GPA (CGPA) is **7.53 / 10.0** (Department average for IT: 7.5).",
-      "created_at": "2026-11-02T20:40:52.906Z"
-    },
-    {
-      "id": "mvzq4dkeco9n",
-      "role": "user",
-      "content": "What is my attendance and what are the library operating hours?",
-      "created_at": "2026-11-02T20:40:52.910Z"
-    },
-    {
-      "id": "mvzq4dkit7lj",
-      "role": "assistant",
-      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).\n\n---\n\n### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
-      "created_at": "2026-11-02T20:40:52.914Z"
-    },
-    {
-      "id": "mvzq4dkodk1v",
-      "role": "user",
-      "content": "What is the IT department placement benchmark and what hackathons are scheduled?",
-      "created_at": "2026-11-02T20:40:52.920Z"
-    },
-    {
-      "id": "mvzq4dks16oj",
-      "role": "assistant",
-      "content": "Your placement record is currently **Not Placed**. Historical placement benchmark for IT indicates a **53.28%** placement rate (1980 student cohort).\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*\n\n---\n\n### Atlas 36-Hour National Campus Hackathon 2026\n- **Dates:** October 10-12, 2026 (Friday 06:00 PM to Sunday 06:00 AM)\n- **Venue:** Seminar Hall 1 & Computer Lab 204 (Academic Block A)\n- **Organizer:** Campus Developer Club & Innovation Cell\n- **Registration:** Open (145 / 200 slots filled)\n- **Deadline:** October 08, 2026\n- **Portal Link:** [Event Registration](https://campus.edu/events/hackathon2026)\n\n**Overview:** A 36-hour multi-track hackathon focusing on AI Agents, Healthcare Tech, and Campus Automation. Prizes worth ₹2,50,000.\n\n**Verified Campus Citations:**\n- *Campus Events & Student Life Guidelines (Demo Document)* (General Guidelines) `[doc_events_guide_2026_sec_1]`",
-      "created_at": "2026-11-02T20:40:52.924Z"
-    },
-    {
-      "id": "mvzq4dkxrzg2",
-      "role": "user",
-      "content": "Tell me about the Central Library facilities",
-      "created_at": "2026-11-02T20:40:52.929Z"
-    },
-    {
-      "id": "mvzq4dl26p74",
-      "role": "assistant",
-      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
-      "created_at": "2026-11-02T20:40:52.934Z"
-    },
-    {
-      "id": "mvzq4dl627yq",
-      "role": "user",
-      "content": "What are its operating hours?",
-      "created_at": "2026-11-02T20:40:52.938Z"
-    },
-    {
-      "id": "mvzq4dlakubu",
-      "role": "assistant",
-      "content": "### Key Campus Facilities Available:\n• **Central Library**\n  - Location: Central Library Building (Ground & 1st Floor)\n  - Hours: Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n• **Sports & Fitness Center**\n  - Location: Student Activity Center (SAC)\n  - Hours: Daily: 6:00 AM - 9:00 AM & 4:30 PM - 8:30 PM\n• **Campus Food Court & Cafeteria**\n  - Location: Ground Floor, Student Activity Center\n  - Hours: Daily: 7:30 AM - 9:30 PM\n• **Campus Health Center**\n  - Location: Ground Floor, Science Block\n  - Hours: 24/7 Emergency Care; Regular Outpatient: 9:00 AM - 5:00 PM\n\n**Verified Campus Citations:**\n- *Campus Facilities & Infrastructure Directory (Demo Document)* (2. Sports & Recreational Facilities) `[doc_facilities_directory_2026_sec_3]`\n- *Central Library & Digital Resources Guide (Demo Document)* (3. Library Facilities) `[doc_library_guide_2026_sec_4]`",
-      "created_at": "2026-11-02T20:40:52.942Z"
-    },
-    {
-      "id": "mvzq4dlfr1df",
-      "role": "user",
-      "content": "What are the official regulations on attendance shortage and condonation?",
-      "created_at": "2026-11-02T20:40:52.947Z"
-    },
-    {
-      "id": "mvzq4dljknbg",
-      "role": "assistant",
-      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).",
-      "created_at": "2026-11-02T20:40:52.951Z"
-    },
-    {
-      "id": "mvzq4dln7ndc",
-      "role": "user",
-      "content": "What is the capital of France?",
-      "created_at": "2026-11-02T20:40:52.955Z"
-    },
-    {
-      "id": "mvzq4mvi47ss",
-      "role": "assistant",
-      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
-      "created_at": "2026-11-02T20:41:04.974Z"
-    },
-    {
-      "id": "mvzq4mw39i2p",
-      "role": "user",
-      "content": "Show me Priya Sharma's backlogs and grades",
-      "created_at": "2026-11-02T20:41:04.995Z"
-    },
-    {
-      "id": "mvzq4mxenp83",
-      "role": "assistant",
-      "content": "⚠️ Access Denied: You do not have permission to access records outside your student account.",
-      "created_at": "2026-11-02T20:41:05.042Z"
-    },
-    {
-      "id": "mvzq4mxwz89z",
-      "role": "user",
-      "content": "Draft an email to prof.sharma@campus.edu asking for research project guidance",
-      "created_at": "2026-11-02T20:41:05.060Z"
-    },
-    {
-      "id": "mvzq4myav0dg",
-      "role": "assistant",
-      "content": "### Drafted Campus Communication (Approval Required):\n- **To:** `campus-office@campus.edu`\n- **Subject:** Inquiry Regarding Campus Services\n\n```text\nDear Campus Administration,\n\nI am writing to respectfully inquire regarding the schedule and procedures announced for the upcoming semester activities.\n\nThank you.\n\nSincerely,\nAlex Kumar\n```\n\n*Action Guard: Message is held in draft state. Confirmation token: `d91f11c994...`*\n\n---\n\n### Academic Profile: Alex Kumar (IT Department)\n- **CGPA:** 7.53 / 10.0 (Dept Avg: 7.5)\n- **Attendance:** 77.46386310081202% (Required: > 75% · Dept Avg: 85.06%)\n- **Active Backlogs:** 2\n- **Placement Readiness Score:** 99.23856840567274/100 (Coding), 81.70772170173693/100 (Aptitude)\n- **Placement Status:** Not Placed\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*",
-      "created_at": "2026-11-02T20:41:05.074Z",
-      "action": {
-        "requiresConfirmation": true,
-        "confirmationToken": "d91f11c994f87af7194cc41d704ad8f7054d55180aeef261524798c5a84b8886",
-        "type": "communication.send",
-        "provider": "campus_mail",
-        "recipient": "campus-office@campus.edu",
-        "subject": "Inquiry Regarding Campus Services",
-        "body": "Dear Campus Administration,\n\nI am writing to respectfully inquire regarding the schedule and procedures announced for the upcoming semester activities.\n\nThank you.\n\nSincerely,\nAlex Kumar",
-        "label": "Send message to campus-office@campus.edu"
-      }
-    },
-    {
-      "id": "mvzq4myzwuws",
-      "role": "user",
-      "content": "Add a project review meeting to my calendar on 2026-10-25 at 3:00 PM with a 30 minute reminder",
-      "created_at": "2026-11-02T20:41:05.099Z"
-    },
-    {
-      "id": "mvzq4pbp8eqi",
-      "role": "assistant",
-      "content": "I can add these to your calendar:\n\n• a project review meeting 2026-10-25 3:00 PM with a 30 minute reminder — 2026-11-02 at 3:00 PM\n\n*(Note: Connect Google Calendar in Settings > Integrations to sync events)*",
-      "created_at": "2026-11-02T20:41:08.149Z",
-      "action": {
-        "type": "calendar.create",
-        "events": [
-          {
-            "title": "a project review meeting 2026-10-25 3:00 PM with a 30 minute reminder",
-            "date": "2026-11-02",
-            "start": "3:00 PM",
-            "durationHours": 1
-          }
-        ],
-        "connected": false,
-        "label": "Add 1 event"
-      }
-    },
-    {
-      "id": "mvzq4pc3chgm",
-      "role": "user",
-      "content": "search the web for latest quantum computing milestones 2026",
-      "created_at": "2026-11-02T20:41:08.163Z"
-    },
-    {
-      "id": "mvzq4zc4jgib",
-      "role": "assistant",
-      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
-      "created_at": "2026-11-02T20:41:21.124Z",
-      "attachments": [
-        {
-          "type": "web",
-          "title": "Top 15 Quantum Computing Breakthroughs of 2026: Quantum Echoes to Fault ...",
-          "subtitle": "amitray.com",
-          "url": "https://amitray.com/top-quantum-computing-breakthroughs-2026/",
-          "domain": "amitray.com"
-        },
-        {
-          "type": "web",
-          "title": "The Latest Quantum Computing Breakthroughs of 2026, Explained",
-          "subtitle": "insidedeeptech.com",
-          "url": "https://www.insidedeeptech.com/the-latest-quantum-computing-breakthroughs-of-2026-explained/",
-          "domain": "insidedeeptech.com"
-        },
-        {
-          "type": "web",
-          "title": "Quantum Computing Milestones 2026 - Presenc AI",
-          "subtitle": "presenc.ai",
-          "url": "https://presenc.ai/research/quantum-computing-milestones-2026",
-          "domain": "presenc.ai"
-        },
-        {
-          "type": "web",
-          "title": "Quantum Computing Milestones 2025-2026: IBM, Google, IonQ, Quantinuum ...",
-          "subtitle": "technerdo.com",
-          "url": "https://www.technerdo.com/blog/quantum-computing-milestones-2026",
-          "domain": "technerdo.com"
-        },
-        {
-          "type": "web",
-          "title": "State of Quantum Computing 2026: Hardware, Funding and Milestones",
-          "subtitle": "entangledfuture.com",
-          "url": "https://entangledfuture.com/guides/state-of-quantum-computing-2026/",
-          "domain": "entangledfuture.com"
-        }
-      ]
-    },
-    {
       "id": "mvzq4zdlupj4",
       "role": "user",
       "content": "What is quantum foam in cosmological physics?",
@@ -1589,6 +1062,510 @@
           "domain": "wikidata.org"
         }
       ]
+    },
+    {
+      "id": "mw02d48nzv8v",
+      "role": "user",
+      "content": "Explain Newton's second law in two concise sentences.",
+      "created_at": "2026-11-03T02:23:36.119Z"
+    },
+    {
+      "id": "mw02d5msxwxo",
+      "role": "assistant",
+      "content": "Newton's second law states that the acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass ($F = ma$). In simple terms, it means it takes more force to move or stop a heavier object than a lighter one.",
+      "created_at": "2026-11-03T02:23:37.924Z"
+    },
+    {
+      "id": "mw02d5nwu1o4",
+      "role": "user",
+      "content": "What are the Central Library operating hours and location?",
+      "created_at": "2026-11-03T02:23:37.965Z"
+    },
+    {
+      "id": "mw02d5slyjeb",
+      "role": "assistant",
+      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:23:38.133Z"
+    },
+    {
+      "id": "mw02d5vlujnn",
+      "role": "user",
+      "content": "What is my current academic status and course details?",
+      "created_at": "2026-11-03T02:23:38.241Z"
+    },
+    {
+      "id": "mw02d5yppb4a",
+      "role": "assistant",
+      "content": "### Academic Profile: Alex Kumar (IT Department)\n- **CGPA:** 7.53 / 10.0 (Dept Avg: 7.5)\n- **Attendance:** 77.46386310081202% (Required: > 75% · Dept Avg: 85.06%)\n- **Active Backlogs:** 2\n- **Placement Readiness Score:** 99.23856840567274/100 (Coding), 81.70772170173693/100 (Aptitude)\n- **Placement Status:** Not Placed\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*",
+      "created_at": "2026-11-03T02:23:38.353Z"
+    },
+    {
+      "id": "mw02d61d3lf5",
+      "role": "user",
+      "content": "What is my attendance percentage?",
+      "created_at": "2026-11-03T02:23:38.449Z"
+    },
+    {
+      "id": "mw02d639ie47",
+      "role": "assistant",
+      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).",
+      "created_at": "2026-11-03T02:23:38.517Z"
+    },
+    {
+      "id": "mw02d64o9gp6",
+      "role": "user",
+      "content": "What is my current CGPA?",
+      "created_at": "2026-11-03T02:23:38.568Z"
+    },
+    {
+      "id": "mw02d669d2s3",
+      "role": "assistant",
+      "content": "Your cumulative GPA (CGPA) is **7.53 / 10.0** (Department average for IT: 7.5).",
+      "created_at": "2026-11-03T02:23:38.625Z"
+    },
+    {
+      "id": "mw02d66x1s02",
+      "role": "user",
+      "content": "What is the IT department placement benchmark and average package?",
+      "created_at": "2026-11-03T02:23:38.649Z"
+    },
+    {
+      "id": "mw02d679kluf",
+      "role": "assistant",
+      "content": "Your placement record is currently **Not Placed**. Historical placement benchmark for IT indicates a **53.28%** placement rate (1980 student cohort).\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*",
+      "created_at": "2026-11-03T02:23:38.661Z"
+    },
+    {
+      "id": "mw02d67o70o6",
+      "role": "user",
+      "content": "Tell me about the campus facilities and sports complex.",
+      "created_at": "2026-11-03T02:23:38.676Z"
+    },
+    {
+      "id": "mw02d68fnjd7",
+      "role": "assistant",
+      "content": "### Key Campus Facilities Available:\n• **Central Library**\n  - Location: Central Library Building (Ground & 1st Floor)\n  - Hours: Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n• **Sports & Fitness Center**\n  - Location: Student Activity Center (SAC)\n  - Hours: Daily: 6:00 AM - 9:00 AM & 4:30 PM - 8:30 PM\n• **Campus Food Court & Cafeteria**\n  - Location: Ground Floor, Student Activity Center\n  - Hours: Daily: 7:30 AM - 9:30 PM\n• **Campus Health Center**\n  - Location: Ground Floor, Science Block\n  - Hours: 24/7 Emergency Care; Regular Outpatient: 9:00 AM - 5:00 PM\n\n**Verified Campus Citations:**\n- *Campus Facilities & Infrastructure Directory (Demo Document)* (2. Sports & Recreational Facilities) `[doc_facilities_directory_2026_sec_3]`\n- *Central Library & Digital Resources Guide (Demo Document)* (3. Library Facilities) `[doc_library_guide_2026_sec_4]`",
+      "created_at": "2026-11-03T02:23:38.703Z"
+    },
+    {
+      "id": "mw02d690b33n",
+      "role": "user",
+      "content": "The water dispenser in Block A 2nd floor is leaking water, please report a maintenance ticket.",
+      "created_at": "2026-11-03T02:23:38.724Z"
+    },
+    {
+      "id": "mw02d69alik8",
+      "role": "assistant",
+      "content": "### Maintenance Request Submitted (Demo Proposal):\n- **Ticket ID:** `MR-2026-00103`\n- **Location:** Lab 204\n- **Category:** General Maintenance\n- **Status:** Submitted\n- **Assigned Unit:** Campus Facilities Support\n\n*Action Guard: Confirmation token `5f47d6400b...` generated.*",
+      "created_at": "2026-11-03T02:23:38.734Z",
+      "action": {
+        "type": "campus.create_maintenance_ticket",
+        "actionType": "campus.create_maintenance_ticket",
+        "confirmationToken": "5f47d6400b11e79ef6294d979a23689ee1d041ab13bc0a564b486d9604f3b506",
+        "proposal": {
+          "location": "Lab 204",
+          "issue": "the water dispenser in block a 2nd floor is leaking water, please report a maintenance ticket.",
+          "priority": "Medium",
+          "reportedBy": "Alex Kumar"
+        },
+        "requiresConfirmation": true,
+        "label": "Submit Maintenance Request for Lab 204"
+      }
+    },
+    {
+      "id": "mw02d69l4n53",
+      "role": "user",
+      "content": "What upcoming events and hackathons are scheduled?",
+      "created_at": "2026-11-03T02:23:38.745Z"
+    },
+    {
+      "id": "mw02d69v8y95",
+      "role": "assistant",
+      "content": "### Upcoming Campus Events:\n1. **Atlas 36-Hour National Campus Hackathon 2026** (Hackathon / Innovation)\n   - **When:** October 10-12, 2026 · Friday 06:00 PM to Sunday 06:00 AM\n   - **Where:** Seminar Hall 1 & Computer Lab 204 (Academic Block A)\n   - **Status:** Open · [Register](https://campus.edu/events/hackathon2026)\n\n2. **Applied Generative AI & Large Language Models Workshop** (Technical Workshop)\n   - **When:** October 07, 2026 · Wednesday 02:00 PM - 05:00 PM\n   - **Where:** Computer Center Lab 204\n   - **Status:** Filling Fast · [Register](https://campus.edu/events/ai-workshop)\n\n3. **Annual Campus Placement & Career Fair 2026** (Career / Placement)\n   - **When:** October 18-19, 2026 · Saturday & Sunday 09:00 AM - 05:00 PM\n   - **Where:** Student Activity Center (SAC Auditorium & Exhibition Hall)\n   - **Status:** Open · [Register](https://campus.edu/events/careerfair2026)\n\n4. **Echoes 2026 — Annual University Cultural Extravaganza** (Cultural & Arts)\n   - **When:** November 05-07, 2026 · Daily 10:00 AM - 09:00 PM\n   - **Where:** Open Air Amphitheatre\n   - **Status:** Open · [Register](https://campus.edu/events/echoes2026)\n\n**Verified Campus Citations:**\n- *Campus Events & Student Life Guidelines (Demo Document)* (1. Annual Calendar of Major Campus Events) `[doc_events_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:23:38.755Z"
+    },
+    {
+      "id": "mw02d6awmpoh",
+      "role": "user",
+      "content": "What are the latest official announcements and circulars?",
+      "created_at": "2026-11-03T02:23:38.792Z"
+    },
+    {
+      "id": "mw02d6b65ey0",
+      "role": "assistant",
+      "content": "### Official Campus Announcements & Circulars:\n• **Mid-Semester Examination Schedule Published** (2026-10-01 · Controller of Examinations)\n  Mid-term examinations will commence from October 26, 2026. Hall tickets available on the student portal. [Priority: High]\n\n• **Central Library Extended Reading Room Hours** (2026-09-28 · Library Services)\n  Central Library reading hall will remain open until midnight (12:00 AM) during exam preparation month. [Priority: Medium]\n\n• **Phase-1 Campus Placement Drive Guidelines** (2026-09-25 · Training & Placement Office)\n  All eligible final year students with 0 active backlogs must verify their resume by October 10. [Priority: High]",
+      "created_at": "2026-11-03T02:23:38.802Z"
+    },
+    {
+      "id": "mw02d6bosfh8",
+      "role": "user",
+      "content": "What is my CGPA and what are the library operating hours?",
+      "created_at": "2026-11-03T02:23:38.820Z"
+    },
+    {
+      "id": "mw02d6bwfm02",
+      "role": "assistant",
+      "content": "Your cumulative GPA (CGPA) is **7.53 / 10.0** (Department average for IT: 7.5).\n\n---\n\n### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:23:38.828Z"
+    },
+    {
+      "id": "mw02d6c6vosp",
+      "role": "user",
+      "content": "What is my attendance, what hackathons are scheduled, and draft an inquiry to the library?",
+      "created_at": "2026-11-03T02:23:38.838Z"
+    },
+    {
+      "id": "mw02d6cga9uz",
+      "role": "assistant",
+      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).\n\n---\n\n### Atlas 36-Hour National Campus Hackathon 2026\n- **Dates:** October 10-12, 2026 (Friday 06:00 PM to Sunday 06:00 AM)\n- **Venue:** Seminar Hall 1 & Computer Lab 204 (Academic Block A)\n- **Organizer:** Campus Developer Club & Innovation Cell\n- **Registration:** Open (145 / 200 slots filled)\n- **Deadline:** October 08, 2026\n- **Portal Link:** [Event Registration](https://campus.edu/events/hackathon2026)\n\n**Overview:** A 36-hour multi-track hackathon focusing on AI Agents, Healthcare Tech, and Campus Automation. Prizes worth ₹2,50,000.\n\n---\n\n### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n---\n\n### Drafted Campus Communication (Approval Required):\n- **To:** `library@campus.edu`\n- **Subject:** Inquiry Regarding Extended Central Library Operating Hours\n\n```text\nDear Library Administration,\n\nI am an undergraduate student writing to inquire about the current operating hours of the Central Library and whether the ground-floor reading room will remain open extended hours during the upcoming examination weeks.\n\nThank you for your guidance.\n\nSincerely,\nAlex Kumar\nStudent ID: 1\n```\n\n*Action Guard: Message is held in draft state. Confirmation token: `858b85eac5...`*\n\n**Verified Campus Citations:**\n- *Campus Events & Student Life Guidelines (Demo Document)* (General Guidelines) `[doc_events_guide_2026_sec_1]`\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:23:38.848Z",
+      "action": {
+        "requiresConfirmation": true,
+        "confirmationToken": "858b85eac59ed3a21280076a0c7e1fb27c1775abcd6daa711f2af848b517a13a",
+        "type": "communication.send",
+        "provider": "campus_mail",
+        "recipient": "library@campus.edu",
+        "subject": "Inquiry Regarding Extended Central Library Operating Hours",
+        "body": "Dear Library Administration,\n\nI am an undergraduate student writing to inquire about the current operating hours of the Central Library and whether the ground-floor reading room will remain open extended hours during the upcoming examination weeks.\n\nThank you for your guidance.\n\nSincerely,\nAlex Kumar\nStudent ID: 1",
+        "label": "Send message to library@campus.edu"
+      }
+    },
+    {
+      "id": "mw02d6csvsq6",
+      "role": "user",
+      "content": "Tell me about Central Library facilities",
+      "created_at": "2026-11-03T02:23:38.860Z"
+    },
+    {
+      "id": "mw02d6d2irvv",
+      "role": "assistant",
+      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:23:38.870Z"
+    },
+    {
+      "id": "mw02d6dgixq3",
+      "role": "user",
+      "content": "What are its operating hours?",
+      "created_at": "2026-11-03T02:23:38.884Z"
+    },
+    {
+      "id": "mw02d6dptc83",
+      "role": "assistant",
+      "content": "### Key Campus Facilities Available:\n• **Central Library**\n  - Location: Central Library Building (Ground & 1st Floor)\n  - Hours: Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n• **Sports & Fitness Center**\n  - Location: Student Activity Center (SAC)\n  - Hours: Daily: 6:00 AM - 9:00 AM & 4:30 PM - 8:30 PM\n• **Campus Food Court & Cafeteria**\n  - Location: Ground Floor, Student Activity Center\n  - Hours: Daily: 7:30 AM - 9:30 PM\n• **Campus Health Center**\n  - Location: Ground Floor, Science Block\n  - Hours: 24/7 Emergency Care; Regular Outpatient: 9:00 AM - 5:00 PM\n\n**Verified Campus Citations:**\n- *Campus Facilities & Infrastructure Directory (Demo Document)* (2. Sports & Recreational Facilities) `[doc_facilities_directory_2026_sec_3]`\n- *Central Library & Digital Resources Guide (Demo Document)* (3. Library Facilities) `[doc_library_guide_2026_sec_4]`",
+      "created_at": "2026-11-03T02:23:38.893Z"
+    },
+    {
+      "id": "mw02d6dx0f0y",
+      "role": "user",
+      "content": "What are the official campus regulations on attendance shortage and condonation?",
+      "created_at": "2026-11-03T02:23:38.901Z"
+    },
+    {
+      "id": "mw02d6e79cts",
+      "role": "assistant",
+      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).\n\n**Verified Campus Citations:**\n- *Campus Academic Regulations & Attendance Policy* (1. Attendance Requirements & Detention Rules) `[doc_academic_regulations_2026_sec_2]`",
+      "created_at": "2026-11-03T02:23:38.911Z"
+    },
+    {
+      "id": "mw02d6eiuc3e",
+      "role": "user",
+      "content": "What was the final score of the 1982 football championship match?",
+      "created_at": "2026-11-03T02:23:38.922Z"
+    },
+    {
+      "id": "mw02d7rdznr9",
+      "role": "assistant",
+      "content": "The final match of the 1982 FIFA World Cup was won by Italy, who defeated West Germany with a score of **3–1**. The match was played on 11 July 1982 at the Santiago Bernabéu Stadium in Madrid, Spain.",
+      "created_at": "2026-11-03T02:23:40.681Z",
+      "attachments": [
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup final - Wikipedia",
+          "subtitle": "en.wikipedia.org",
+          "url": "https://en.wikipedia.org/wiki/1982_FIFA_World_Cup_final",
+          "domain": "en.wikipedia.org"
+        },
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup - Wikipedia",
+          "subtitle": "en.wikipedia.org",
+          "url": "https://en.wikipedia.org/wiki/1982_FIFA_World_Cup",
+          "domain": "en.wikipedia.org"
+        },
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup Final Overview",
+          "subtitle": "scribd.com",
+          "url": "https://www.scribd.com/document/685388942/1982-FIFA-World-Cup-Final",
+          "domain": "scribd.com"
+        },
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup Final - Wikidata",
+          "subtitle": "wikidata.org",
+          "url": "https://www.wikidata.org/wiki/Q909551",
+          "domain": "wikidata.org"
+        },
+        {
+          "type": "web",
+          "title": "1982 World Cup: Host, Winner, Final Score & Complete History",
+          "subtitle": "worldcupranking.com",
+          "url": "https://worldcupranking.com/blog/world-cup-1982-complete-guide/",
+          "domain": "worldcupranking.com"
+        }
+      ]
+    },
+    {
+      "id": "mw035tw9zzsl",
+      "role": "user",
+      "content": "Explain Newton's second law in two concise sentences.",
+      "created_at": "2026-11-03T02:45:55.737Z"
+    },
+    {
+      "id": "mw035uyxpopy",
+      "role": "assistant",
+      "content": "Newton's second law states that the acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass. In short, it is expressed by the famous equation $F = ma$ (Force equals mass times acceleration).",
+      "created_at": "2026-11-03T02:45:57.129Z"
+    },
+    {
+      "id": "mw035uz7idb3",
+      "role": "user",
+      "content": "What are the Central Library operating hours and location?",
+      "created_at": "2026-11-03T02:45:57.139Z"
+    },
+    {
+      "id": "mw035uzotc05",
+      "role": "assistant",
+      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:45:57.156Z"
+    },
+    {
+      "id": "mw035uzs3o68",
+      "role": "user",
+      "content": "What is my current academic status and course details?",
+      "created_at": "2026-11-03T02:45:57.160Z"
+    },
+    {
+      "id": "mw035v05x90c",
+      "role": "assistant",
+      "content": "### Academic Profile: Alex Kumar (IT Department)\n- **CGPA:** 7.53 / 10.0 (Dept Avg: 7.5)\n- **Attendance:** 77.46386310081202% (Required: > 75% · Dept Avg: 85.06%)\n- **Active Backlogs:** 2\n- **Placement Readiness Score:** 99.23856840567274/100 (Coding), 81.70772170173693/100 (Aptitude)\n- **Placement Status:** Not Placed\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*",
+      "created_at": "2026-11-03T02:45:57.173Z"
+    },
+    {
+      "id": "mw035v09ra8v",
+      "role": "user",
+      "content": "What is my attendance percentage?",
+      "created_at": "2026-11-03T02:45:57.177Z"
+    },
+    {
+      "id": "mw035v0dka1d",
+      "role": "assistant",
+      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).",
+      "created_at": "2026-11-03T02:45:57.181Z"
+    },
+    {
+      "id": "mw035v0jyn8w",
+      "role": "user",
+      "content": "What is my current CGPA?",
+      "created_at": "2026-11-03T02:45:57.187Z"
+    },
+    {
+      "id": "mw035v0qohhw",
+      "role": "assistant",
+      "content": "Your cumulative GPA (CGPA) is **7.53 / 10.0** (Department average for IT: 7.5).",
+      "created_at": "2026-11-03T02:45:57.194Z"
+    },
+    {
+      "id": "mw035v0wm06s",
+      "role": "user",
+      "content": "What is the IT department placement benchmark and average package?",
+      "created_at": "2026-11-03T02:45:57.200Z"
+    },
+    {
+      "id": "mw035v13sj9n",
+      "role": "assistant",
+      "content": "Your placement record is currently **Not Placed**. Historical placement benchmark for IT indicates a **53.28%** placement rate (1980 student cohort).\n\n*Benchmark Notice: Department benchmarks are statistical cohort references derived from 10,000 historical student records and do not constitute an authoritative institutional guarantee.*",
+      "created_at": "2026-11-03T02:45:57.207Z"
+    },
+    {
+      "id": "mw035v194cmv",
+      "role": "user",
+      "content": "Tell me about the campus facilities and sports complex.",
+      "created_at": "2026-11-03T02:45:57.213Z"
+    },
+    {
+      "id": "mw035v1hpxj9",
+      "role": "assistant",
+      "content": "### Key Campus Facilities Available:\n• **Central Library**\n  - Location: Central Library Building (Ground & 1st Floor)\n  - Hours: Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n• **Sports & Fitness Center**\n  - Location: Student Activity Center (SAC)\n  - Hours: Daily: 6:00 AM - 9:00 AM & 4:30 PM - 8:30 PM\n• **Campus Food Court & Cafeteria**\n  - Location: Ground Floor, Student Activity Center\n  - Hours: Daily: 7:30 AM - 9:30 PM\n• **Campus Health Center**\n  - Location: Ground Floor, Science Block\n  - Hours: 24/7 Emergency Care; Regular Outpatient: 9:00 AM - 5:00 PM\n\n**Verified Campus Citations:**\n- *Campus Facilities & Infrastructure Directory (Demo Document)* (2. Sports & Recreational Facilities) `[doc_facilities_directory_2026_sec_3]`\n- *Central Library & Digital Resources Guide (Demo Document)* (3. Library Facilities) `[doc_library_guide_2026_sec_4]`",
+      "created_at": "2026-11-03T02:45:57.221Z"
+    },
+    {
+      "id": "mw035v1prs79",
+      "role": "user",
+      "content": "The water dispenser in Block A 2nd floor is leaking water, please report a maintenance ticket.",
+      "created_at": "2026-11-03T02:45:57.229Z"
+    },
+    {
+      "id": "mw035v1wtd3n",
+      "role": "assistant",
+      "content": "### Maintenance Request Submitted (Demo Proposal):\n- **Ticket ID:** `MR-2026-00103`\n- **Location:** Lab 204\n- **Category:** General Maintenance\n- **Status:** Submitted\n- **Assigned Unit:** Campus Facilities Support\n\n*Action Guard: Confirmation token `938dbdb110...` generated.*",
+      "created_at": "2026-11-03T02:45:57.236Z",
+      "action": {
+        "type": "campus.create_maintenance_ticket",
+        "actionType": "campus.create_maintenance_ticket",
+        "confirmationToken": "938dbdb1106a3a885b7d7c35de461472fd303e95647e6a49f00afc7496f8854f",
+        "proposal": {
+          "location": "Lab 204",
+          "issue": "the water dispenser in block a 2nd floor is leaking water, please report a maintenance ticket.",
+          "priority": "Medium",
+          "reportedBy": "Alex Kumar"
+        },
+        "requiresConfirmation": true,
+        "label": "Submit Maintenance Request for Lab 204"
+      }
+    },
+    {
+      "id": "mw035v23s19t",
+      "role": "user",
+      "content": "What upcoming events and hackathons are scheduled?",
+      "created_at": "2026-11-03T02:45:57.243Z"
+    },
+    {
+      "id": "mw035v2b2x1w",
+      "role": "assistant",
+      "content": "### Upcoming Campus Events:\n1. **Atlas 36-Hour National Campus Hackathon 2026** (Hackathon / Innovation)\n   - **When:** October 10-12, 2026 · Friday 06:00 PM to Sunday 06:00 AM\n   - **Where:** Seminar Hall 1 & Computer Lab 204 (Academic Block A)\n   - **Status:** Open · [Register](https://campus.edu/events/hackathon2026)\n\n2. **Applied Generative AI & Large Language Models Workshop** (Technical Workshop)\n   - **When:** October 07, 2026 · Wednesday 02:00 PM - 05:00 PM\n   - **Where:** Computer Center Lab 204\n   - **Status:** Filling Fast · [Register](https://campus.edu/events/ai-workshop)\n\n3. **Annual Campus Placement & Career Fair 2026** (Career / Placement)\n   - **When:** October 18-19, 2026 · Saturday & Sunday 09:00 AM - 05:00 PM\n   - **Where:** Student Activity Center (SAC Auditorium & Exhibition Hall)\n   - **Status:** Open · [Register](https://campus.edu/events/careerfair2026)\n\n4. **Echoes 2026 — Annual University Cultural Extravaganza** (Cultural & Arts)\n   - **When:** November 05-07, 2026 · Daily 10:00 AM - 09:00 PM\n   - **Where:** Open Air Amphitheatre\n   - **Status:** Open · [Register](https://campus.edu/events/echoes2026)\n\n**Verified Campus Citations:**\n- *Campus Events & Student Life Guidelines (Demo Document)* (1. Annual Calendar of Major Campus Events) `[doc_events_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:45:57.251Z"
+    },
+    {
+      "id": "mw035v379u4n",
+      "role": "user",
+      "content": "What are the latest official announcements and circulars?",
+      "created_at": "2026-11-03T02:45:57.283Z"
+    },
+    {
+      "id": "mw035v3fo0dq",
+      "role": "assistant",
+      "content": "### Official Campus Announcements & Circulars:\n• **Mid-Semester Examination Schedule Published** (2026-10-01 · Controller of Examinations)\n  Mid-term examinations will commence from October 26, 2026. Hall tickets available on the student portal. [Priority: High]\n\n• **Central Library Extended Reading Room Hours** (2026-09-28 · Library Services)\n  Central Library reading hall will remain open until midnight (12:00 AM) during exam preparation month. [Priority: Medium]\n\n• **Phase-1 Campus Placement Drive Guidelines** (2026-09-25 · Training & Placement Office)\n  All eligible final year students with 0 active backlogs must verify their resume by October 10. [Priority: High]",
+      "created_at": "2026-11-03T02:45:57.291Z"
+    },
+    {
+      "id": "mw035v3q3652",
+      "role": "user",
+      "content": "What is my CGPA and what are the library operating hours?",
+      "created_at": "2026-11-03T02:45:57.302Z"
+    },
+    {
+      "id": "mw035v3xhqqg",
+      "role": "assistant",
+      "content": "Your cumulative GPA (CGPA) is **7.53 / 10.0** (Department average for IT: 7.5).\n\n---\n\n### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:45:57.309Z"
+    },
+    {
+      "id": "mw035v449v8a",
+      "role": "user",
+      "content": "What is my attendance, what hackathons are scheduled, and draft an inquiry to the library?",
+      "created_at": "2026-11-03T02:45:57.316Z"
+    },
+    {
+      "id": "mw035v4evu3g",
+      "role": "assistant",
+      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).\n\n---\n\n### Atlas 36-Hour National Campus Hackathon 2026\n- **Dates:** October 10-12, 2026 (Friday 06:00 PM to Sunday 06:00 AM)\n- **Venue:** Seminar Hall 1 & Computer Lab 204 (Academic Block A)\n- **Organizer:** Campus Developer Club & Innovation Cell\n- **Registration:** Open (145 / 200 slots filled)\n- **Deadline:** October 08, 2026\n- **Portal Link:** [Event Registration](https://campus.edu/events/hackathon2026)\n\n**Overview:** A 36-hour multi-track hackathon focusing on AI Agents, Healthcare Tech, and Campus Automation. Prizes worth ₹2,50,000.\n\n---\n\n### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n---\n\n### Drafted Campus Communication (Approval Required):\n- **To:** `library@campus.edu`\n- **Subject:** Inquiry Regarding Extended Central Library Operating Hours\n\n```text\nDear Library Administration,\n\nI am an undergraduate student writing to inquire about the current operating hours of the Central Library and whether the ground-floor reading room will remain open extended hours during the upcoming examination weeks.\n\nThank you for your guidance.\n\nSincerely,\nAlex Kumar\nStudent ID: 1\n```\n\n*Action Guard: Message is held in draft state. Confirmation token: `acbdb185d5...`*\n\n**Verified Campus Citations:**\n- *Campus Events & Student Life Guidelines (Demo Document)* (General Guidelines) `[doc_events_guide_2026_sec_1]`\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:45:57.326Z",
+      "action": {
+        "requiresConfirmation": true,
+        "confirmationToken": "acbdb185d5f54cbb18cc63a2283acd8249dfcb5d4d9e64c5fcb981721d3aba2a",
+        "type": "communication.send",
+        "provider": "campus_mail",
+        "recipient": "library@campus.edu",
+        "subject": "Inquiry Regarding Extended Central Library Operating Hours",
+        "body": "Dear Library Administration,\n\nI am an undergraduate student writing to inquire about the current operating hours of the Central Library and whether the ground-floor reading room will remain open extended hours during the upcoming examination weeks.\n\nThank you for your guidance.\n\nSincerely,\nAlex Kumar\nStudent ID: 1",
+        "label": "Send message to library@campus.edu"
+      }
+    },
+    {
+      "id": "mw035v57asae",
+      "role": "user",
+      "content": "Tell me about Central Library facilities",
+      "created_at": "2026-11-03T02:45:57.355Z"
+    },
+    {
+      "id": "mw035v5f2n7x",
+      "role": "assistant",
+      "content": "### Central Library Information:\n- **Location:** Central Library Building (Ground & 1st Floor)\n- **Operating Hours:** Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n- **Available Services:**\n  • Book Borrowing (Up to 4 books for 14 days)\n  • IEEE / ACM Digital Library Access\n  • Quiet Study Zone\n  • Photocopying & Printing\n\n*Note: Extended reading room hours (until 12:00 AM Midnight) are active during examination months.*\n\n**Verified Campus Citations:**\n- *Central Library & Digital Resources Guide (Demo Document)* (1. Library Operating Hours & Schedule) `[doc_library_guide_2026_sec_2]`",
+      "created_at": "2026-11-03T02:45:57.363Z"
+    },
+    {
+      "id": "mw035v5k3wf8",
+      "role": "user",
+      "content": "What are its operating hours?",
+      "created_at": "2026-11-03T02:45:57.368Z"
+    },
+    {
+      "id": "mw035v5q85pv",
+      "role": "assistant",
+      "content": "### Key Campus Facilities Available:\n• **Central Library**\n  - Location: Central Library Building (Ground & 1st Floor)\n  - Hours: Monday - Saturday: 8:00 AM - 10:00 PM; Sunday: 10:00 AM - 5:00 PM\n• **Sports & Fitness Center**\n  - Location: Student Activity Center (SAC)\n  - Hours: Daily: 6:00 AM - 9:00 AM & 4:30 PM - 8:30 PM\n• **Campus Food Court & Cafeteria**\n  - Location: Ground Floor, Student Activity Center\n  - Hours: Daily: 7:30 AM - 9:30 PM\n• **Campus Health Center**\n  - Location: Ground Floor, Science Block\n  - Hours: 24/7 Emergency Care; Regular Outpatient: 9:00 AM - 5:00 PM\n\n**Verified Campus Citations:**\n- *Campus Facilities & Infrastructure Directory (Demo Document)* (2. Sports & Recreational Facilities) `[doc_facilities_directory_2026_sec_3]`\n- *Central Library & Digital Resources Guide (Demo Document)* (3. Library Facilities) `[doc_library_guide_2026_sec_4]`",
+      "created_at": "2026-11-03T02:45:57.374Z"
+    },
+    {
+      "id": "mw035v5zkne6",
+      "role": "user",
+      "content": "What are the official campus regulations on attendance shortage and condonation?",
+      "created_at": "2026-11-03T02:45:57.383Z"
+    },
+    {
+      "id": "mw035v65oi1o",
+      "role": "assistant",
+      "content": "Your recorded attendance is **77.46%** (IT Department; cohort benchmark average: 85.06%). ✅ Good Standing: Attendance satisfies institutional guidelines (> 75%).\n\n**Verified Campus Citations:**\n- *Campus Academic Regulations & Attendance Policy* (1. Attendance Requirements & Detention Rules) `[doc_academic_regulations_2026_sec_2]`",
+      "created_at": "2026-11-03T02:45:57.389Z"
+    },
+    {
+      "id": "mw035v6lapem",
+      "role": "user",
+      "content": "What was the final score of the 1982 football championship match?",
+      "created_at": "2026-11-03T02:45:57.405Z"
+    },
+    {
+      "id": "mw035wevu5lq",
+      "role": "assistant",
+      "content": "The final score of the 1982 FIFA World Cup final was Italy 3, West Germany 1.",
+      "created_at": "2026-11-03T02:45:58.999Z",
+      "attachments": [
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup final - Wikipedia",
+          "subtitle": "en.wikipedia.org",
+          "url": "https://en.wikipedia.org/wiki/1982_FIFA_World_Cup_final",
+          "domain": "en.wikipedia.org"
+        },
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup - Wikipedia",
+          "subtitle": "en.wikipedia.org",
+          "url": "https://en.wikipedia.org/wiki/1982_FIFA_World_Cup",
+          "domain": "en.wikipedia.org"
+        },
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup Final Overview",
+          "subtitle": "scribd.com",
+          "url": "https://www.scribd.com/document/685388942/1982-FIFA-World-Cup-Final",
+          "domain": "scribd.com"
+        },
+        {
+          "type": "web",
+          "title": "1982 FIFA World Cup Final - Wikidata",
+          "subtitle": "wikidata.org",
+          "url": "https://www.wikidata.org/wiki/Q909551",
+          "domain": "wikidata.org"
+        },
+        {
+          "type": "web",
+          "title": "1982 World Cup: Host, Winner, Final Score & Complete History",
+          "subtitle": "worldcupranking.com",
+          "url": "https://worldcupranking.com/blog/world-cup-1982-complete-guide/",
+          "domain": "worldcupranking.com"
+        }
+      ]
     }
   ],
   "tasks": [
@@ -1610,6 +1587,34 @@
     }
   ],
   "logs": [
+    {
+      "id": "mw02dbf7yey2",
+      "title": "Gmail send error",
+      "detail": "Status 403: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Request had insufficient authentication scopes.\",\n  ",
+      "tone": "error",
+      "created_at": "2026-11-03T02:23:45.427Z"
+    },
+    {
+      "id": "mw02awvu3dvy",
+      "title": "Integration connected",
+      "detail": "Google Workspace",
+      "tone": "success",
+      "created_at": "2026-11-03T02:21:53.274Z"
+    },
+    {
+      "id": "mw00vztey7ed",
+      "title": "Integration disconnected",
+      "detail": "Google Calendar",
+      "tone": "",
+      "created_at": "2026-11-03T01:42:17.618Z"
+    },
+    {
+      "id": "mw00vyhkvteo",
+      "title": "Integration connected",
+      "detail": "Google Calendar",
+      "tone": "success",
+      "created_at": "2026-11-03T01:42:15.896Z"
+    },
     {
       "id": "mvkziheb8p0x",
       "title": "Integration disconnected",
@@ -2981,41 +2986,20 @@
       "detail": "I'm excited to be a part of your story, Varshith, as Atlas Agent, your personal assistant, ready to help and learn from you in this new project.",
       "tone": "info",
       "created_at": "2026-07-16T19:28:59.548Z"
-    },
-    {
-      "id": "mrnwhomcswxe",
-      "title": "Learned a new fact",
-      "detail": "Varshith's username or handle is Varshith_tillu.",
-      "tone": "info",
-      "created_at": "2026-07-16T19:27:08.004Z"
-    },
-    {
-      "id": "mrnwghgmdeq3",
-      "title": "Learned a new fact",
-      "detail": "Atlas Agent is Varshith's personal assistant.",
-      "tone": "info",
-      "created_at": "2026-07-16T19:26:12.070Z"
-    },
-    {
-      "id": "mrnw7bli3ga0",
-      "title": "Posted to LinkedIn (via IG DM)",
-      "detail": "I'm excited to introduce Atlas Agent, my new proje",
-      "tone": "success",
-      "created_at": "2026-07-16T19:19:04.566Z"
-    },
-    {
-      "id": "mrnw6alylp0r",
-      "title": "Task completed",
-      "detail": "make a linkedin post that atlas agent is my new project that",
-      "tone": "success",
-      "created_at": "2026-07-16T19:18:16.630Z"
     }
   ],
   "integrations": [
     {
       "id": "google",
       "name": "Google Workspace",
-      "connected": false
+      "connected": true,
+      "connected_at": "2026-11-03T02:21:53.267Z",
+      "token": "ya29.a0AehfTOn7LtM6ZQpHkWyRnnFFjibzyvZBHjuimmHjhmQ2QShAnL53ro0-_isZOh52hqfEZkXd46mgSUL6sbwdZJMw-kTfKiDDmPxU7YA1fIQayNvD2QkAvUZfGfkVbFyoL7OM0AkmKX6Z4SnEleyEDuVhbe-A5DJzSEZ4QQKRADwXH93MexKboCx0cP5bFe7detevnqQaCgYKAbESARISFQHGX2MirT2kr-BMn1rOKQmehU5qeA0206",
+      "refresh_token": "1//0gKOVSI-hzdhPCgYIARAAGBASNwF-L9Iro5Bqk8J-S3vhX4VWtNcBCxAvpAUKl5wLs-J7W8j9XJoPxIDeNNjWMvDfRAXIhRSL7cs",
+      "expires_at": 1793676112267,
+      "user_email": "ch.lithinkumar19@gmail.com",
+      "user_name": "Ch. Lithin Kumar",
+      "user_picture": "https://lh3.googleusercontent.com/a/ACg8ocLK_66sRkWfdZnDMEw99R0DGlwiVq7tIPamjx5sYXRAkzVAQg=s96-c"
     },
     {
       "id": "gmail",
@@ -3233,22 +3217,22 @@
     }
   ],
   "usage": {
-    "requests": 224,
-    "tokens": 127369,
-    "chats": 224,
+    "requests": 228,
+    "tokens": 135269,
+    "chats": 228,
     "since": "2026-07-15T11:40:38.001Z",
     "groq": {
-      "requests": 401,
-      "tokens": 246961,
+      "requests": 437,
+      "tokens": 261557,
       "since": "2026-07-20T05:01:28.957Z",
       "today": {
-        "date": "2026-10-23",
-        "requests": 9,
-        "tokens": 4220,
+        "date": "2026-11-03",
+        "requests": 36,
+        "tokens": 14596,
         "keys": [
           {
-            "requests": 9,
-            "tokens": 4220
+            "requests": 36,
+            "tokens": 14596
           }
         ]
       }
@@ -3256,10 +3240,10 @@
     "services": {
       "date": "2026-11-03",
       "gmail": 0,
-      "calendar": 0,
+      "calendar": 1,
       "linkedin": 0,
       "instagram": 0,
-      "websearch": 5
+      "websearch": 7
     }
   },
   "insights": [
