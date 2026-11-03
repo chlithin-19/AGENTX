@@ -17,6 +17,7 @@
 import { getDemoStudent, DEMO_STUDENT_PROFILES, COHORT_BENCHMARKS } from '../data/demoStudents.js'
 import { assertStudentAccess } from '../security/index.js'
 import { getCampusRepositories } from '../campus/repositories/index.js'
+import { queryKnowledge } from '../knowledge/retriever.js'
 
 export class AcademicAgent {
   constructor() {
@@ -163,7 +164,13 @@ export class AcademicAgent {
           cohortAverage: branchAvgAttendance
         },
         summary: `${subjectPrefix} recorded attendance is **${att}%** (${student.branch} Department; cohort benchmark average: ${branchAvgAttendance}%). ${statusNote}`,
-        citations: []
+        citations: (function() {
+          if (/\b(condonation|regulations?|policy|guidelines?|shortage|rules?)\b/i.test(query)) {
+            const rag = queryKnowledge('attendance regulations and condonation policy', 1);
+            return rag.citations || [];
+          }
+          return [];
+        })()
       }
     }
 

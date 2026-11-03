@@ -9,4 +9,6 @@ build/
 __pycache__/
 .localstorage
 *.db
+*.db-shm
+*.db-wal
 *.csv

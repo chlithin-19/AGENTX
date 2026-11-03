@@ -2,8 +2,9 @@
 // ponytail: in-memory state map (lost on restart) — fine, OAuth states are short-lived.
 import { randomBytes, createHash } from 'node:crypto'
 
-const APP_BASE = process.env.APP_BASE || 'https://atlas.oqens.me'
-const CB = (id) => `${APP_BASE}/api/oauth/${id}/callback`
+const APP_BASE = (process.env.APP_BASE || 'http://localhost:8080').replace(/\/+$/, '')
+export const getCallbackUri = (id) => `${APP_BASE}/api/oauth/${id}/callback`
+export const CB = getCallbackUri
 
 // OAuth servers. Credentials come from env (see .env).
 const SERVERS = {
@@ -34,9 +35,12 @@ const SERVERS = {
 // Each integration id -> which OAuth server + scopes it needs.
 export const OAUTH_CONFIG = {
   github: { server: 'github', scope: 'repo read:org read:user' },
-  google: { server: 'google', scope: 'openid email profile' },
+  google: {
+    server: 'google',
+    scope: 'openid email profile https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/calendar.events',
+  },
   gmail: { server: 'google', scope: 'https://www.googleapis.com/auth/gmail.modify' },
-  calendar: { server: 'google', scope: 'https://www.googleapis.com/auth/calendar' },
+  calendar: { server: 'google', scope: 'https://www.googleapis.com/auth/calendar.events' },
   meet: { server: 'google', scope: 'https://www.googleapis.com/auth/calendar.events' },
   linkedin: { server: 'linkedin', scope: 'openid profile w_member_social' },
 }
@@ -55,12 +59,12 @@ export function isConfigured(id) {
 }
 
 // Build the provider authorize URL; returns null if not configured.
-export function buildAuthUrl(id) {
+export function buildAuthUrl(id, options = {}) {
   const cfg = OAUTH_CONFIG[id]
   if (!cfg || !isConfigured(id)) return null
   const s = SERVERS[cfg.server]
   const state = randomBytes(16).toString('hex')
-  const entry = { id, created: Date.now() }
+  const entry = { id, created: Date.now(), returnTo: options.returnTo || null }
   const params = new URLSearchParams({
     client_id: s.clientId(),
     redirect_uri: CB(id),
@@ -80,7 +84,7 @@ export function buildAuthUrl(id) {
   return `${s.authorize}?${params.toString()}`
 }
 
-// Exchange the callback code for tokens. Returns { access_token, refresh_token, expires_in } or throws.
+// Exchange the callback code for tokens. Returns { access_token, refresh_token, expires_in, returnTo } or throws.
 export async function exchangeCode(id, code, state) {
   const cfg = OAUTH_CONFIG[id]
   const entry = states.get(state)
@@ -108,5 +112,5 @@ export async function exchangeCode(id, code, state) {
   if (!r.ok || data.error || !data.access_token) {
     throw new Error(data.error_description || data.error || `token exchange failed (${r.status})`)
   }
-  return data
+  return { ...data, returnTo: entry.returnTo }
 }

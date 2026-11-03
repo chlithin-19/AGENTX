@@ -6,21 +6,44 @@ const integration = (id) => get().integrations.find(x => x.id === id)
 
 // --- Google auth: refresh access token when expired ---
 export async function ensureGoogleToken(it) {
-  if (it.token && it.expires_at && Date.now() < it.expires_at - 60000) return it.token
-  if (!it.refresh_token) return it.token
-  const r = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      refresh_token: it.refresh_token,
-      grant_type: 'refresh_token',
-    }),
-  })
-  const j = await r.json()
-  if (j.access_token) { it.token = j.access_token; it.expires_at = Date.now() + (j.expires_in || 3600) * 1000; save() }
-  return it.token
+  if (it?.token && it?.expires_at && Date.now() < it.expires_at - 60000) return it.token
+  if (it?.refresh_token) {
+    const r = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        refresh_token: it.refresh_token,
+        grant_type: 'refresh_token',
+      }),
+    })
+    const j = await r.json()
+    if (j.access_token) {
+      it.token = j.access_token
+      it.expires_at = Date.now() + (j.expires_in || 3600) * 1000
+      save()
+      return it.token
+    }
+  }
+
+  // Fallback to master google integration if this specific service has no active credentials
+  if (it?.id && it.id !== 'google') {
+    const master = get().integrations.find(x => x.id === 'google')
+    if (master && master.connected) {
+      const masterToken = await ensureGoogleToken(master)
+      if (masterToken) {
+        it.token = master.token
+        it.expires_at = master.expires_at
+        if (master.refresh_token) it.refresh_token = master.refresh_token
+        it.connected = true
+        save()
+        return masterToken
+      }
+    }
+  }
+
+  return it?.token || null
 }
 
 async function gmailList(it, { q = '', count = 5 } = {}) {

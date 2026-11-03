@@ -24,8 +24,8 @@ const PORT = process.env.PORT || 8080
 const OLLAMA = process.env.OLLAMA_URL || 'http://127.0.0.1:11434'
 const DEFAULT_MODEL = process.env.DEFAULT_MODEL || 'gemma4:e2b'
 const AGENT_MODEL = process.env.AGENT_MODEL || 'gemma4:e2b' // needs tool-calling support
-const DEFAULT_NOTIFY = process.env.NOTIFY_EMAIL || 'varshithpaladugu07@gmail.com'
-const APP_BASE = process.env.APP_BASE || 'https://atlas.oqens.me'
+const APP_BASE = (process.env.APP_BASE || 'http://localhost:8080').replace(/\/+$/, '')
+const FRONTEND_URL = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '')
 const STARTED = Date.now()
 
 const app = express()
@@ -283,7 +283,7 @@ app.post('/api/chat', async (req, res) => {
               const buf = Buffer.from(p.inlineData.data, 'base64');
               const outPath = `/var/www/atlas/images/${imgId}.png`;
               fs.writeFileSync(outPath, buf);
-              imgUrl = `https://atlas.oqens.me/images/${imgId}.png`;
+              imgUrl = `${APP_BASE}/images/${imgId}.png`;
               break;
             }
           }
@@ -744,6 +744,9 @@ function formatGeminiPayload(messages, opts = {}) {
   } else if (contents[0].role === 'model') {
     contents.unshift({ role: 'user', parts: [{ text: 'Hello' }] })
   }
+  if (contents[contents.length - 1]?.role === 'model') {
+    contents.push({ role: 'user', parts: [{ text: 'Please continue.' }] })
+  }
   const payload = { contents }
   if (systemText) {
     payload.system_instruction = { parts: [{ text: systemText }] }
@@ -770,7 +773,7 @@ async function streamGemini(messages, onToken, opts = {}) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(6000)
+          signal: AbortSignal.timeout(10000)
         })
         if (r.status === 429) {
           keyIdx++
@@ -920,7 +923,7 @@ async function streamLLM(messages, onToken, opts = {}) {
       const up = await fetch(`${OLLAMA}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ model: AGENT_MODEL, stream: true, keep_alive: -1, messages }),
-        signal: AbortSignal.timeout(20000)
+        signal: AbortSignal.timeout(12000)
       })
       if (up.ok && up.body) {
         let full = '', tokens = 0
@@ -1283,6 +1286,40 @@ app.get('/api/jobs/:id/document', (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename="${job.docName}"`)
   res.send(readFileSync(path))
 })
+
+// Direct on-demand document generation endpoint (PDF, Excel, Word)
+app.post('/api/docs/generate', async (req, res) => {
+  const { format = 'pdf', title = 'Atlas Report', content } = req.body || {}
+  if (!content || typeof content !== 'string' || !content.trim()) {
+    return res.status(400).json({ error: 'content is required and must be non-empty Markdown text' })
+  }
+  const cleanTitle = (typeof title === 'string' && title.trim()) ? title.trim().slice(0, 100) : 'Atlas Report'
+  const fmt = String(format).toLowerCase().trim()
+
+  try {
+    if (fmt === 'excel' || fmt === 'xlsx') {
+      const buf = await renderExcel(cleanTitle, content)
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle.replace(/[^\w.-]/g, '_')}.xlsx"`)
+      return res.send(buf)
+    } else if (fmt === 'docx' || fmt === 'word') {
+      const buf = await renderDocx(cleanTitle, content)
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle.replace(/[^\w.-]/g, '_')}.docx"`)
+      return res.send(buf)
+    } else if (fmt === 'pdf') {
+      const buf = await renderPDF(cleanTitle, content)
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Disposition', `attachment; filename="${cleanTitle.replace(/[^\w.-]/g, '_')}.pdf"`)
+      return res.send(buf)
+    } else {
+      return res.status(400).json({ error: `Unsupported format "${format}". Supported formats are: pdf, excel, docx` })
+    }
+  } catch (err) {
+    res.status(500).json({ error: `Document generation failed: ${err.message}` })
+  }
+})
+
 app.delete('/api/jobs/:id', (req, res) => {
   db.jobs = db.jobs.filter(j => j.id !== req.params.id); save()
   res.json({ ok: true })
@@ -1323,12 +1360,50 @@ const publicIntegration = (it) => ({
 })
 app.get('/api/integrations', (req, res) => res.json(db.integrations.map(publicIntegration)))
 
+// Safe frontend return origin validation to prevent open redirects
+const ALLOWED_FRONTEND_ORIGINS = new Set([
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+])
+if (process.env.FRONTEND_URL) {
+  try {
+    const u = new URL(process.env.FRONTEND_URL)
+    ALLOWED_FRONTEND_ORIGINS.add(u.origin)
+  } catch {}
+}
+
+function resolveFrontendOrigin(req, candidateReturnTo) {
+  if (candidateReturnTo) {
+    try {
+      const u = new URL(candidateReturnTo)
+      if (ALLOWED_FRONTEND_ORIGINS.has(u.origin)) return u.origin
+    } catch {}
+  }
+  const ref = req.headers?.referer || req.headers?.origin
+  if (ref) {
+    try {
+      const u = new URL(ref)
+      if (ALLOWED_FRONTEND_ORIGINS.has(u.origin)) return u.origin
+    } catch {}
+  }
+  return FRONTEND_URL || 'http://localhost:5173'
+}
+
+function getSafeFrontendRedirect(req, integrationId, params = {}, candidateReturnTo = null) {
+  const origin = resolveFrontendOrigin(req, candidateReturnTo)
+  const qs = new URLSearchParams(params).toString()
+  return `${origin}/?tab=settings&integration=${encodeURIComponent(integrationId)}${qs ? '&' + qs : ''}`
+}
+
 // Start OAuth: browser hits this directly (full-page redirect to provider).
 app.get('/api/integrations/:id/connect', (req, res) => {
   const it = db.integrations.find(x => x.id === req.params.id)
   if (!it) return res.status(404).json({ error: 'not found' })
-  const url = buildAuthUrl(it.id)
-  if (!url) return res.redirect(`${APP_BASE}/integrations/${it.id}?error=not_configured`)
+  const returnTo = resolveFrontendOrigin(req)
+  const url = buildAuthUrl(it.id, { returnTo })
+  if (!url) return res.redirect(getSafeFrontendRedirect(req, it.id, { error: 'not_configured' }))
   res.redirect(url)
 })
 
@@ -1337,7 +1412,7 @@ app.get('/api/oauth/:id/callback', async (req, res) => {
   const it = db.integrations.find(x => x.id === req.params.id)
   const { code, state, error } = req.query
   if (!it) return res.status(404).send('unknown integration')
-  if (error) return res.redirect(`${APP_BASE}/integrations/${it.id}?error=${encodeURIComponent(error)}`)
+  if (error) return res.redirect(getSafeFrontendRedirect(req, it.id, { error: String(error) }))
   try {
     const tok = await exchangeCode(it.id, code, state)
     it.connected = true
@@ -1345,11 +1420,32 @@ app.get('/api/oauth/:id/callback', async (req, res) => {
     it.token = tok.access_token
     if (tok.refresh_token) it.refresh_token = tok.refresh_token
     it.expires_at = tok.expires_in ? Date.now() + tok.expires_in * 1000 : null
+
+    // If connecting master Google Workspace integration, propagate credentials to Gmail and Calendar
+    if (it.id === 'google') {
+      const gmail = db.integrations.find(x => x.id === 'gmail')
+      if (gmail) {
+        gmail.connected = true
+        gmail.connected_at = it.connected_at
+        gmail.token = tok.access_token
+        if (tok.refresh_token) gmail.refresh_token = tok.refresh_token
+        gmail.expires_at = it.expires_at
+      }
+      const calendar = db.integrations.find(x => x.id === 'calendar')
+      if (calendar) {
+        calendar.connected = true
+        calendar.connected_at = it.connected_at
+        calendar.token = tok.access_token
+        if (tok.refresh_token) calendar.refresh_token = tok.refresh_token
+        calendar.expires_at = it.expires_at
+      }
+    }
+
     save()
     logEvent('Integration connected', it.name, 'success')
-    res.redirect(`${APP_BASE}/integrations/${it.id}?connected=1`)
+    res.redirect(getSafeFrontendRedirect(req, it.id, { connected: '1' }, tok.returnTo))
   } catch (e) {
-    res.redirect(`${APP_BASE}/integrations/${it.id}?error=${encodeURIComponent(e.message)}`)
+    res.redirect(getSafeFrontendRedirect(req, it.id, { error: e.message }))
   }
 })
 
@@ -1358,6 +1454,17 @@ app.post('/api/integrations/:id/disconnect', (req, res) => {
   if (!it) return res.status(404).json({ error: 'not found' })
   it.connected = false
   delete it.token; delete it.refresh_token; delete it.expires_at; delete it.connected_at
+
+  if (it.id === 'google') {
+    for (const subId of ['gmail', 'calendar']) {
+      const sub = db.integrations.find(x => x.id === subId)
+      if (sub) {
+        sub.connected = false
+        delete sub.token; delete sub.refresh_token; delete sub.expires_at; delete sub.connected_at
+      }
+    }
+  }
+
   save()
   logEvent('Integration disconnected', it.name, '')
   res.json(publicIntegration(it))

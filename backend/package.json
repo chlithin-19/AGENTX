@@ -7,7 +7,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node --no-warnings server.js",
-    "test": "node --test tests/security.test.js tests/data_architecture.test.js tests/intelligence.test.js tests/orchestration.test.js tests/knowledge_rag.test.js tests/campus_workflows.test.js tests/deployment_readiness.test.js tests/reliable_inference.test.js"
+    "test": "node --test tests/security.test.js tests/data_architecture.test.js tests/intelligence.test.js tests/orchestration.test.js tests/knowledge_rag.test.js tests/campus_workflows.test.js tests/deployment_readiness.test.js tests/reliable_inference.test.js tests/oauth.test.js",
+    "test:acceptance": "node tests/master_30_acceptance.js"
   },
   "dependencies": {
     "@google/genai": "^2.26.0",
