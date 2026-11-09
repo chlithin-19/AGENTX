@@ -45,18 +45,6 @@
   ],
   "messages": [
     {
-      "id": "mvzq4zdlupj4",
-      "role": "user",
-      "content": "What is quantum foam in cosmological physics?",
-      "created_at": "2026-11-02T20:41:21.177Z"
-    },
-    {
-      "id": "mvzq58ndyc8r",
-      "role": "assistant",
-      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
-      "created_at": "2026-11-02T20:41:33.193Z"
-    },
-    {
       "id": "mvzq6o656jyc",
       "role": "user",
       "content": "Explain Newton's second law in two concise sentences.",
@@ -1566,6 +1554,18 @@
           "domain": "worldcupranking.com"
         }
       ]
+    },
+    {
+      "id": "mw08o0d4wvap",
+      "role": "user",
+      "content": "Heyy whats upp ",
+      "created_at": "2026-11-03T05:20:02.008Z"
+    },
+    {
+      "id": "mw08oakh73oa",
+      "role": "assistant",
+      "content": "I am currently running in local campus offline mode without an active generative LLM provider. You can still ask me about your academics, attendance, campus facilities, maintenance requests, events, and official circulars.",
+      "created_at": "2026-11-03T05:20:15.233Z"
     }
   ],
   "tasks": [
@@ -1587,6 +1587,48 @@
     }
   ],
   "logs": [
+    {
+      "id": "mw08o2jp9jta",
+      "title": "Reasoning model down",
+      "detail": "gemini-3.8-flash: fetch failed",
+      "tone": "warn",
+      "created_at": "2026-11-03T05:20:04.837Z"
+    },
+    {
+      "id": "mw08o249xfi1",
+      "title": "Reasoning model down",
+      "detail": "gemini-3.5-flash: fetch failed",
+      "tone": "warn",
+      "created_at": "2026-11-03T05:20:04.281Z"
+    },
+    {
+      "id": "mw08o1aqhugt",
+      "title": "Gemini stream error",
+      "detail": "gemini-3.8-flash: fetch failed",
+      "tone": "warn",
+      "created_at": "2026-11-03T05:20:03.218Z"
+    },
+    {
+      "id": "mw08o19zypjl",
+      "title": "Gemini stream error",
+      "detail": "gemini-3.5-flash: fetch failed",
+      "tone": "warn",
+      "created_at": "2026-11-03T05:20:03.191Z"
+    },
+    {
+      "id": "mw08o0urbfkc",
+      "title": "Reasoning model down",
+      "detail": "gemini-3.5-flash-lite: fetch failed",
+      "tone": "warn",
+      "created_at": "2026-11-03T05:20:02.643Z"
+    },
+    {
+      "id": "mw08o0uebqih",
+      "title": "Gemini stream error",
+      "detail": "gemini-3.5-flash-lite: fetch failed",
+      "tone": "warn",
+      "created_at": "2026-11-03T05:20:02.630Z"
+    },
     {
       "id": "mw02dbf7yey2",
       "title": "Gmail send error",
@@ -2944,48 +2986,6 @@
       "detail": "Summarise all mails from gemini student ambassador team",
       "tone": "",
       "created_at": "2026-07-17T08:39:21.312Z"
-    },
-    {
-      "id": "mrooshjyp0ml",
-      "title": "Background task queued",
-      "detail": "Summarise all mails from gemini student ambassador team",
-      "tone": "info",
-      "created_at": "2026-07-17T08:39:21.310Z"
-    },
-    {
-      "id": "mrooq3z44ssj",
-      "title": "Learned a new fact",
-      "detail": "The email address of the Gemini Student Ambassadors program is info@geministudentambassadors.com.",
-      "tone": "info",
-      "created_at": "2026-07-17T08:37:30.400Z"
-    },
-    {
-      "id": "mroopk27hmk5",
-      "title": "Learned a new fact",
-      "detail": "Varshith is a part of the Gemini Student Ambassadors program.",
-      "tone": "info",
-      "created_at": "2026-07-17T08:37:04.591Z"
-    },
-    {
-      "id": "mrnxnqbmzh6l",
-      "title": "Sent an email (via IG DM)",
-      "detail": "To varshithpaladugu07@gmail.com",
-      "tone": "success",
-      "created_at": "2026-07-16T19:59:49.762Z"
-    },
-    {
-      "id": "mrnx9lk2m01j",
-      "title": "Learned a new fact",
-      "detail": "You want me to repeat what you say.",
-      "tone": "info",
-      "created_at": "2026-07-16T19:48:50.402Z"
-    },
-    {
-      "id": "mrnwk2oskrgz",
-      "title": "Learned a new fact",
-      "detail": "I'm excited to be a part of your story, Varshith, as Atlas Agent, your personal assistant, ready to help and learn from you in this new project.",
-      "tone": "info",
-      "created_at": "2026-07-16T19:28:59.548Z"
     }
   ],
   "integrations": [
@@ -3217,9 +3217,9 @@
     }
   ],
   "usage": {
-    "requests": 228,
+    "requests": 229,
     "tokens": 135269,
-    "chats": 228,
+    "chats": 229,
     "since": "2026-07-15T11:40:38.001Z",
     "groq": {
       "requests": 437,
